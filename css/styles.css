@@ -209,7 +209,7 @@ body{position:relative;z-index:0}
 #category-info-modal .category-info-modal__close,#position-info-modal .position-info-modal__close,#tally-info-modal .tally-info-modal__close{width:100%;padding:0.4rem 1rem;font-size:0.875rem;line-height:1.25rem;font-weight:600;border-radius:1rem;border:1px solid var(--color-border-strong);cursor:pointer}
 #hemisphere-modal.is-open{z-index:230}
 .other-options-modal__seasonal-row{display:flex;align-items:center;column-gap:0.35rem}
-.hemisphere-modal__heading{margin:0 0 0.5rem;font-size:calc(0.95rem * var(--font-scale, 1));font-weight:700;color:var(--text-color)}
+.hemisphere-modal__heading{margin:1rem 0 0.5rem;font-size:calc(0.95rem * var(--font-scale, 1));font-weight:700;color:var(--text-color)}
 .hemisphere-modal__options{display:flex;flex-direction:column;align-items:flex-start;row-gap:0.45rem}
 .hemisphere-modal__schedule{margin:1rem 0 0;padding:0;list-style:none;color:var(--text-color);font-size:calc(0.95rem * var(--font-scale, 1));line-height:1.45}
 .hemisphere-modal__schedule li+li{margin-top:0.3rem}
