@@ -16,6 +16,12 @@ const css = fs.readFileSync(path.join(root, 'css/styles.css'), 'utf8');
 assert.ok(html.includes('>Seasonal<'), 'Seasonal option missing');
 assert.ok(html.includes('id="seasonal-info-btn"'), 'seasonal info button missing');
 assert.ok(html.includes('id="hemisphere-modal"'), 'hemisphere modal missing');
+assert.ok(html.includes('id="hemisphere-modal-icon"'), 'seasonal header icon missing');
+const settingsSrc = fs.readFileSync(path.join(root, 'js/settingsmodal.js'), 'utf8');
+['snowflake', 'flower', 'butterfly', 'sun', 'feather'].forEach(function (name) {
+    assert.ok(settingsSrc.includes(name + ':'), 'seasonal header icon missing: ' + name);
+});
+assert.ok(settingsSrc.includes('paintSeasonalHeaderIcon()'), 'seasonal header icon should be chosen when the modal opens');
 assert.ok(html.includes('>Northern<') && html.includes('>Southern<'), 'hemisphere options missing');
 assert.ok(html.includes('Effects automatically change with the seasons.'), 'seasonal instructions missing');
 assert.ok(html.includes('id="effect-season-radio"'), 'season radio missing');
