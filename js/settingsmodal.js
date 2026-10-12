@@ -455,7 +455,7 @@ function hideOtherOptionsResetSection() {
     var more = document.getElementById('other-options-show-more');
     var rest = document.getElementById('other-options-reset');
     if (rest) rest.classList.add('is-hidden');
-    if (more) more.classList.remove('is-hidden');
+    if (more) more.classList.toggle('is-hidden', !otherOptionsOpenedFromSettings);
 }
 
 function submitResetPhrase() {
