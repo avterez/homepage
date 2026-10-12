@@ -46,7 +46,7 @@
 		<link rel="preload" href="css/lucide/lucide.woff2?v=pr75-settings-icons" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="css/styles.css?v=pr86-season" as="style">
+		<link rel="preload" href="css/styles.css?v=pr86-effects-note" as="style">
 
 		<!-- Critical CSS (FOUC / first paint) -->
 		<style>
@@ -70,7 +70,7 @@
 		</style>
 
 		<!-- Main CSS (blocking; avoid FOUC) -->
-		<link rel="stylesheet" href="css/styles.css?v=pr86-season">
+		<link rel="stylesheet" href="css/styles.css?v=pr86-effects-note">
 		<link rel="stylesheet" href="css/lucide/lucide.css?v=pr75-settings-icons">
 
 		<!-- FA subset async (~1.8KB vs full) -->
@@ -706,7 +706,7 @@
 						<label class="settings-modal__check-row">
 							<input type="radio" name="background-effect" id="effect-fluff-radio" value="fluff"
 								class="settings-modal__radio">
-							<span class="settings-modal__check-label">Dandelion Fluff</span>
+							<span class="settings-modal__check-label">Dandelion Fluff*</span>
 						</label>
 						<label class="settings-modal__check-row">
 							<input type="radio" name="background-effect" id="effect-butterflies-radio" value="butterflies"
@@ -721,8 +721,9 @@
 						<label class="settings-modal__check-row">
 							<input type="radio" name="background-effect" id="effect-snow-radio" value="snow"
 								class="settings-modal__radio" checked>
-							<span class="settings-modal__check-label">Snow</span>
+							<span class="settings-modal__check-label">Snow*</span>
 						</label>
+						<p class="other-options-modal__effects-note">* "Effects" color using in the "Color Theme Editor"</p>
 						</div>
 					</div>
 
