@@ -937,6 +937,49 @@ function appendFireflies(layer) {
     layer.appendChild(frag);
 }
 
+var BUTTERFLY_COLORS = ['#e07a2f', '#f2c14e', '#5b8def', '#d45d8c', '#7dbe6a', '#9b6bdb', '#f4f1ea', '#e14c4c'];
+
+function butterflyParticleCount() {
+    var w = window.innerWidth || 1280;
+    var h = window.innerHeight || 800;
+    var count = Math.round((w * h) / 120000);
+    if (count < 8) count = 8;
+    if (count > 16) count = 16;
+    return count;
+}
+
+function appendButterflies(layer) {
+    var count = butterflyParticleCount();
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < count; i++) {
+        var fly = document.createElement('span');
+        var alt = Math.random() < 0.5;
+        fly.className = alt ? 'snow-flake snow-flake--butterfly snow-flake--butterfly-alt' : 'snow-flake snow-flake--butterfly';
+        var body = document.createElement('span');
+        body.className = 'butterfly-body';
+        fly.appendChild(body);
+        var width = 22 + Math.random() * 26;
+        var height = width * (0.7 + Math.random() * 0.15);
+        var flight = 16 + Math.random() * 16;
+        var flap = 0.32 + (width / 48) * 0.38;
+        var travelX = (90 + Math.random() * 160) * (Math.random() < 0.5 ? -1 : 1);
+        var travelY = (70 + Math.random() * 140) * (Math.random() < 0.5 ? -1 : 1);
+        var color = BUTTERFLY_COLORS[Math.floor(Math.random() * BUTTERFLY_COLORS.length)];
+        fly.style.left = (6 + Math.random() * 88) + '%';
+        fly.style.top = (6 + Math.random() * 80) + '%';
+        fly.style.width = width.toFixed(1) + 'px';
+        fly.style.height = height.toFixed(1) + 'px';
+        fly.style.animationDuration = flight.toFixed(2) + 's';
+        fly.style.animationDelay = (-Math.random() * flight).toFixed(2) + 's';
+        fly.style.setProperty('--fly-x', travelX.toFixed(1) + 'px');
+        fly.style.setProperty('--fly-y', travelY.toFixed(1) + 'px');
+        fly.style.setProperty('--butterfly-color', color);
+        fly.style.setProperty('--butterfly-flap', flap.toFixed(2) + 's');
+        frag.appendChild(fly);
+    }
+    layer.appendChild(frag);
+}
+
 function ensureBackgroundParticles(kind) {
     if (backgroundParticlesKind === kind) return;
     var layer = document.getElementById('snow-layer');
@@ -946,6 +989,7 @@ function ensureBackgroundParticles(kind) {
     else if (kind === 'leaves') appendLeaves(layer);
     else if (kind === 'fluff') appendFluff(layer);
     else if (kind === 'fireflies') appendFireflies(layer);
+    else if (kind === 'butterflies') appendButterflies(layer);
     else if (kind === 'snow') appendSnowFlakes(layer);
     backgroundParticlesKind = kind;
 }
@@ -977,7 +1021,7 @@ function clearSnowIdlePause() {
 }
 
 function backgroundEffectIsOn() {
-    return backgroundEffect === 'snow' || backgroundEffect === 'petals' || backgroundEffect === 'leaves' || backgroundEffect === 'fluff' || backgroundEffect === 'fireflies';
+    return backgroundEffect === 'snow' || backgroundEffect === 'petals' || backgroundEffect === 'leaves' || backgroundEffect === 'fluff' || backgroundEffect === 'fireflies' || backgroundEffect === 'butterflies';
 }
 
 function syncSnowPausedNote() {
@@ -988,6 +1032,7 @@ function syncSnowPausedNote() {
     else if (backgroundEffect === 'leaves') note.textContent = '(Leaves paused)';
     else if (backgroundEffect === 'fluff') note.textContent = '(Fluff paused)';
     else if (backgroundEffect === 'fireflies') note.textContent = '(Fireflies paused)';
+    else if (backgroundEffect === 'butterflies') note.textContent = '(Butterflies paused)';
     else note.textContent = '(Snow paused)';
     if (effectOn && snowIdlePaused) note.removeAttribute('hidden');
     else note.setAttribute('hidden', '');
@@ -1026,15 +1071,17 @@ function applySnowEffect(enabled) {
     var leafRadio = document.getElementById('effect-leaves-radio');
     var fluffRadio = document.getElementById('effect-fluff-radio');
     var fireflyRadio = document.getElementById('effect-fireflies-radio');
+    var butterflyRadio = document.getElementById('effect-butterflies-radio');
     if (snowRadio) snowRadio.checked = effect === 'snow';
     if (noneRadio) noneRadio.checked = effect === 'none';
     if (petalRadio) petalRadio.checked = effect === 'petals';
     if (leafRadio) leafRadio.checked = effect === 'leaves';
     if (fluffRadio) fluffRadio.checked = effect === 'fluff';
     if (fireflyRadio) fireflyRadio.checked = effect === 'fireflies';
+    if (butterflyRadio) butterflyRadio.checked = effect === 'butterflies';
     var layer = document.getElementById('snow-layer');
     if (!layer) return;
-    if (effect === 'snow' || effect === 'petals' || effect === 'leaves' || effect === 'fluff' || effect === 'fireflies') {
+    if (effect === 'snow' || effect === 'petals' || effect === 'leaves' || effect === 'fluff' || effect === 'fireflies' || effect === 'butterflies') {
         ensureBackgroundParticles(effect);
         layer.classList.add('is-on');
         if (!snowIdleTimer && !snowIdlePaused) scheduleSnowIdlePause();

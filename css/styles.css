@@ -109,7 +109,7 @@ body{position:relative;z-index:0}
 .snow-layer{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;display:none}
 .snow-layer.is-on{display:block}
 .snow-layer.is-covered{visibility:hidden}
-.snow-layer.is-paused .snow-flake,.snow-layer.is-covered .snow-flake{animation-play-state:paused}
+.snow-layer.is-paused .snow-flake,.snow-layer.is-covered .snow-flake,.snow-layer.is-paused .snow-flake--butterfly::before,.snow-layer.is-paused .snow-flake--butterfly::after,.snow-layer.is-paused .butterfly-body::before,.snow-layer.is-paused .butterfly-body::after,.snow-layer.is-covered .snow-flake--butterfly::before,.snow-layer.is-covered .snow-flake--butterfly::after,.snow-layer.is-covered .butterfly-body::before,.snow-layer.is-covered .butterfly-body::after{animation-play-state:paused}
 .snow-flake{position:absolute;top:-12px;border-radius:50%;background-color:var(--snow-color);box-shadow:0 0 3.2px color-mix(in srgb,var(--snow-color) 70%,transparent);animation-name:snow-fall;animation-timing-function:linear;animation-iteration-count:infinite}
 .snow-flake--crystal{background-color:transparent;box-shadow:none;border-radius:0;animation-name:snow-fall-spin}
 .snow-flake--crystal::before,.snow-flake--crystal::after{content:"";position:absolute;left:50%;top:50%;background-color:var(--snow-color);border-radius:1px}
@@ -129,6 +129,17 @@ body{position:relative;z-index:0}
 @keyframes fluff-float-alt{0%{transform:translate3d(0,0,0)}30%{transform:translate3d(calc(var(--fluff-x) * -0.85),calc(var(--fluff-y) * -0.35),0)}65%{transform:translate3d(var(--fluff-x),calc(var(--fluff-y) * 0.8),0)}100%{transform:translate3d(0,0,0)}}
 .snow-flake--firefly{border-radius:50%;background-color:var(--snow-color);box-shadow:0 0 8px 3px color-mix(in srgb,var(--snow-color) 80%,transparent),0 0 16px 6px color-mix(in srgb,var(--snow-color) 35%,transparent);animation-name:firefly-flash;animation-timing-function:ease-in-out}
 @keyframes firefly-flash{0%,86%,100%{opacity:0}90%{opacity:1}94%{opacity:0}}
+.snow-flake--butterfly{background:transparent;box-shadow:none;border-radius:0;animation-name:butterfly-flight;animation-timing-function:ease-in-out;--butterfly-color:#e07a2f;--butterfly-flap:0.45s}
+.snow-flake--butterfly-alt{animation-name:butterfly-flight-alt}
+.snow-flake--butterfly::before,.snow-flake--butterfly::after,.butterfly-body::before,.butterfly-body::after{content:"";position:absolute;background:var(--butterfly-color);animation-name:butterfly-flap;animation-duration:var(--butterfly-flap);animation-timing-function:ease-in-out;animation-iteration-count:infinite}
+.snow-flake--butterfly::before{left:0;top:6%;width:46%;height:54%;border-radius:72% 18% 62% 28%;transform-origin:100% 78%}
+.snow-flake--butterfly::after{right:0;top:6%;width:46%;height:54%;border-radius:18% 72% 28% 62%;transform-origin:0 78%}
+.butterfly-body{position:absolute;z-index:2;left:45%;top:20%;width:10%;height:58%;border-radius:40%;background:color-mix(in srgb,var(--butterfly-color) 35%,#2a1c12)}
+.butterfly-body::before{left:-250%;top:42%;width:250%;height:78%;border-radius:62% 8% 72% 36%;transform-origin:100% 16%}
+.butterfly-body::after{right:-250%;top:42%;width:250%;height:78%;border-radius:8% 62% 36% 72%;transform-origin:0 16%}
+@keyframes butterfly-flap{0%,100%{transform:scaleX(1)}50%{transform:scaleX(0.18)}}
+@keyframes butterfly-flight{0%{transform:translate3d(0,0,0)}20%{transform:translate3d(var(--fly-x),calc(var(--fly-y) * 0.35),0)}45%{transform:translate3d(calc(var(--fly-x) * -0.55),var(--fly-y),0)}70%{transform:translate3d(calc(var(--fly-x) * 0.4),calc(var(--fly-y) * -0.75),0)}100%{transform:translate3d(0,0,0)}}
+@keyframes butterfly-flight-alt{0%{transform:translate3d(0,0,0)}30%{transform:translate3d(calc(var(--fly-x) * -1),calc(var(--fly-y) * -0.45),0)}62%{transform:translate3d(calc(var(--fly-x) * 0.65),var(--fly-y),0)}100%{transform:translate3d(0,0,0)}}
 .other-options-modal__show-more{align-self:flex-start;margin-top:1.25rem;padding:0;border:0;background:none;color:var(--save-button-bg,#4f46e5);font:inherit;font-size:calc(0.75rem * var(--font-scale, 1));text-decoration:none;cursor:pointer}#other-options-modal .other-options-modal__show-more:hover{color:color-mix(in srgb,var(--save-button-bg,#4f46e5) 85%,var(--hover-blend)) !important;text-decoration:underline}
 .other-options-modal__reset{display:flex;flex-direction:column;align-items:flex-start;row-gap:0.625rem;margin-top:1.25rem;width:100%}.other-options-modal__reset-timer{font-size:calc(0.75rem * var(--font-scale, 1));font-weight:400;color:var(--text-color)}
 .other-options-modal__clear{width:100%;padding:0.5rem 0.75rem;border:0;border-radius:1rem;background-color:var(--save-button-bg,#4f46e5);color:var(--text-color);font-size:calc(0.75rem * var(--font-scale, 1));font-weight:700;cursor:pointer;transition-property:color,background-color;transition-duration:150ms}
