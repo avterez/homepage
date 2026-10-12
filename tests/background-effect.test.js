@@ -15,7 +15,16 @@ const css = fs.readFileSync(path.join(root, 'css/styles.css'), 'utf8');
 
 assert.ok(html.includes('>Seasonal<'), 'Seasonal option missing');
 assert.ok(html.includes('id="seasonal-info-btn"'), 'seasonal info button missing');
+const seasonalBtn = html.slice(html.indexOf('id="seasonal-info-btn"'), html.indexOf('id="effect-fluff-radio"'));
+assert.ok(seasonalBtn.includes('icon-settings'), 'seasonal control should use the settings gear');
+assert.ok(!seasonalBtn.includes('<svg'), 'seasonal control should not keep the info mark');
 assert.ok(html.includes('id="hemisphere-modal"'), 'hemisphere modal missing');
+assert.ok(html.includes('id="hemisphere-modal-icon"'), 'seasonal header icon missing');
+const settingsSrc = fs.readFileSync(path.join(root, 'js/settingsmodal.js'), 'utf8');
+['snowflake', 'flower', 'butterfly', 'sun', 'feather'].forEach(function (name) {
+    assert.ok(settingsSrc.includes(name + ':'), 'seasonal header icon missing: ' + name);
+});
+assert.ok(settingsSrc.includes('paintSeasonalHeaderIcon()'), 'seasonal header icon should be chosen when the modal opens');
 assert.ok(html.includes('>Northern<') && html.includes('>Southern<'), 'hemisphere options missing');
 assert.ok(html.includes('Effects automatically change with the seasons.'), 'seasonal instructions missing');
 assert.ok(html.includes('id="effect-season-radio"'), 'season radio missing');
@@ -25,7 +34,9 @@ assert.ok(html.includes('>Snow*<'), 'Snow option label missing');
 assert.ok(html.includes('Dandelion Fluff*'), 'Dandelion Fluff asterisk missing');
 assert.ok(html.includes('* Uses "Effects" color in the "Color Theme Editor"'), 'effects color note missing');
 assert.ok(html.includes('Effects Timeout (in minutes):'), 'effects timeout label missing');
-assert.ok(/id="effects-timeout-minutes"[^>]*maxlength="2"[^>]*value="5"/.test(html), 'effects timeout defaults to 5 and allows 2 digits');
+assert.ok(/type="number"[^>]*id="effects-timeout-minutes"[^>]*min="1"[^>]*max="99"[^>]*value="5"/.test(html), 'effects timeout uses the number arrows and defaults to 5');
+const timeoutField = html.slice(html.indexOf('for="effects-timeout-minutes"'), html.indexOf('other-options-modal__effects-note'));
+assert.ok(timeoutField.includes('>m<'), 'effects timeout should show m');
 assert.ok(!html.includes('Snow Effect'), 'Snow Effect label should be renamed');
 assert.ok(html.indexOf('id="other-options-effects"') < html.indexOf('id="other-options-sight"'), 'Effects should come before Sight');
 const configSrc = fs.readFileSync(path.join(root, 'js/config.js'), 'utf8');
