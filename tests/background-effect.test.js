@@ -18,7 +18,9 @@ assert.ok(html.includes('id="effect-petals-radio"'), 'petals radio missing');
 assert.ok(html.includes('value="petals"'), 'petals radio value missing');
 assert.ok(css.includes('@keyframes petal-fall'), 'petal fall animation missing');
 assert.ok(css.includes('--petal-tilt'), 'petal tilt angle missing');
-assert.ok(!css.includes('--petal-rock'), 'petal tilt must not follow the sway direction');
+assert.ok(css.includes('--petal-bank:10deg'), 'sway bank is capped at 10 degrees');
+assert.ok(css.includes('var(--petal-tilt) - var(--petal-bank)'), 'rightward sway turns counter-clockwise');
+assert.ok(css.includes('var(--petal-tilt) + var(--petal-bank)'), 'leftward sway turns clockwise');
 assert.ok(!/@keyframes petal-fall\{[^}]*360deg/.test(css), 'petals must rock, not spin a full turn');
 
 function loadState() {
