@@ -842,8 +842,8 @@ function appendPetals(layer) {
         var width = 8 + Math.random() * 6;
         var height = width * (1.35 + Math.random() * 0.45);
         var duration = Math.max(22, (screenH / 900) * (28 + Math.random() * 16));
-        var drift = (40 + Math.random() * 100) * (Math.random() < 0.5 ? -1 : 1);
-        var rock = (14 + Math.random() * 14) * (Math.random() < 0.5 ? -1 : 1);
+        var drift = (56 + Math.random() * 64) * (Math.random() < 0.5 ? -1 : 1);
+        var tilt = (Math.random() * 16 - 8);
         petal.style.left = (Math.random() * 100) + '%';
         petal.style.width = width.toFixed(1) + 'px';
         petal.style.height = height.toFixed(1) + 'px';
@@ -851,7 +851,7 @@ function appendPetals(layer) {
         petal.style.animationDuration = duration.toFixed(2) + 's';
         petal.style.animationDelay = (-Math.random() * duration).toFixed(2) + 's';
         petal.style.setProperty('--snow-drift', drift.toFixed(1) + 'px');
-        petal.style.setProperty('--petal-rock', rock.toFixed(1) + 'deg');
+        petal.style.setProperty('--petal-tilt', tilt.toFixed(1) + 'deg');
         frag.appendChild(petal);
     }
     layer.appendChild(frag);

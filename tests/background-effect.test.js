@@ -17,7 +17,8 @@ assert.ok(html.includes('Cherry Blossom Petals'), 'Effects option label missing'
 assert.ok(html.includes('id="effect-petals-radio"'), 'petals radio missing');
 assert.ok(html.includes('value="petals"'), 'petals radio value missing');
 assert.ok(css.includes('@keyframes petal-fall'), 'petal fall animation missing');
-assert.ok(css.includes('--petal-rock'), 'petal rock angle missing');
+assert.ok(css.includes('--petal-tilt'), 'petal tilt angle missing');
+assert.ok(!css.includes('--petal-rock'), 'petal tilt must not follow the sway direction');
 assert.ok(!/@keyframes petal-fall\{[^}]*360deg/.test(css), 'petals must rock, not spin a full turn');
 
 function loadState() {
