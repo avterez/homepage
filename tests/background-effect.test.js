@@ -35,6 +35,8 @@ assert.ok(html.includes('Dandelion Fluff*'), 'Dandelion Fluff asterisk missing')
 assert.ok(html.includes('* Uses "Effects" color in the "Color Theme Editor"'), 'effects color note missing');
 assert.ok(html.includes('Effects Timeout (in minutes):'), 'effects timeout label missing');
 assert.ok(/type="number"[^>]*id="effects-timeout-minutes"[^>]*min="1"[^>]*max="99"[^>]*value="5"/.test(html), 'effects timeout uses the number arrows and defaults to 5');
+const timeoutField = html.slice(html.indexOf('for="effects-timeout-minutes"'), html.indexOf('other-options-modal__effects-note'));
+assert.ok(timeoutField.includes('>m<'), 'effects timeout should show m');
 assert.ok(!html.includes('Snow Effect'), 'Snow Effect label should be renamed');
 assert.ok(html.indexOf('id="other-options-effects"') < html.indexOf('id="other-options-sight"'), 'Effects should come before Sight');
 const configSrc = fs.readFileSync(path.join(root, 'js/config.js'), 'utf8');
