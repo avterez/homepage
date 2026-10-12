@@ -3599,7 +3599,7 @@ Optional falling snow on the landing page (`#snow-layer`). It is on by default.
 
 | Item | Behavior |
 |------|----------|
-| Toggle | Other Options → Sight → **Enable Snow Effect** (`#snow-effect-checkbox`) |
+| Toggle | Other Options → Effects → **None** or **Snow Effect** (`input[name="background-effect"]`) |
 | Persistence | `startpage_snow_effect` (`true` / `false`). A missing key stays on. Also stored as `snowEffect` in JSON/Gist backups. |
 | Color | Theme role **Snow** → `startpage_snow_color` → CSS `--snow-color` |
 | Motion | `ensureSnowParticles()` builds 48–96 flakes from the viewport size. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for 5 minutes. |

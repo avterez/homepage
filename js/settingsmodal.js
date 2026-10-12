@@ -442,8 +442,12 @@ function syncOtherOptionsSightSection() {
     var hidden = !otherOptionsOpenedFromSettings;
     var sight = document.getElementById('other-options-sight');
     var rule = document.getElementById('other-options-sight-rule');
+    var effects = document.getElementById('other-options-effects');
+    var effectsRule = document.getElementById('other-options-effects-rule');
     if (sight) sight.classList.toggle('is-hidden', hidden);
     if (rule) rule.classList.toggle('is-hidden', hidden);
+    if (effects) effects.classList.toggle('is-hidden', hidden);
+    if (effectsRule) effectsRule.classList.toggle('is-hidden', hidden);
 }
 
 function hideOtherOptionsResetSection() {

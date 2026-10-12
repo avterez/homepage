@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<!-- AI: The Debug screen shows this pull request number. When a new PR starts, update content below to that PR number. -->
-		<meta name="homepage-pr" content="84">
+		<meta name="homepage-pr" content="85">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<script>
 		(function () {
@@ -684,14 +684,25 @@
 							<span class="settings-modal__check-label">Hide Categories (visible on wide screens)</span>
 						</label>
 						<label class="settings-modal__check-row">
-							<input type="checkbox" id="snow-effect-checkbox" checked
-								class="settings-modal__checkbox">
-							<span class="settings-modal__check-label">Enable Snow Effect</span>
-						</label>
-						<label class="settings-modal__check-row">
 							<input type="checkbox" id="debug-panel-checkbox"
 								class="settings-modal__checkbox">
 							<span class="settings-modal__check-label">Show Debug window</span>
+						</label>
+					</div>
+
+					<div id="other-options-effects-rule" class="other-options-modal__section-rule" aria-hidden="true"></div>
+
+					<div id="other-options-effects" class="other-options-modal__checks">
+						<span class="other-options-modal__section-title">Effects:</span>
+						<label class="settings-modal__check-row">
+							<input type="radio" name="background-effect" id="effect-none-radio" value="none"
+								class="settings-modal__radio">
+							<span class="settings-modal__check-label">None</span>
+						</label>
+						<label class="settings-modal__check-row">
+							<input type="radio" name="background-effect" id="effect-snow-radio" value="snow"
+								class="settings-modal__radio" checked>
+							<span class="settings-modal__check-label">Snow Effect</span>
 						</label>
 					</div>
 

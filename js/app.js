@@ -882,8 +882,10 @@ document.addEventListener('visibilitychange', syncSnowPlayback);
 
 function applySnowEffect(enabled) {
     snowEffect = !!enabled;
-    var checkbox = document.getElementById('snow-effect-checkbox');
-    if (checkbox) checkbox.checked = snowEffect;
+    var snowRadio = document.getElementById('effect-snow-radio');
+    var noneRadio = document.getElementById('effect-none-radio');
+    if (snowRadio) snowRadio.checked = snowEffect;
+    if (noneRadio) noneRadio.checked = !snowEffect;
     var layer = document.getElementById('snow-layer');
     if (!layer) return;
     if (snowEffect) {
@@ -1276,12 +1278,12 @@ function initializeApp() {
         });
     }
 
-    const snowEffectCheckbox = document.getElementById('snow-effect-checkbox');
-    if (snowEffectCheckbox) {
-        snowEffectCheckbox.addEventListener('change', () => {
-            setSnowEffectEnabled(snowEffectCheckbox.checked);
+    document.querySelectorAll('input[name="background-effect"]').forEach((radio) => {
+        radio.addEventListener('change', () => {
+            if (!radio.checked) return;
+            setSnowEffectEnabled(radio.value === 'snow');
         });
-    }
+    });
 
     function bindPopupSecondsInput(inputId, storageKey, fallback) {
         const input = document.getElementById(inputId);
