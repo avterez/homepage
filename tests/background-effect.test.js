@@ -31,6 +31,8 @@ assert.ok(html.includes('value="fireflies"'), 'fireflies radio value missing');
 assert.ok(css.includes('.snow-flake--firefly'), 'firefly shape missing');
 assert.ok(css.includes('@keyframes firefly-flash'), 'firefly flash animation missing');
 assert.ok(css.includes('0%,86%,100%{opacity:0}90%{opacity:1}'), 'firefly flash stays dark most of the cycle');
+const appSrc = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');
+assert.ok(appSrc.includes('var duration = 17.6 + Math.random() * 14.4;'), 'firefly flashes should be 25% more often');
 assert.ok(html.includes('>Butterflies<'), 'Butterflies option label missing');
 assert.ok(html.includes('id="effect-butterflies-radio"'), 'butterflies radio missing');
 assert.ok(html.includes('value="butterflies"'), 'butterflies radio value missing');

@@ -925,7 +925,7 @@ function appendFireflies(layer) {
         var fly = document.createElement('span');
         fly.className = 'snow-flake snow-flake--firefly';
         var size = 4 + Math.random() * 5;
-        var duration = 22 + Math.random() * 18;
+        var duration = 17.6 + Math.random() * 14.4;
         fly.style.left = (3 + Math.random() * 94) + '%';
         fly.style.top = (4 + Math.random() * 88) + '%';
         fly.style.width = size.toFixed(1) + 'px';
