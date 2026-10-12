@@ -19,7 +19,7 @@ assert.ok(!html.includes('Cherry Blossom Petals'), 'cherry blossom option should
 assert.ok(!html.includes('effect-fireflies-radio'), 'fireflies option should be removed');
 assert.ok(html.includes('>Snow*<'), 'Snow option label missing');
 assert.ok(html.includes('Dandelion Fluff*'), 'Dandelion Fluff asterisk missing');
-assert.ok(html.includes('* "Effects" color using in the "Color Theme Editor"'), 'effects color note missing');
+assert.ok(html.includes('* Uses "Effects" color in the "Color Theme Editor"'), 'effects color note missing');
 assert.ok(!html.includes('Snow Effect'), 'Snow Effect label should be renamed');
 assert.ok(html.indexOf('id="other-options-effects"') < html.indexOf('id="other-options-sight"'), 'Effects should come before Sight');
 const configSrc = fs.readFileSync(path.join(root, 'js/config.js'), 'utf8');
