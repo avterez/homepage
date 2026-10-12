@@ -421,6 +421,7 @@ function setupAppKeyboardShortcuts() {
         'color-theme-modal': closeColorThemeModal,
         'attribution-modal': closeAttributionModal,
         'about-modal': closeAboutModal,
+        'hemisphere-modal': closeHemisphereModal,
         'other-options-modal': closeOtherOptionsModal,
         'reset-confirm-modal': cancelResetConfirm,
         'sync-modal': closeSyncModal,
@@ -956,7 +957,11 @@ function ensureBackgroundParticles(kind) {
     backgroundParticlesKind = kind;
 }
 
-var SNOW_IDLE_MS = 5 * 60 * 1000;
+function effectsIdleMs() {
+    var minutes = (typeof getEffectsTimeoutMinutes === 'function') ? getEffectsTimeoutMinutes() : 5;
+    return minutes * 60 * 1000;
+}
+
 var snowIdleTimer = null;
 var snowIdlePaused = false;
 var snowLastActivityMark = 0;
@@ -971,7 +976,7 @@ function scheduleSnowIdlePause() {
         snowIdleTimer = null;
         snowIdlePaused = true;
         syncSnowPlayback();
-    }, SNOW_IDLE_MS);
+    }, effectsIdleMs());
 }
 
 function clearSnowIdlePause() {
@@ -984,7 +989,8 @@ function clearSnowIdlePause() {
 
 function resolvedBackgroundEffect() {
     if (backgroundEffect === 'season' && typeof effectForMonth === 'function') {
-        return effectForMonth(new Date().getMonth());
+        var hemisphere = (typeof readHemisphere === 'function') ? readHemisphere() : 'northern';
+        return effectForMonth(new Date().getMonth(), hemisphere);
     }
     return backgroundEffect;
 }
@@ -1441,6 +1447,23 @@ function initializeApp() {
             localStorage.setItem('startpage_hide_categories', hideCategoriesCheckbox.checked ? 'true' : 'false');
             applyHideCategories(hideCategoriesCheckbox.checked);
         });
+    }
+
+    const effectsTimeoutInput = document.getElementById('effects-timeout-minutes');
+    if (effectsTimeoutInput && typeof getEffectsTimeoutMinutes === 'function') {
+        effectsTimeoutInput.value = String(getEffectsTimeoutMinutes());
+        const commitTimeout = () => {
+            const minutes = saveEffectsTimeoutMinutes(effectsTimeoutInput.value);
+            effectsTimeoutInput.value = String(minutes);
+            if (snowIdleTimer) scheduleSnowIdlePause();
+        };
+        effectsTimeoutInput.addEventListener('input', () => {
+            const digits = effectsTimeoutInput.value.replace(/\D/g, '').slice(0, 2);
+            if (effectsTimeoutInput.value !== digits) effectsTimeoutInput.value = digits;
+            if (parseEffectsTimeoutMinutes(digits) != null) commitTimeout();
+        });
+        effectsTimeoutInput.addEventListener('change', commitTimeout);
+        effectsTimeoutInput.addEventListener('blur', commitTimeout);
     }
 
     document.querySelectorAll('input[name="background-effect"]').forEach((radio) => {

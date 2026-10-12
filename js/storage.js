@@ -358,6 +358,8 @@ function buildBackupPayload(options) {
         snowEffect: (typeof readBackgroundEffect === 'function')
             ? readBackgroundEffect()
             : 'snow',
+        hemisphere: (typeof readHemisphere === 'function') ? readHemisphere() : 'northern',
+        effectsTimeoutMinutes: (typeof getEffectsTimeoutMinutes === 'function') ? getEffectsTimeoutMinutes() : 5,
         github: {
             username: username,
             token: maskToken(token),
@@ -452,6 +454,13 @@ function applyBackupPayload(imported, options) {
         if (snowFlag !== null && typeof setSnowEffectEnabled === 'function') {
             setSnowEffectEnabled(snowFlag);
         }
+    }
+    if ((data.hemisphere === 'northern' || data.hemisphere === 'southern') && typeof setHemisphere === 'function') {
+        setHemisphere(data.hemisphere);
+    }
+    if (data.effectsTimeoutMinutes !== undefined && typeof saveEffectsTimeoutMinutes === 'function') {
+        var timeoutMinutes = parseEffectsTimeoutMinutes(data.effectsTimeoutMinutes);
+        if (timeoutMinutes != null) saveEffectsTimeoutMinutes(timeoutMinutes);
     }
 
     if (data.github) {

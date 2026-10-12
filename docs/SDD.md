@@ -1351,7 +1351,7 @@ Link cards are the primary presentation of `links[]` on the Landing Screen. Rend
 | C8 | Tooltip delay **1s**; hide delays 250/150 ms | Reduce flicker; allow mouse into tooltip | **Current** |
 | C9 | Delete focuses link search + re-applies keyboard highlight | Continuity after destructive action | **Current** |
 | C10 | Orphan tooltip cleanup on every `renderLinks` | Prevent ghost tooltips after filter | **Current** |
-| C11 | URL preview hidden below breakpoints (full: &lt;md; compact: &lt;1320px) | Prioritize name/actions on narrow widths | **Current** |
+| C11 | URL preview hidden below breakpoints (full: &lt;md; compact: 1475px and narrower) | Prioritize name/actions on narrow widths | **Current** |
 
 ##### 6.1.2.6 Data Model / Schema
 
@@ -3600,9 +3600,9 @@ Optional background effects on the landing page (`#snow-layer`). A first visit u
 | Item | Behavior |
 |------|----------|
 | Toggle | Other Options shows **Effects** before **Sight**. Effects order: **None**, **Season**, **Dandelion Fluff***, **Butterflies**, **Falling Leaves**, **Snow***. The note under the list reads: * Uses "Effects" color in the "Color Theme Editor". Sight, Effects, and Description Timing start collapsed. **show more...** stays visible. |
-| Persistence | `startpage_snow_effect` (`true` snow, `false` none, `season`, `leaves`, `fluff`, `butterflies`). A missing key starts on **Season**. **Season** shows snow in Dec–Feb, dandelion fluff in Mar–May, butterflies in Jun–Aug, and falling leaves in Sep–Nov. |
+| Persistence | `startpage_snow_effect` (`true` snow, `false` none, `season`, `leaves`, `fluff`, `butterflies`). A missing key starts on **Seasonal**. Northern shows snow in Dec–Feb, dandelion fluff in Mar–May, butterflies in Jun–Aug, and falling leaves in Sep–Nov. Southern shifts that calendar by six months. The hemisphere is saved as `startpage_hemisphere`. |
 | Color | Theme role **Effects** → `startpage_snow_color` → CSS `--snow-color`. Snow and dandelion fluff use that color. Falling leaves use an autumn palette. Butterflies use several wing colors. |
-| Motion | Snow builds 48–96 flakes. Falling leaves are 24–56 wide shapes that glide side to side and turn at most 40 degrees with the sway. Dandelion fluff is 18–40 soft balls of different sizes and opacities that wander around the screen. Butterflies are 8–16 fliers of different sizes and colors; the wings flap separately from the flight path. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for 5 minutes. |
+| Motion | Snow builds 48–96 flakes. Falling leaves are 24–56 wide shapes that glide side to side and turn at most 40 degrees with the sway. Dandelion fluff is 18–40 soft balls of different sizes and opacities that wander around the screen. Butterflies are 8–16 fliers of different sizes and colors; the wings flap separately from the flight path. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for the Effects Timeout. That value is 1–99 minutes and defaults to 5. |
 | Hit testing | The layer does not receive pointer events. |
 
 ---

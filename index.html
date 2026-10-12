@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<!-- AI: The Debug screen shows this pull request number. When a new PR starts, update content below to that PR number. -->
-		<meta name="homepage-pr" content="86">
+		<meta name="homepage-pr" content="87">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<script>
 		(function () {
@@ -46,7 +46,7 @@
 		<link rel="preload" href="css/lucide/lucide.woff2?v=pr75-settings-icons" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="css/styles.css?v=pr86-effects-note-text" as="style">
+		<link rel="preload" href="css/styles.css?v=pr87-timeout" as="style">
 
 		<!-- Critical CSS (FOUC / first paint) -->
 		<style>
@@ -70,7 +70,7 @@
 		</style>
 
 		<!-- Main CSS (blocking; avoid FOUC) -->
-		<link rel="stylesheet" href="css/styles.css?v=pr86-effects-note-text">
+		<link rel="stylesheet" href="css/styles.css?v=pr87-timeout">
 		<link rel="stylesheet" href="css/lucide/lucide.css?v=pr75-settings-icons">
 
 		<!-- FA subset async (~1.8KB vs full) -->
@@ -698,11 +698,25 @@
 								class="settings-modal__radio">
 							<span class="settings-modal__check-label">None</span>
 						</label>
-						<label class="settings-modal__check-row">
-							<input type="radio" name="background-effect" id="effect-season-radio" value="season"
-								class="settings-modal__radio" checked>
-							<span class="settings-modal__check-label">Season</span>
-						</label>
+						<div class="other-options-modal__seasonal-row">
+							<label class="settings-modal__check-row">
+								<input type="radio" name="background-effect" id="effect-season-radio" value="season"
+									class="settings-modal__radio" checked>
+								<span class="settings-modal__check-label">Seasonal</span>
+							</label>
+							<button type="button" id="seasonal-info-btn"
+								class="add-edit-modal__info"
+								title="About Seasonal"
+								aria-label="About Seasonal">
+								<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+									<circle cx="12" cy="12" r="10.15" fill="none" stroke="currentColor" stroke-width="1.15"/>
+									<g fill="currentColor" transform="translate(12 12) skewX(-8) translate(-12 -12)">
+										<circle cx="12" cy="7.7" r="1.05"/>
+										<rect x="11.2" y="10.25" width="1.6" height="6.15" rx="0.7"/>
+									</g>
+								</svg>
+							</button>
+						</div>
 						<label class="settings-modal__check-row">
 							<input type="radio" name="background-effect" id="effect-fluff-radio" value="fluff"
 								class="settings-modal__radio">
@@ -722,6 +736,11 @@
 							<input type="radio" name="background-effect" id="effect-snow-radio" value="snow"
 								class="settings-modal__radio">
 							<span class="settings-modal__check-label">Snow*</span>
+						</label>
+						<label class="other-options-modal__duration other-options-modal__timeout" for="effects-timeout-minutes">
+							<span class="other-options-modal__duration-label">Effects Timeout (in minutes):</span>
+							<input type="text" id="effects-timeout-minutes" inputmode="numeric" maxlength="2"
+								autocomplete="off" value="5" class="other-options-modal__seconds other-options-modal__timeout-input">
 						</label>
 						<p class="other-options-modal__effects-note">* Uses "Effects" color in the "Color Theme Editor"</p>
 						</div>
@@ -1283,6 +1302,55 @@
 			</div>
 		</div>
 
+		<!-- Seasonal hemisphere. Opened above Other Options. -->
+		<div id="hemisphere-modal"
+			class="ui-modal ui-modal--topmost about-modal hemisphere-modal"
+			role="dialog" aria-modal="true" aria-labelledby="hemisphere-modal-title">
+			<div onclick="event.stopImmediatePropagation()"
+				class="ui-modal__panel ui-modal__panel--xl modal">
+
+				<div class="ui-modal__header">
+					<h3 id="hemisphere-modal-title" class="ui-modal__title ui-modal__title--row">
+						<i class="icon-info"></i>
+						<span>Seasonal</span>
+					</h3>
+					<button type="button" onclick="closeHemisphereModal()" class="ui-modal__close" aria-label="Close">
+						<i class="fa-solid fa-times"></i>
+					</button>
+				</div>
+
+				<div class="about-modal__body custom-scroll">
+					<p class="about-modal__text">Effects automatically change with the seasons.</p>
+					<p class="hemisphere-modal__heading">Hemisphere:</p>
+					<div class="hemisphere-modal__options">
+						<label class="settings-modal__check-row">
+							<input type="radio" name="hemisphere" id="hemisphere-northern" value="northern"
+								class="settings-modal__radio" checked>
+							<span class="settings-modal__check-label">Northern</span>
+						</label>
+						<label class="settings-modal__check-row">
+							<input type="radio" name="hemisphere" id="hemisphere-southern" value="southern"
+								class="settings-modal__radio">
+							<span class="settings-modal__check-label">Southern</span>
+						</label>
+					</div>
+					<ul id="hemisphere-schedule" class="hemisphere-modal__schedule">
+						<li data-month="0"><span class="hemisphere-modal__months">December – February:</span> <span class="hemisphere-modal__effect">Snow</span></li>
+						<li data-month="2"><span class="hemisphere-modal__months">March – May:</span> <span class="hemisphere-modal__effect">Dandelion Fluff</span></li>
+						<li data-month="5"><span class="hemisphere-modal__months">June – August:</span> <span class="hemisphere-modal__effect">Butterflies</span></li>
+						<li data-month="8"><span class="hemisphere-modal__months">September – November:</span> <span class="hemisphere-modal__effect">Falling Leaves</span></li>
+					</ul>
+				</div>
+
+				<div class="about-modal__footer ui-modal__footer">
+					<button type="button" onclick="closeHemisphereModal()"
+						class="about-modal__footer-close ui-modal__btn ui-modal__btn--block ui-modal__btn--bordered">
+						Close
+					</button>
+				</div>
+			</div>
+		</div>
+
 		<!-- Position help. Same chrome as the Categories note, opened above Add/Edit Link. -->
 		<div id="position-info-modal"
 			class="ui-modal ui-modal--topmost about-modal"
@@ -1661,16 +1729,16 @@
 		</div>
 
 		<!-- Defer JS (tag order = execute order) -->
-		<script defer src="js/config.js?v=pr86-season"></script>
-		<script defer src="js/state.js?v=pr86-season-default"></script>
-		<script defer src="js/storage.js?v=pr86-season"></script>
+		<script defer src="js/config.js?v=pr87-hemisphere"></script>
+		<script defer src="js/state.js?v=pr87-timeout"></script>
+		<script defer src="js/storage.js?v=pr87-timeout"></script>
 		<script defer src="js/github.js"></script>
 		<script defer src="js/render.js?v=pr66-clear"></script>
 		<script defer src="js/quotes.js"></script>
 		<script defer src="js/addeditlink.js?v=pr78-google-ai"></script>
-		<script defer src="js/settingsmodal.js?v=pr85-sight-toggle"></script>
+		<script defer src="js/settingsmodal.js?v=pr87-hemisphere-close"></script>
 		<script defer src="js/gsmodal.js?v=pr82-clear"></script>
-		<script defer src="js/app.js?v=pr85-firefly-rate"></script>
+		<script defer src="js/app.js?v=pr87-timeout"></script>
 		<script defer src="js/script.js"></script>
 	</body>
 </html>

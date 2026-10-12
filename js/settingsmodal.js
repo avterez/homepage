@@ -528,6 +528,7 @@ function bindResetConfirmControls() {
     var more = document.getElementById('other-options-show-more');
     if (more) more.addEventListener('click', showOtherOptionsResetSection);
     bindOtherOptionsSectionToggles();
+    bindHemisphereControls();
     var clearBtn = document.getElementById('other-options-clear-all');
     if (clearBtn) clearBtn.addEventListener('click', openResetConfirmModal);
     ['reset-confirm-close', 'reset-cancel-warn', 'reset-cancel-type', 'reset-no'].forEach(function (id) {
@@ -627,7 +628,64 @@ function openOtherOptionsModal() {
     if (body) body.scrollTop = 0;
 }
 
+var HEMISPHERE_EFFECT_NAMES = {
+    snow: 'Snow',
+    fluff: 'Dandelion Fluff',
+    butterflies: 'Butterflies',
+    leaves: 'Falling Leaves'
+};
+
+function syncHemisphereControls() {
+    var hemisphere = (typeof readHemisphere === 'function') ? readHemisphere() : 'northern';
+    var north = document.getElementById('hemisphere-northern');
+    var south = document.getElementById('hemisphere-southern');
+    if (north) north.checked = hemisphere !== 'southern';
+    if (south) south.checked = hemisphere === 'southern';
+    var rows = document.querySelectorAll('#hemisphere-schedule [data-month]');
+    for (var i = 0; i < rows.length; i++) {
+        var month = Number(rows[i].getAttribute('data-month'));
+        var effect = (typeof effectForMonth === 'function') ? effectForMonth(month, hemisphere) : 'snow';
+        var name = rows[i].querySelector('.hemisphere-modal__effect');
+        if (name) name.textContent = HEMISPHERE_EFFECT_NAMES[effect] || effect;
+    }
+}
+
+function openHemisphereModal() {
+    syncHemisphereControls();
+    openUiModal('hemisphere-modal');
+    setTimeout(function () {
+        var closeBtn = document.querySelector('#hemisphere-modal .about-modal__footer-close');
+        if (closeBtn) closeBtn.focus();
+    }, 50);
+}
+
+function closeHemisphereModal() {
+    closeUiModal('hemisphere-modal');
+}
+
+function bindHemisphereControls() {
+    var info = document.getElementById('seasonal-info-btn');
+    if (info && info.getAttribute('data-hemisphere-bound') !== '1') {
+        info.setAttribute('data-hemisphere-bound', '1');
+        info.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            openHemisphereModal();
+        });
+    }
+    var radios = document.querySelectorAll('input[name="hemisphere"]');
+    for (var i = 0; i < radios.length; i++) {
+        if (radios[i].getAttribute('data-hemisphere-bound') === '1') continue;
+        radios[i].setAttribute('data-hemisphere-bound', '1');
+        radios[i].addEventListener('change', function () {
+            if (!this.checked || typeof setHemisphere !== 'function') return;
+            setHemisphere(this.value);
+        });
+    }
+}
+
 function closeOtherOptionsModal() {
+    if (typeof closeHemisphereModal === 'function') closeHemisphereModal();
     var modal = document.getElementById('other-options-modal');
     hideOtherOptionsResetSection();
     closeUiModal('other-options-modal');

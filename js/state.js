@@ -92,6 +92,38 @@ var githubToken = '';
 var githubGistId = '';
 var githubLastSync = null;
 
+var EFFECTS_TIMEOUT_KEY = 'startpage_effects_timeout_minutes';
+var DEFAULT_EFFECTS_TIMEOUT_MINUTES = 5;
+
+/** Whole minutes from 1 to 99, or null when the value cannot be used. */
+function parseEffectsTimeoutMinutes(value) {
+    var text = String(value == null ? '' : value).trim();
+    if (!/^\d{1,2}$/.test(text)) return null;
+    var minutes = Number(text);
+    if (minutes < 1 || minutes > 99) return null;
+    return minutes;
+}
+
+function getEffectsTimeoutMinutes() {
+    try {
+        var raw = localStorage.getItem(EFFECTS_TIMEOUT_KEY);
+        if (raw == null || raw === '') return DEFAULT_EFFECTS_TIMEOUT_MINUTES;
+        var parsed = parseEffectsTimeoutMinutes(raw);
+        return parsed == null ? DEFAULT_EFFECTS_TIMEOUT_MINUTES : parsed;
+    } catch (e) {
+        return DEFAULT_EFFECTS_TIMEOUT_MINUTES;
+    }
+}
+
+function saveEffectsTimeoutMinutes(value) {
+    var minutes = parseEffectsTimeoutMinutes(value);
+    if (minutes == null) minutes = getEffectsTimeoutMinutes();
+    try {
+        localStorage.setItem(EFFECTS_TIMEOUT_KEY, String(minutes));
+    } catch (e) { /* ignore quota */ }
+    return minutes;
+}
+
 var DEFAULT_MOBILE_LINK_DESC_SECONDS = 5;
 var DEFAULT_EMOJI_DESC_SECONDS = 4;
 var MOBILE_LINK_DESC_SECONDS_KEY = 'startpage_mobile_link_desc_seconds';
@@ -138,12 +170,36 @@ var SNOW_EFFECT_KEY = 'startpage_snow_effect';
 var snowEffect = true;
 var backgroundEffect = 'season';
 
-/** Month index 0–11. Dec–Feb snow, Mar–May fluff, Jun–Aug butterflies, Sep–Nov leaves. */
-function effectForMonth(monthIndex) {
-    if (monthIndex === 11 || monthIndex <= 1) return 'snow';
-    if (monthIndex <= 4) return 'fluff';
-    if (monthIndex <= 7) return 'butterflies';
+var HEMISPHERE_KEY = 'startpage_hemisphere';
+
+/** Month index 0–11. Northern: Dec–Feb snow, Mar–May fluff, Jun–Aug butterflies, Sep–Nov leaves. Southern is six months later. */
+function effectForMonth(monthIndex, hemisphere) {
+    var month = monthIndex;
+    if (hemisphere === 'southern') month = (month + 6) % 12;
+    if (month === 11 || month <= 1) return 'snow';
+    if (month <= 4) return 'fluff';
+    if (month <= 7) return 'butterflies';
     return 'leaves';
+}
+
+function readHemisphere() {
+    try {
+        return localStorage.getItem(HEMISPHERE_KEY) === 'southern' ? 'southern' : 'northern';
+    } catch (e) {
+        return 'northern';
+    }
+}
+
+function setHemisphere(value) {
+    var hemisphere = value === 'southern' ? 'southern' : 'northern';
+    try {
+        localStorage.setItem(HEMISPHERE_KEY, hemisphere);
+    } catch (e) { /* ignore quota */ }
+    if (typeof syncHemisphereControls === 'function') syncHemisphereControls();
+    if (typeof backgroundEffect !== 'undefined' && backgroundEffect === 'season' && typeof applySnowEffect === 'function') {
+        applySnowEffect('season');
+    }
+    return hemisphere;
 }
 
 /** 'snow', 'none', 'season', 'leaves', 'fluff', or 'butterflies'. null when an older backup should leave the setting alone. */
