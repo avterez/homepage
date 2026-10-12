@@ -50,6 +50,11 @@ const effectsBlock = html.slice(html.indexOf('id="other-options-effects"'), html
 const effectValues = Array.from(effectsBlock.matchAll(/value="([^"]+)"/g), function (match) { return match[1]; });
 assert.deepStrictEqual(effectValues, ['none', 'petals', 'fluff', 'butterflies', 'fireflies', 'leaves', 'snow']);
 assert.ok(!effectsBlock.includes('other-options-modal__season'), 'season labels are not shown');
+assert.ok(html.includes('id="effects-toggle"'), 'effects disclosure missing');
+assert.ok(html.includes('id="effects-choices"') && /id="effects-choices"[^>]*hidden/.test(html), 'effects choices start hidden');
+assert.ok(html.includes('id="description-timing-toggle"'), 'description timing disclosure missing');
+assert.ok(/id="description-timing-choices"[^>]*hidden/.test(html), 'description timing choices start hidden');
+assert.ok(html.includes('id="other-options-show-more"'), 'show more link missing');
 
 function loadState() {
     const store = {};
