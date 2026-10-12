@@ -360,7 +360,7 @@ Primary CRUD surface for link records (`#modal`). Full component design: **§6.1
   viewMode: string,               // full | compact
   mobileLinkDescriptionSeconds: number,
   emojiDescriptionSeconds: number,
-  snowEffect: 'snow' | 'none' | 'petals' | 'leaves' | 'fluff',  // older files may still use boolean true/false
+  snowEffect: 'snow' | 'none' | 'petals' | 'leaves' | 'fluff' | 'fireflies',  // older files may still use boolean true/false
   lastSynced?: string,            // ISO — gist export only
   github: {
     username: string,
@@ -501,7 +501,7 @@ Starter link pack shipped with the repo. Used for first-run seed and as the file
 | `sortMode` | `default` (My Order) \| `tally` \| `abc` \| `date`; persisted; default `tally` |
 | `currentFontScale` | `95` \| `100` \| `105` \| `110` |
 | `viewMode` | `full` \| `compact`; default `compact` |
-| `snowEffect` / `backgroundEffect` | `snow` \| `none` \| `petals` \| `leaves` \| `fluff` |
+| `snowEffect` / `backgroundEffect` | `snow` \| `none` \| `petals` \| `leaves` \| `fluff` \| `fireflies` |
 | `githubUsername` / `Token` / `GistId` / `LastSync` | Sync state |
 | `keyboardFocusedIndex` | Card keyboard nav index (`debug.js`) |
 | `listControlsStacked` | Layout flag for list controls (`debug.js`) |
@@ -3599,10 +3599,10 @@ Optional falling snow on the landing page (`#snow-layer`). It is on by default.
 
 | Item | Behavior |
 |------|----------|
-| Toggle | Other Options → Effects → **None**, **Snow Effect**, **Cherry Blossom Petals**, **Falling Leaves**, or **Dandelion Fluff** (`input[name="background-effect"]`) |
-| Persistence | `startpage_snow_effect` (`true` snow, `false` none, `petals`, `leaves`, `fluff`). A missing key stays on snow. Backups store `snowEffect` as `snow`, `none`, `petals`, `leaves`, or `fluff`; older boolean values still import. |
-| Color | Theme role **Snow** → `startpage_snow_color` → CSS `--snow-color`. Petals and dandelion fluff use that same color. Falling leaves use an autumn palette of red, orange, gold, and brown. |
-| Motion | Snow builds 48–96 flakes. Petals and falling leaves share one path: 24–56 wide shapes that lie on their side and glide side to side. While one sways right it turns counter-clockwise by at most 40 degrees; while it sways left it turns clockwise by at most 40 degrees. The angle eases along with the sideways motion. It does not spin. Dandelion fluff is 18–40 soft balls of different sizes and opacities that wander around the screen. A taller screen gets a longer petal or leaf fall. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for 5 minutes. |
+| Toggle | Other Options → Effects → **None**, **Snow Effect**, **Cherry Blossom Petals**, **Falling Leaves**, **Dandelion Fluff**, or **Fireflies** (`input[name="background-effect"]`) |
+| Persistence | `startpage_snow_effect` (`true` snow, `false` none, `petals`, `leaves`, `fluff`, `fireflies`). A missing key stays on snow. Backups store `snowEffect` as `snow`, `none`, `petals`, `leaves`, `fluff`, or `fireflies`; older boolean values still import. |
+| Color | Theme role **Snow** → `startpage_snow_color` → CSS `--snow-color`. Petals, dandelion fluff, and fireflies use that same color. Falling leaves use an autumn palette of red, orange, gold, and brown. |
+| Motion | Snow builds 48–96 flakes. Petals and falling leaves share one path: 24–56 wide shapes that lie on their side and glide side to side. While one sways right it turns counter-clockwise by at most 40 degrees; while it sways left it turns clockwise by at most 40 degrees. The angle eases along with the sideways motion. It does not spin. Dandelion fluff is 18–40 soft balls of different sizes and opacities that wander around the screen. Fireflies are 12–28 points in random places; each stays dark for most of a long cycle and flashes once. A taller screen gets a longer petal or leaf fall. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for 5 minutes. |
 | Hit testing | The layer does not receive pointer events. |
 
 ---

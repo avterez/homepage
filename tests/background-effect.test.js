@@ -25,6 +25,12 @@ assert.ok(html.includes('value="fluff"'), 'fluff radio value missing');
 assert.ok(css.includes('.snow-flake--fluff'), 'fluff shape missing');
 assert.ok(css.includes('@keyframes fluff-float'), 'fluff float animation missing');
 assert.ok(css.includes('.snow-flake--fluff{') && css.includes('var(--snow-color)'), 'fluff must use the snow color');
+assert.ok(html.includes('>Fireflies<'), 'Fireflies option label missing');
+assert.ok(html.includes('id="effect-fireflies-radio"'), 'fireflies radio missing');
+assert.ok(html.includes('value="fireflies"'), 'fireflies radio value missing');
+assert.ok(css.includes('.snow-flake--firefly'), 'firefly shape missing');
+assert.ok(css.includes('@keyframes firefly-flash'), 'firefly flash animation missing');
+assert.ok(css.includes('0%,86%,100%{opacity:0}90%{opacity:1}'), 'firefly flash stays dark most of the cycle');
 assert.ok(css.includes('.snow-flake--leaf'), 'leaf shape missing');
 assert.ok(css.includes('animation-name:petal-fall'), 'leaves must use the petal sway animation');
 assert.ok(css.includes('@keyframes petal-fall'), 'petal fall animation missing');
@@ -88,5 +94,11 @@ assert.strictEqual(fluff.context.setBackgroundEffect('fluff'), 'fluff');
 assert.strictEqual(fluff.store.startpage_snow_effect, 'fluff');
 assert.strictEqual(fluff.context.readBackgroundEffect(), 'fluff');
 assert.strictEqual(fluff.context.parseSnowEffectFlag('fluff'), 'fluff');
+
+const fireflies = loadState();
+assert.strictEqual(fireflies.context.setBackgroundEffect('fireflies'), 'fireflies');
+assert.strictEqual(fireflies.store.startpage_snow_effect, 'fireflies');
+assert.strictEqual(fireflies.context.readBackgroundEffect(), 'fireflies');
+assert.strictEqual(fireflies.context.parseSnowEffectFlag('fireflies'), 'fireflies');
 
 console.log('background-effect.test.js ok');
