@@ -92,6 +92,38 @@ var githubToken = '';
 var githubGistId = '';
 var githubLastSync = null;
 
+var EFFECTS_TIMEOUT_KEY = 'startpage_effects_timeout_minutes';
+var DEFAULT_EFFECTS_TIMEOUT_MINUTES = 5;
+
+/** Whole minutes from 1 to 99, or null when the value cannot be used. */
+function parseEffectsTimeoutMinutes(value) {
+    var text = String(value == null ? '' : value).trim();
+    if (!/^\d{1,2}$/.test(text)) return null;
+    var minutes = Number(text);
+    if (minutes < 1 || minutes > 99) return null;
+    return minutes;
+}
+
+function getEffectsTimeoutMinutes() {
+    try {
+        var raw = localStorage.getItem(EFFECTS_TIMEOUT_KEY);
+        if (raw == null || raw === '') return DEFAULT_EFFECTS_TIMEOUT_MINUTES;
+        var parsed = parseEffectsTimeoutMinutes(raw);
+        return parsed == null ? DEFAULT_EFFECTS_TIMEOUT_MINUTES : parsed;
+    } catch (e) {
+        return DEFAULT_EFFECTS_TIMEOUT_MINUTES;
+    }
+}
+
+function saveEffectsTimeoutMinutes(value) {
+    var minutes = parseEffectsTimeoutMinutes(value);
+    if (minutes == null) minutes = getEffectsTimeoutMinutes();
+    try {
+        localStorage.setItem(EFFECTS_TIMEOUT_KEY, String(minutes));
+    } catch (e) { /* ignore quota */ }
+    return minutes;
+}
+
 var DEFAULT_MOBILE_LINK_DESC_SECONDS = 5;
 var DEFAULT_EMOJI_DESC_SECONDS = 4;
 var MOBILE_LINK_DESC_SECONDS_KEY = 'startpage_mobile_link_desc_seconds';

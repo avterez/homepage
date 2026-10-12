@@ -46,7 +46,7 @@
 		<link rel="preload" href="css/lucide/lucide.woff2?v=pr75-settings-icons" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="css/styles.css?v=pr87-hemisphere-info" as="style">
+		<link rel="preload" href="css/styles.css?v=pr87-timeout" as="style">
 
 		<!-- Critical CSS (FOUC / first paint) -->
 		<style>
@@ -70,7 +70,7 @@
 		</style>
 
 		<!-- Main CSS (blocking; avoid FOUC) -->
-		<link rel="stylesheet" href="css/styles.css?v=pr87-hemisphere-info">
+		<link rel="stylesheet" href="css/styles.css?v=pr87-timeout">
 		<link rel="stylesheet" href="css/lucide/lucide.css?v=pr75-settings-icons">
 
 		<!-- FA subset async (~1.8KB vs full) -->
@@ -736,6 +736,11 @@
 							<input type="radio" name="background-effect" id="effect-snow-radio" value="snow"
 								class="settings-modal__radio">
 							<span class="settings-modal__check-label">Snow*</span>
+						</label>
+						<label class="other-options-modal__duration other-options-modal__timeout" for="effects-timeout-minutes">
+							<span class="other-options-modal__duration-label">Effects Timeout (in minutes)</span>
+							<input type="text" id="effects-timeout-minutes" inputmode="numeric" maxlength="2"
+								autocomplete="off" value="5" class="other-options-modal__seconds other-options-modal__timeout-input">
 						</label>
 						<p class="other-options-modal__effects-note">* Uses "Effects" color in the "Color Theme Editor"</p>
 						</div>
@@ -1725,15 +1730,15 @@
 
 		<!-- Defer JS (tag order = execute order) -->
 		<script defer src="js/config.js?v=pr87-hemisphere"></script>
-		<script defer src="js/state.js?v=pr87-hemisphere"></script>
-		<script defer src="js/storage.js?v=pr87-hemisphere"></script>
+		<script defer src="js/state.js?v=pr87-timeout"></script>
+		<script defer src="js/storage.js?v=pr87-timeout"></script>
 		<script defer src="js/github.js"></script>
 		<script defer src="js/render.js?v=pr66-clear"></script>
 		<script defer src="js/quotes.js"></script>
 		<script defer src="js/addeditlink.js?v=pr78-google-ai"></script>
 		<script defer src="js/settingsmodal.js?v=pr87-hemisphere-close"></script>
 		<script defer src="js/gsmodal.js?v=pr82-clear"></script>
-		<script defer src="js/app.js?v=pr87-hemisphere"></script>
+		<script defer src="js/app.js?v=pr87-timeout"></script>
 		<script defer src="js/script.js"></script>
 	</body>
 </html>

@@ -24,6 +24,8 @@ assert.ok(!html.includes('effect-fireflies-radio'), 'fireflies option should be 
 assert.ok(html.includes('>Snow*<'), 'Snow option label missing');
 assert.ok(html.includes('Dandelion Fluff*'), 'Dandelion Fluff asterisk missing');
 assert.ok(html.includes('* Uses "Effects" color in the "Color Theme Editor"'), 'effects color note missing');
+assert.ok(html.includes('Effects Timeout (in minutes)'), 'effects timeout label missing');
+assert.ok(/id="effects-timeout-minutes"[^>]*maxlength="2"[^>]*value="5"/.test(html), 'effects timeout defaults to 5 and allows 2 digits');
 assert.ok(!html.includes('Snow Effect'), 'Snow Effect label should be renamed');
 assert.ok(html.indexOf('id="other-options-effects"') < html.indexOf('id="other-options-sight"'), 'Effects should come before Sight');
 const configSrc = fs.readFileSync(path.join(root, 'js/config.js'), 'utf8');
@@ -55,7 +57,7 @@ assert.ok(css.includes('var(--petal-tilt) + var(--petal-bank)'), 'leftward sway 
 assert.ok(!/@keyframes petal-fall\{[^}]*360deg/.test(css), 'petals must rock, not spin a full turn');
 
 const effectsBlock = html.slice(html.indexOf('id="other-options-effects"'), html.indexOf('id="popup-duration-settings"'));
-const effectValues = Array.from(effectsBlock.matchAll(/value="([^"]+)"/g), function (match) { return match[1]; });
+const effectValues = Array.from(effectsBlock.matchAll(/name="background-effect"[^>]*value="([^"]+)"/g), function (match) { return match[1]; });
 assert.deepStrictEqual(effectValues, ['none', 'season', 'fluff', 'butterflies', 'leaves', 'snow']);
 assert.ok(!/>Spring<|>Summer<|>Fall<|>Winter</.test(effectsBlock), 'season labels are not shown');
 assert.ok(html.includes('id="sight-toggle"'), 'sight disclosure missing');
@@ -110,6 +112,12 @@ assert.strictEqual(season.context.parseSnowEffectFlag('fireflies'), null);
 [2, 3, 4].forEach(function (month) { assert.strictEqual(season.context.effectForMonth(month, 'southern'), 'leaves', 'south ' + month); });
 [5, 6, 7].forEach(function (month) { assert.strictEqual(season.context.effectForMonth(month, 'southern'), 'snow', 'south ' + month); });
 [8, 9, 10].forEach(function (month) { assert.strictEqual(season.context.effectForMonth(month, 'southern'), 'fluff', 'south ' + month); });
+assert.strictEqual(season.context.getEffectsTimeoutMinutes(), 5);
+assert.strictEqual(season.context.parseEffectsTimeoutMinutes('7'), 7);
+assert.strictEqual(season.context.parseEffectsTimeoutMinutes('0'), null);
+assert.strictEqual(season.context.parseEffectsTimeoutMinutes('100'), null);
+assert.strictEqual(season.context.saveEffectsTimeoutMinutes('12'), 12);
+assert.strictEqual(season.store.startpage_effects_timeout_minutes, '12');
 assert.strictEqual(season.context.readHemisphere(), 'northern');
 assert.strictEqual(season.context.setHemisphere('southern'), 'southern');
 assert.strictEqual(season.store.startpage_hemisphere, 'southern');
