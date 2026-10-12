@@ -570,12 +570,14 @@ function setOtherOptionsSectionExpanded(choicesId, toggleId, open, showTitle, hi
 }
 
 function collapseOtherOptionsDetails() {
+    setOtherOptionsSectionExpanded('sight-choices', 'sight-toggle', false, 'Show sight', 'Hide sight');
     setOtherOptionsSectionExpanded('effects-choices', 'effects-toggle', false, 'Show effects', 'Hide effects');
     setOtherOptionsSectionExpanded('description-timing-choices', 'description-timing-toggle', false, 'Show description timing', 'Hide description timing');
 }
 
 function bindOtherOptionsSectionToggles() {
     [
+        ['sight-toggle', 'sight-choices', 'Show sight', 'Hide sight'],
         ['effects-toggle', 'effects-choices', 'Show effects', 'Hide effects'],
         ['description-timing-toggle', 'description-timing-choices', 'Show description timing', 'Hide description timing']
     ].forEach(function (spec) {

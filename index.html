@@ -677,7 +677,22 @@
 					<div id="other-options-sight-rule" class="other-options-modal__section-rule" aria-hidden="true"></div>
 
 					<div id="other-options-sight" class="other-options-modal__checks">
-						<span class="other-options-modal__section-title">Sight:</span>
+						<div class="other-options-modal__section-head">
+							<span class="other-options-modal__section-title">Sight:</span>
+							<button type="button" id="sight-toggle"
+								class="add-edit-modal__position-toggle"
+								aria-expanded="false"
+								aria-controls="sight-choices"
+								title="Show sight">
+								<svg class="add-edit-modal__position-chevron add-edit-modal__position-chevron--down" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+									<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+								<svg class="add-edit-modal__position-chevron add-edit-modal__position-chevron--up" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+									<path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</button>
+						</div>
+						<div id="sight-choices" class="other-options-modal__section-choices" hidden>
 						<label class="settings-modal__check-row">
 							<input type="checkbox" id="hide-categories-checkbox" checked
 								class="settings-modal__checkbox">
@@ -688,6 +703,7 @@
 								class="settings-modal__checkbox">
 							<span class="settings-modal__check-label">Show Debug window</span>
 						</label>
+						</div>
 					</div>
 
 					<div id="other-options-effects-rule" class="other-options-modal__section-rule" aria-hidden="true"></div>
@@ -1656,7 +1672,7 @@
 		<script defer src="js/render.js?v=pr66-clear"></script>
 		<script defer src="js/quotes.js"></script>
 		<script defer src="js/addeditlink.js?v=pr78-google-ai"></script>
-		<script defer src="js/settingsmodal.js?v=pr85-section-toggle"></script>
+		<script defer src="js/settingsmodal.js?v=pr85-sight-toggle"></script>
 		<script defer src="js/gsmodal.js?v=pr82-clear"></script>
 		<script defer src="js/app.js?v=pr85-section-toggle"></script>
 		<script defer src="js/script.js"></script>
