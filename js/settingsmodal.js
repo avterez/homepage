@@ -442,8 +442,12 @@ function syncOtherOptionsSightSection() {
     var hidden = !otherOptionsOpenedFromSettings;
     var sight = document.getElementById('other-options-sight');
     var rule = document.getElementById('other-options-sight-rule');
+    var effects = document.getElementById('other-options-effects');
+    var effectsRule = document.getElementById('other-options-effects-rule');
     if (sight) sight.classList.toggle('is-hidden', hidden);
     if (rule) rule.classList.toggle('is-hidden', hidden);
+    if (effects) effects.classList.toggle('is-hidden', hidden);
+    if (effectsRule) effectsRule.classList.toggle('is-hidden', hidden);
 }
 
 function hideOtherOptionsResetSection() {
@@ -451,7 +455,7 @@ function hideOtherOptionsResetSection() {
     var more = document.getElementById('other-options-show-more');
     var rest = document.getElementById('other-options-reset');
     if (rest) rest.classList.add('is-hidden');
-    if (more) more.classList.toggle('is-hidden', !otherOptionsOpenedFromSettings);
+    if (more) more.classList.remove('is-hidden');
 }
 
 function submitResetPhrase() {
@@ -472,9 +476,7 @@ function scrollOtherOptionsBodyToEnd() {
 }
 
 function showOtherOptionsResetSection() {
-    var more = document.getElementById('other-options-show-more');
     var rest = document.getElementById('other-options-reset');
-    if (more) more.classList.add('is-hidden');
     if (rest) rest.classList.remove('is-hidden');
     startResetHideTimer();
     scrollOtherOptionsBodyToEnd();
@@ -525,6 +527,7 @@ function clearAllAppData() {
 function bindResetConfirmControls() {
     var more = document.getElementById('other-options-show-more');
     if (more) more.addEventListener('click', showOtherOptionsResetSection);
+    bindOtherOptionsSectionToggles();
     var clearBtn = document.getElementById('other-options-clear-all');
     if (clearBtn) clearBtn.addEventListener('click', openResetConfirmModal);
     ['reset-confirm-close', 'reset-cancel-warn', 'reset-cancel-type', 'reset-no'].forEach(function (id) {
@@ -546,6 +549,47 @@ function bindResetConfirmControls() {
     if (submit) submit.addEventListener('click', submitResetPhrase);
     var yes = document.getElementById('reset-yes');
     if (yes) yes.addEventListener('click', clearAllAppData);
+}
+
+function setOtherOptionsSectionExpanded(choicesId, toggleId, open, showTitle, hideTitle) {
+    var choices = document.getElementById(choicesId);
+    var toggle = document.getElementById(toggleId);
+    if (choices) choices.hidden = !open;
+    if (toggle) {
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        toggle.title = open ? hideTitle : showTitle;
+    }
+    if (!open || !choices) return;
+    var body = document.querySelector('#other-options-modal .other-options-modal__body');
+    if (!body) return;
+    var bodyRect = body.getBoundingClientRect();
+    var choiceRect = choices.getBoundingClientRect();
+    if (choiceRect.bottom > bodyRect.bottom - 4) {
+        body.scrollTop += choiceRect.bottom - bodyRect.bottom + 8;
+    }
+}
+
+function collapseOtherOptionsDetails() {
+    setOtherOptionsSectionExpanded('sight-choices', 'sight-toggle', false, 'Show sight', 'Hide sight');
+    setOtherOptionsSectionExpanded('effects-choices', 'effects-toggle', false, 'Show effects', 'Hide effects');
+    setOtherOptionsSectionExpanded('description-timing-choices', 'description-timing-toggle', false, 'Show description timing', 'Hide description timing');
+}
+
+function bindOtherOptionsSectionToggles() {
+    [
+        ['sight-toggle', 'sight-choices', 'Show sight', 'Hide sight'],
+        ['effects-toggle', 'effects-choices', 'Show effects', 'Hide effects'],
+        ['description-timing-toggle', 'description-timing-choices', 'Show description timing', 'Hide description timing']
+    ].forEach(function (spec) {
+        var toggle = document.getElementById(spec[0]);
+        if (!toggle || toggle.getAttribute('data-section-bound') === '1') return;
+        toggle.setAttribute('data-section-bound', '1');
+        toggle.addEventListener('click', function (event) {
+            event.preventDefault();
+            var choices = document.getElementById(spec[1]);
+            setOtherOptionsSectionExpanded(spec[1], spec[0], !choices || choices.hidden, spec[2], spec[3]);
+        });
+    });
 }
 
 function syncPopupDurationFields(fromSettings) {
@@ -573,6 +617,7 @@ function openOtherOptionsModal() {
     if (typeof syncPopupDurationFields === 'function') {
         syncPopupDurationFields(otherOptionsOpenedFromSettings);
     }
+    collapseOtherOptionsDetails();
     if (settingsOpen) closeSettingsModal(false);
     syncOtherOptionsSightSection();
     hideOtherOptionsResetSection();

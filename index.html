@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<!-- AI: The Debug screen shows this pull request number. When a new PR starts, update content below to that PR number. -->
-		<meta name="homepage-pr" content="84">
+		<meta name="homepage-pr" content="85">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<script>
 		(function () {
@@ -46,7 +46,7 @@
 		<link rel="preload" href="css/lucide/lucide.woff2?v=pr75-settings-icons" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="css/styles.css?v=pr84-icons" as="style">
+		<link rel="preload" href="css/styles.css?v=pr85-section-toggle" as="style">
 
 		<!-- Critical CSS (FOUC / first paint) -->
 		<style>
@@ -70,7 +70,7 @@
 		</style>
 
 		<!-- Main CSS (blocking; avoid FOUC) -->
-		<link rel="stylesheet" href="css/styles.css?v=pr84-icons">
+		<link rel="stylesheet" href="css/styles.css?v=pr85-section-toggle">
 		<link rel="stylesheet" href="css/lucide/lucide.css?v=pr75-settings-icons">
 
 		<!-- FA subset async (~1.8KB vs full) -->
@@ -677,26 +677,109 @@
 					<div id="other-options-sight-rule" class="other-options-modal__section-rule" aria-hidden="true"></div>
 
 					<div id="other-options-sight" class="other-options-modal__checks">
-						<span class="other-options-modal__section-title">Sight:</span>
+						<div class="other-options-modal__section-head">
+							<span class="other-options-modal__section-title">Sight:</span>
+							<button type="button" id="sight-toggle"
+								class="add-edit-modal__position-toggle"
+								aria-expanded="false"
+								aria-controls="sight-choices"
+								title="Show sight">
+								<svg class="add-edit-modal__position-chevron add-edit-modal__position-chevron--down" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+									<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+								<svg class="add-edit-modal__position-chevron add-edit-modal__position-chevron--up" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+									<path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</button>
+						</div>
+						<div id="sight-choices" class="other-options-modal__section-choices" hidden>
 						<label class="settings-modal__check-row">
 							<input type="checkbox" id="hide-categories-checkbox" checked
 								class="settings-modal__checkbox">
 							<span class="settings-modal__check-label">Hide Categories (visible on wide screens)</span>
 						</label>
 						<label class="settings-modal__check-row">
-							<input type="checkbox" id="snow-effect-checkbox" checked
-								class="settings-modal__checkbox">
-							<span class="settings-modal__check-label">Enable Snow Effect</span>
-						</label>
-						<label class="settings-modal__check-row">
 							<input type="checkbox" id="debug-panel-checkbox"
 								class="settings-modal__checkbox">
 							<span class="settings-modal__check-label">Show Debug window</span>
 						</label>
+						</div>
+					</div>
+
+					<div id="other-options-effects-rule" class="other-options-modal__section-rule" aria-hidden="true"></div>
+
+					<div id="other-options-effects" class="other-options-modal__checks">
+						<div class="other-options-modal__section-head">
+							<span class="other-options-modal__section-title">Effects:</span>
+							<button type="button" id="effects-toggle"
+								class="add-edit-modal__position-toggle"
+								aria-expanded="false"
+								aria-controls="effects-choices"
+								title="Show effects">
+								<svg class="add-edit-modal__position-chevron add-edit-modal__position-chevron--down" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+									<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+								<svg class="add-edit-modal__position-chevron add-edit-modal__position-chevron--up" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+									<path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</button>
+						</div>
+						<div id="effects-choices" class="other-options-modal__section-choices" hidden>
+						<label class="settings-modal__check-row">
+							<input type="radio" name="background-effect" id="effect-none-radio" value="none"
+								class="settings-modal__radio">
+							<span class="settings-modal__check-label">None</span>
+						</label>
+						<label class="settings-modal__check-row">
+							<input type="radio" name="background-effect" id="effect-petals-radio" value="petals"
+								class="settings-modal__radio">
+							<span class="settings-modal__check-label">Cherry Blossom Petals</span>
+						</label>
+						<label class="settings-modal__check-row">
+							<input type="radio" name="background-effect" id="effect-fluff-radio" value="fluff"
+								class="settings-modal__radio">
+							<span class="settings-modal__check-label">Dandelion Fluff</span>
+						</label>
+						<label class="settings-modal__check-row">
+							<input type="radio" name="background-effect" id="effect-butterflies-radio" value="butterflies"
+								class="settings-modal__radio">
+							<span class="settings-modal__check-label">Butterflies</span>
+						</label>
+						<label class="settings-modal__check-row">
+							<input type="radio" name="background-effect" id="effect-fireflies-radio" value="fireflies"
+								class="settings-modal__radio">
+							<span class="settings-modal__check-label">Fireflies</span>
+						</label>
+						<label class="settings-modal__check-row">
+							<input type="radio" name="background-effect" id="effect-leaves-radio" value="leaves"
+								class="settings-modal__radio">
+							<span class="settings-modal__check-label">Falling Leaves</span>
+						</label>
+						<label class="settings-modal__check-row">
+							<input type="radio" name="background-effect" id="effect-snow-radio" value="snow"
+								class="settings-modal__radio" checked>
+							<span class="settings-modal__check-label">Snow Effect</span>
+						</label>
+						</div>
 					</div>
 
 					<div id="popup-duration-settings" class="other-options-modal__durations is-hidden">
-						<span class="other-options-modal__duration-title">Description Timing:</span>
+						<div class="other-options-modal__section-head">
+							<span class="other-options-modal__duration-title">Description Timing:</span>
+							<button type="button" id="description-timing-toggle"
+								class="add-edit-modal__position-toggle"
+								aria-expanded="false"
+								aria-controls="description-timing-choices"
+								title="Show description timing">
+								<svg class="add-edit-modal__position-chevron add-edit-modal__position-chevron--down" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+									<path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+								<svg class="add-edit-modal__position-chevron add-edit-modal__position-chevron--up" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+									<path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+								</svg>
+							</button>
+						</div>
+						<div id="description-timing-choices" class="other-options-modal__section-choices" hidden>
 						<label class="other-options-modal__duration" for="mobile-link-desc-seconds">
 							<span class="other-options-modal__duration-label">Link Cards (Long press):</span>
 							<span class="other-options-modal__duration-value">
@@ -713,6 +796,7 @@
 								<span>s</span>
 							</span>
 						</label>
+						</div>
 					</div>
 
 					<button type="button" id="other-options-show-more" class="other-options-modal__show-more">show more...</button>
@@ -1582,15 +1666,15 @@
 
 		<!-- Defer JS (tag order = execute order) -->
 		<script defer src="js/config.js?v=pr63-tally"></script>
-		<script defer src="js/state.js?v=my-order"></script>
-		<script defer src="js/storage.js?v=pr69-android-chrome"></script>
+		<script defer src="js/state.js?v=pr85-section-toggle"></script>
+		<script defer src="js/storage.js?v=pr85-section-toggle"></script>
 		<script defer src="js/github.js"></script>
 		<script defer src="js/render.js?v=pr66-clear"></script>
 		<script defer src="js/quotes.js"></script>
 		<script defer src="js/addeditlink.js?v=pr78-google-ai"></script>
-		<script defer src="js/settingsmodal.js?v=pr76-unsaved-warning"></script>
+		<script defer src="js/settingsmodal.js?v=pr85-sight-toggle"></script>
 		<script defer src="js/gsmodal.js?v=pr82-clear"></script>
-		<script defer src="js/app.js?v=pr83-finance-chart"></script>
+		<script defer src="js/app.js?v=pr85-firefly-rate"></script>
 		<script defer src="js/script.js"></script>
 	</body>
 </html>

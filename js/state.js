@@ -136,29 +136,48 @@ function savePopupSeconds(key, value, fallback) {
 
 var SNOW_EFFECT_KEY = 'startpage_snow_effect';
 var snowEffect = true;
+var backgroundEffect = 'snow';
 
-function readSnowEffectEnabled() {
-    try {
-        var raw = localStorage.getItem(SNOW_EFFECT_KEY);
-        if (raw == null || raw === '') return true;
-        return raw === 'true';
-    } catch (e) {
-        return true;
-    }
-}
-
-/** true or false for a boolean flag; null when an older backup should leave the setting alone. */
+/** 'snow', 'none', 'petals', 'leaves', 'fluff', 'fireflies', or 'butterflies'. null when an older backup should leave the setting alone. */
 function parseSnowEffectFlag(value) {
-    if (value === true || value === 'true') return true;
-    if (value === false || value === 'false') return false;
+    if (value === true || value === 'true' || value === 'snow') return 'snow';
+    if (value === false || value === 'false' || value === 'none') return 'none';
+    if (value === 'petals') return 'petals';
+    if (value === 'leaves') return 'leaves';
+    if (value === 'fluff') return 'fluff';
+    if (value === 'fireflies') return 'fireflies';
+    if (value === 'butterflies') return 'butterflies';
     return null;
 }
 
-function setSnowEffectEnabled(enabled) {
-    snowEffect = !!enabled;
+function readBackgroundEffect() {
     try {
-        localStorage.setItem(SNOW_EFFECT_KEY, snowEffect ? 'true' : 'false');
+        var raw = localStorage.getItem(SNOW_EFFECT_KEY);
+        if (raw == null || raw === '') return 'snow';
+        return parseSnowEffectFlag(raw) || 'snow';
+    } catch (e) {
+        return 'snow';
+    }
+}
+
+function readSnowEffectEnabled() {
+    return readBackgroundEffect() === 'snow';
+}
+
+function setBackgroundEffect(effect) {
+    var parsed = parseSnowEffectFlag(effect) || 'snow';
+    backgroundEffect = parsed;
+    snowEffect = parsed !== 'none';
+    var stored = parsed === 'snow' ? 'true' : (parsed === 'none' ? 'false' : parsed);
+    try {
+        localStorage.setItem(SNOW_EFFECT_KEY, stored);
     } catch (e) { /* ignore quota */ }
-    if (typeof applySnowEffect === 'function') applySnowEffect(snowEffect);
-    return snowEffect;
+    if (typeof applySnowEffect === 'function') applySnowEffect(parsed);
+    return backgroundEffect;
+}
+
+function setSnowEffectEnabled(enabled) {
+    var parsed = parseSnowEffectFlag(enabled);
+    if (!parsed) parsed = enabled ? 'snow' : 'none';
+    return setBackgroundEffect(parsed);
 }

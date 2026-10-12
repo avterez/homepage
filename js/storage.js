@@ -355,9 +355,9 @@ function buildBackupPayload(options) {
             ? getEmojiDescriptionSeconds()
             : 4,
         // Optional on older JSON files and Gists; missing values keep the saved setting.
-        snowEffect: (typeof readSnowEffectEnabled === 'function')
-            ? readSnowEffectEnabled()
-            : true,
+        snowEffect: (typeof readBackgroundEffect === 'function')
+            ? readBackgroundEffect()
+            : 'snow',
         github: {
             username: username,
             token: maskToken(token),
