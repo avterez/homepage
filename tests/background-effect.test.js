@@ -49,8 +49,7 @@ assert.ok(!/@keyframes petal-fall\{[^}]*360deg/.test(css), 'petals must rock, no
 const effectsBlock = html.slice(html.indexOf('id="other-options-effects"'), html.indexOf('id="popup-duration-settings"'));
 const effectValues = Array.from(effectsBlock.matchAll(/value="([^"]+)"/g), function (match) { return match[1]; });
 assert.deepStrictEqual(effectValues, ['none', 'petals', 'fluff', 'butterflies', 'fireflies', 'leaves', 'snow']);
-const seasons = Array.from(effectsBlock.matchAll(/other-options-modal__season">([^<]+)/g), function (match) { return match[1]; });
-assert.deepStrictEqual(seasons, ['Spring', 'Summer', 'Fall', 'Winter']);
+assert.ok(!effectsBlock.includes('other-options-modal__season'), 'season labels are not shown');
 
 function loadState() {
     const store = {};
