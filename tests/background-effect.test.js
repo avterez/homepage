@@ -16,6 +16,11 @@ const css = fs.readFileSync(path.join(root, 'css/styles.css'), 'utf8');
 assert.ok(html.includes('Cherry Blossom Petals'), 'Effects option label missing');
 assert.ok(html.includes('id="effect-petals-radio"'), 'petals radio missing');
 assert.ok(html.includes('value="petals"'), 'petals radio value missing');
+assert.ok(html.includes('Falling Leaves'), 'Falling Leaves option label missing');
+assert.ok(html.includes('id="effect-leaves-radio"'), 'leaves radio missing');
+assert.ok(html.includes('value="leaves"'), 'leaves radio value missing');
+assert.ok(css.includes('.snow-flake--leaf'), 'leaf shape missing');
+assert.ok(css.includes('animation-name:petal-fall'), 'leaves must use the petal sway animation');
 assert.ok(css.includes('@keyframes petal-fall'), 'petal fall animation missing');
 assert.ok(css.includes('--petal-tilt'), 'petal tilt angle missing');
 assert.ok(css.includes('--petal-bank:40deg'), 'sway bank is capped at 40 degrees');
@@ -65,5 +70,11 @@ assert.strictEqual(petals.context.setSnowEffectEnabled(false), 'none');
 assert.strictEqual(petals.store.startpage_snow_effect, 'false');
 assert.strictEqual(petals.context.setSnowEffectEnabled(true), 'snow');
 assert.strictEqual(petals.store.startpage_snow_effect, 'true');
+
+const leaves = loadState();
+assert.strictEqual(leaves.context.setBackgroundEffect('leaves'), 'leaves');
+assert.strictEqual(leaves.store.startpage_snow_effect, 'leaves');
+assert.strictEqual(leaves.context.readBackgroundEffect(), 'leaves');
+assert.strictEqual(leaves.context.parseSnowEffectFlag('leaves'), 'leaves');
 
 console.log('background-effect.test.js ok');

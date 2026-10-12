@@ -138,11 +138,12 @@ var SNOW_EFFECT_KEY = 'startpage_snow_effect';
 var snowEffect = true;
 var backgroundEffect = 'snow';
 
-/** 'snow', 'none', or 'petals'. null when an older backup should leave the setting alone. */
+/** 'snow', 'none', 'petals', or 'leaves'. null when an older backup should leave the setting alone. */
 function parseSnowEffectFlag(value) {
     if (value === true || value === 'true' || value === 'snow') return 'snow';
     if (value === false || value === 'false' || value === 'none') return 'none';
     if (value === 'petals') return 'petals';
+    if (value === 'leaves') return 'leaves';
     return null;
 }
 
@@ -164,7 +165,7 @@ function setBackgroundEffect(effect) {
     var parsed = parseSnowEffectFlag(effect) || 'snow';
     backgroundEffect = parsed;
     snowEffect = parsed !== 'none';
-    var stored = parsed === 'snow' ? 'true' : (parsed === 'none' ? 'false' : 'petals');
+    var stored = parsed === 'snow' ? 'true' : (parsed === 'none' ? 'false' : parsed);
     try {
         localStorage.setItem(SNOW_EFFECT_KEY, stored);
     } catch (e) { /* ignore quota */ }

@@ -831,31 +831,48 @@ function appendSnowFlakes(layer) {
     layer.appendChild(frag);
 }
 
-function appendPetals(layer) {
+var AUTUMN_LEAF_COLORS = ['#c4512c', '#e07a2f', '#e2b007', '#8d3b2c', '#c4842a', '#a3472c'];
+
+function appendDriftingPieces(layer, kind) {
     var count = petalParticleCount();
     var screenH = window.innerHeight || 800;
     var frag = document.createDocumentFragment();
     for (var i = 0; i < count; i++) {
-        var petal = document.createElement('span');
-        var slim = Math.random() < 0.5;
-        petal.className = slim ? 'snow-flake snow-flake--petal snow-flake--petal-slim' : 'snow-flake snow-flake--petal';
+        var piece = document.createElement('span');
+        var flip = Math.random() < 0.5;
+        if (kind === 'leaves') {
+            piece.className = flip ? 'snow-flake snow-flake--leaf snow-flake--leaf-flip' : 'snow-flake snow-flake--leaf';
+            var color = AUTUMN_LEAF_COLORS[Math.floor(Math.random() * AUTUMN_LEAF_COLORS.length)];
+            piece.style.backgroundColor = color;
+            piece.style.color = color;
+        } else {
+            piece.className = flip ? 'snow-flake snow-flake--petal snow-flake--petal-slim' : 'snow-flake snow-flake--petal';
+        }
         var width = 13 + Math.random() * 6;
         var height = width * (0.52 + Math.random() * 0.16);
         var duration = Math.max(22, (screenH / 900) * (28 + Math.random() * 16));
         var drift = (56 + Math.random() * 64) * (Math.random() < 0.5 ? -1 : 1);
         var tilt = (Math.random() * 64 - 32);
-        petal.style.left = (Math.random() * 100) + '%';
-        petal.style.width = width.toFixed(1) + 'px';
-        petal.style.height = height.toFixed(1) + 'px';
-        petal.style.opacity = String(0.82 + Math.random() * 0.18);
-        petal.style.animationDuration = duration.toFixed(2) + 's';
-        petal.style.animationDelay = (-Math.random() * duration).toFixed(2) + 's';
-        petal.style.setProperty('--snow-drift', drift.toFixed(1) + 'px');
-        petal.style.setProperty('--petal-tilt', tilt.toFixed(1) + 'deg');
-        petal.style.setProperty('--petal-bank', (drift < 0 ? -40 : 40) + 'deg');
-        frag.appendChild(petal);
+        piece.style.left = (Math.random() * 100) + '%';
+        piece.style.width = width.toFixed(1) + 'px';
+        piece.style.height = height.toFixed(1) + 'px';
+        piece.style.opacity = String(0.82 + Math.random() * 0.18);
+        piece.style.animationDuration = duration.toFixed(2) + 's';
+        piece.style.animationDelay = (-Math.random() * duration).toFixed(2) + 's';
+        piece.style.setProperty('--snow-drift', drift.toFixed(1) + 'px');
+        piece.style.setProperty('--petal-tilt', tilt.toFixed(1) + 'deg');
+        piece.style.setProperty('--petal-bank', (drift < 0 ? -40 : 40) + 'deg');
+        frag.appendChild(piece);
     }
     layer.appendChild(frag);
+}
+
+function appendPetals(layer) {
+    appendDriftingPieces(layer, 'petals');
+}
+
+function appendLeaves(layer) {
+    appendDriftingPieces(layer, 'leaves');
 }
 
 function ensureBackgroundParticles(kind) {
@@ -864,6 +881,7 @@ function ensureBackgroundParticles(kind) {
     if (!layer) return;
     while (layer.firstChild) layer.removeChild(layer.firstChild);
     if (kind === 'petals') appendPetals(layer);
+    else if (kind === 'leaves') appendLeaves(layer);
     else if (kind === 'snow') appendSnowFlakes(layer);
     backgroundParticlesKind = kind;
 }
@@ -897,8 +915,10 @@ function clearSnowIdlePause() {
 function syncSnowPausedNote() {
     var note = document.getElementById('snow-paused-note');
     if (!note) return;
-    var effectOn = backgroundEffect === 'snow' || backgroundEffect === 'petals';
-    note.textContent = backgroundEffect === 'petals' ? '(Petals paused)' : '(Snow paused)';
+    var effectOn = backgroundEffect === 'snow' || backgroundEffect === 'petals' || backgroundEffect === 'leaves';
+    if (backgroundEffect === 'petals') note.textContent = '(Petals paused)';
+    else if (backgroundEffect === 'leaves') note.textContent = '(Leaves paused)';
+    else note.textContent = '(Snow paused)';
     if (effectOn && snowIdlePaused) note.removeAttribute('hidden');
     else note.setAttribute('hidden', '');
 }
@@ -906,14 +926,14 @@ function syncSnowPausedNote() {
 function syncSnowPlayback() {
     var layer = document.getElementById('snow-layer');
     if (!layer) return;
-    var effectOn = backgroundEffect === 'snow' || backgroundEffect === 'petals';
+    var effectOn = backgroundEffect === 'snow' || backgroundEffect === 'petals' || backgroundEffect === 'leaves';
     var pause = !effectOn || snowIdlePaused || snowTabIsHidden() || layer.classList.contains('is-covered');
     layer.classList.toggle('is-paused', !!pause);
     syncSnowPausedNote();
 }
 
 function markSnowActivity() {
-    if (backgroundEffect !== 'snow' && backgroundEffect !== 'petals') return;
+    if (backgroundEffect !== 'snow' && backgroundEffect !== 'petals' && backgroundEffect !== 'leaves') return;
     var now = Date.now();
     if (!snowIdlePaused && now - snowLastActivityMark < 1000) return;
     snowLastActivityMark = now;
@@ -933,12 +953,14 @@ function applySnowEffect(enabled) {
     var snowRadio = document.getElementById('effect-snow-radio');
     var noneRadio = document.getElementById('effect-none-radio');
     var petalRadio = document.getElementById('effect-petals-radio');
+    var leafRadio = document.getElementById('effect-leaves-radio');
     if (snowRadio) snowRadio.checked = effect === 'snow';
     if (noneRadio) noneRadio.checked = effect === 'none';
     if (petalRadio) petalRadio.checked = effect === 'petals';
+    if (leafRadio) leafRadio.checked = effect === 'leaves';
     var layer = document.getElementById('snow-layer');
     if (!layer) return;
-    if (effect === 'snow' || effect === 'petals') {
+    if (effect === 'snow' || effect === 'petals' || effect === 'leaves') {
         ensureBackgroundParticles(effect);
         layer.classList.add('is-on');
         if (!snowIdleTimer && !snowIdlePaused) scheduleSnowIdlePause();
