@@ -19,6 +19,12 @@ assert.ok(html.includes('value="petals"'), 'petals radio value missing');
 assert.ok(html.includes('Falling Leaves'), 'Falling Leaves option label missing');
 assert.ok(html.includes('id="effect-leaves-radio"'), 'leaves radio missing');
 assert.ok(html.includes('value="leaves"'), 'leaves radio value missing');
+assert.ok(html.includes('Dandelion Fluff'), 'Dandelion Fluff option label missing');
+assert.ok(html.includes('id="effect-fluff-radio"'), 'fluff radio missing');
+assert.ok(html.includes('value="fluff"'), 'fluff radio value missing');
+assert.ok(css.includes('.snow-flake--fluff'), 'fluff shape missing');
+assert.ok(css.includes('@keyframes fluff-float'), 'fluff float animation missing');
+assert.ok(css.includes('.snow-flake--fluff{') && css.includes('var(--snow-color)'), 'fluff must use the snow color');
 assert.ok(css.includes('.snow-flake--leaf'), 'leaf shape missing');
 assert.ok(css.includes('animation-name:petal-fall'), 'leaves must use the petal sway animation');
 assert.ok(css.includes('@keyframes petal-fall'), 'petal fall animation missing');
@@ -76,5 +82,11 @@ assert.strictEqual(leaves.context.setBackgroundEffect('leaves'), 'leaves');
 assert.strictEqual(leaves.store.startpage_snow_effect, 'leaves');
 assert.strictEqual(leaves.context.readBackgroundEffect(), 'leaves');
 assert.strictEqual(leaves.context.parseSnowEffectFlag('leaves'), 'leaves');
+
+const fluff = loadState();
+assert.strictEqual(fluff.context.setBackgroundEffect('fluff'), 'fluff');
+assert.strictEqual(fluff.store.startpage_snow_effect, 'fluff');
+assert.strictEqual(fluff.context.readBackgroundEffect(), 'fluff');
+assert.strictEqual(fluff.context.parseSnowEffectFlag('fluff'), 'fluff');
 
 console.log('background-effect.test.js ok');
