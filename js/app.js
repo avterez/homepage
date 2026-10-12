@@ -852,7 +852,7 @@ function appendPetals(layer) {
         petal.style.animationDelay = (-Math.random() * duration).toFixed(2) + 's';
         petal.style.setProperty('--snow-drift', drift.toFixed(1) + 'px');
         petal.style.setProperty('--petal-tilt', tilt.toFixed(1) + 'deg');
-        petal.style.setProperty('--petal-bank', (drift < 0 ? -10 : 10) + 'deg');
+        petal.style.setProperty('--petal-bank', (drift < 0 ? -25 : 25) + 'deg');
         frag.appendChild(petal);
     }
     layer.appendChild(frag);
