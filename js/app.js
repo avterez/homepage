@@ -789,7 +789,7 @@ function loadHideCategories() {
     applyHideCategories(raw === 'true');
 }
 
-var snowFlakesReady = false;
+var backgroundParticlesKind = '';
 
 function snowParticleCount() {
     var w = window.innerWidth || 1280;
@@ -800,10 +800,16 @@ function snowParticleCount() {
     return count;
 }
 
-function ensureSnowParticles() {
-    if (snowFlakesReady) return;
-    var layer = document.getElementById('snow-layer');
-    if (!layer) return;
+function petalParticleCount() {
+    var w = window.innerWidth || 1280;
+    var h = window.innerHeight || 800;
+    var count = Math.round((w * h) / 28000);
+    if (count < 24) count = 24;
+    if (count > 56) count = 56;
+    return count;
+}
+
+function appendSnowFlakes(layer) {
     var count = snowParticleCount();
     var frag = document.createDocumentFragment();
     for (var i = 0; i < count; i++) {
@@ -823,7 +829,42 @@ function ensureSnowParticles() {
         frag.appendChild(flake);
     }
     layer.appendChild(frag);
-    snowFlakesReady = true;
+}
+
+function appendPetals(layer) {
+    var count = petalParticleCount();
+    var screenH = window.innerHeight || 800;
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < count; i++) {
+        var petal = document.createElement('span');
+        var slim = Math.random() < 0.5;
+        petal.className = slim ? 'snow-flake snow-flake--petal snow-flake--petal-slim' : 'snow-flake snow-flake--petal';
+        var width = 8 + Math.random() * 6;
+        var height = width * (1.35 + Math.random() * 0.45);
+        var duration = Math.max(22, (screenH / 900) * (28 + Math.random() * 16));
+        var drift = (40 + Math.random() * 100) * (Math.random() < 0.5 ? -1 : 1);
+        var rock = (14 + Math.random() * 14) * (Math.random() < 0.5 ? -1 : 1);
+        petal.style.left = (Math.random() * 100) + '%';
+        petal.style.width = width.toFixed(1) + 'px';
+        petal.style.height = height.toFixed(1) + 'px';
+        petal.style.opacity = String(0.82 + Math.random() * 0.18);
+        petal.style.animationDuration = duration.toFixed(2) + 's';
+        petal.style.animationDelay = (-Math.random() * duration).toFixed(2) + 's';
+        petal.style.setProperty('--snow-drift', drift.toFixed(1) + 'px');
+        petal.style.setProperty('--petal-rock', rock.toFixed(1) + 'deg');
+        frag.appendChild(petal);
+    }
+    layer.appendChild(frag);
+}
+
+function ensureBackgroundParticles(kind) {
+    if (backgroundParticlesKind === kind) return;
+    var layer = document.getElementById('snow-layer');
+    if (!layer) return;
+    while (layer.firstChild) layer.removeChild(layer.firstChild);
+    if (kind === 'petals') appendPetals(layer);
+    else if (kind === 'snow') appendSnowFlakes(layer);
+    backgroundParticlesKind = kind;
 }
 
 var SNOW_IDLE_MS = 5 * 60 * 1000;
@@ -855,20 +896,23 @@ function clearSnowIdlePause() {
 function syncSnowPausedNote() {
     var note = document.getElementById('snow-paused-note');
     if (!note) return;
-    if (snowEffect && snowIdlePaused) note.removeAttribute('hidden');
+    var effectOn = backgroundEffect === 'snow' || backgroundEffect === 'petals';
+    note.textContent = backgroundEffect === 'petals' ? '(Petals paused)' : '(Snow paused)';
+    if (effectOn && snowIdlePaused) note.removeAttribute('hidden');
     else note.setAttribute('hidden', '');
 }
 
 function syncSnowPlayback() {
     var layer = document.getElementById('snow-layer');
     if (!layer) return;
-    var pause = !snowEffect || snowIdlePaused || snowTabIsHidden() || layer.classList.contains('is-covered');
+    var effectOn = backgroundEffect === 'snow' || backgroundEffect === 'petals';
+    var pause = !effectOn || snowIdlePaused || snowTabIsHidden() || layer.classList.contains('is-covered');
     layer.classList.toggle('is-paused', !!pause);
     syncSnowPausedNote();
 }
 
 function markSnowActivity() {
-    if (!snowEffect) return;
+    if (backgroundEffect !== 'snow' && backgroundEffect !== 'petals') return;
     var now = Date.now();
     if (!snowIdlePaused && now - snowLastActivityMark < 1000) return;
     snowLastActivityMark = now;
@@ -881,15 +925,20 @@ document.addEventListener('mousemove', markSnowActivity);
 document.addEventListener('visibilitychange', syncSnowPlayback);
 
 function applySnowEffect(enabled) {
-    snowEffect = !!enabled;
+    var effect = (typeof parseSnowEffectFlag === 'function') ? parseSnowEffectFlag(enabled) : null;
+    if (!effect) effect = enabled ? 'snow' : 'none';
+    backgroundEffect = effect;
+    snowEffect = effect !== 'none';
     var snowRadio = document.getElementById('effect-snow-radio');
     var noneRadio = document.getElementById('effect-none-radio');
-    if (snowRadio) snowRadio.checked = snowEffect;
-    if (noneRadio) noneRadio.checked = !snowEffect;
+    var petalRadio = document.getElementById('effect-petals-radio');
+    if (snowRadio) snowRadio.checked = effect === 'snow';
+    if (noneRadio) noneRadio.checked = effect === 'none';
+    if (petalRadio) petalRadio.checked = effect === 'petals';
     var layer = document.getElementById('snow-layer');
     if (!layer) return;
-    if (snowEffect) {
-        ensureSnowParticles();
+    if (effect === 'snow' || effect === 'petals') {
+        ensureBackgroundParticles(effect);
         layer.classList.add('is-on');
         if (!snowIdleTimer && !snowIdlePaused) scheduleSnowIdlePause();
     } else {
@@ -900,9 +949,9 @@ function applySnowEffect(enabled) {
 }
 
 function loadSnowEffect() {
-    var enabled = (typeof readSnowEffectEnabled === 'function') ? readSnowEffectEnabled() : true;
-    if (typeof setSnowEffectEnabled === 'function') setSnowEffectEnabled(enabled);
-    else applySnowEffect(enabled);
+    var effect = (typeof readBackgroundEffect === 'function') ? readBackgroundEffect() : 'snow';
+    if (typeof setBackgroundEffect === 'function') setBackgroundEffect(effect);
+    else applySnowEffect(effect);
 }
 
 function updateClock() {
@@ -1281,7 +1330,7 @@ function initializeApp() {
     document.querySelectorAll('input[name="background-effect"]').forEach((radio) => {
         radio.addEventListener('change', () => {
             if (!radio.checked) return;
-            setSnowEffectEnabled(radio.value === 'snow');
+            setBackgroundEffect(radio.value);
         });
     });
 

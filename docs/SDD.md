@@ -360,7 +360,7 @@ Primary CRUD surface for link records (`#modal`). Full component design: **§6.1
   viewMode: string,               // full | compact
   mobileLinkDescriptionSeconds: number,
   emojiDescriptionSeconds: number,
-  snowEffect: boolean,
+  snowEffect: 'snow' | 'none' | 'petals',  // older files may still use boolean true/false
   lastSynced?: string,            // ISO — gist export only
   github: {
     username: string,
@@ -501,7 +501,7 @@ Starter link pack shipped with the repo. Used for first-run seed and as the file
 | `sortMode` | `default` (My Order) \| `tally` \| `abc` \| `date`; persisted; default `tally` |
 | `currentFontScale` | `95` \| `100` \| `105` \| `110` |
 | `viewMode` | `full` \| `compact`; default `compact` |
-| `snowEffect` | Falling snow on/off |
+| `snowEffect` / `backgroundEffect` | `snow` \| `none` \| `petals` |
 | `githubUsername` / `Token` / `GistId` / `LastSync` | Sync state |
 | `keyboardFocusedIndex` | Card keyboard nav index (`debug.js`) |
 | `listControlsStacked` | Layout flag for list controls (`debug.js`) |
@@ -3599,10 +3599,10 @@ Optional falling snow on the landing page (`#snow-layer`). It is on by default.
 
 | Item | Behavior |
 |------|----------|
-| Toggle | Other Options → Effects → **None** or **Snow Effect** (`input[name="background-effect"]`) |
-| Persistence | `startpage_snow_effect` (`true` / `false`). A missing key stays on. Also stored as `snowEffect` in JSON/Gist backups. |
-| Color | Theme role **Snow** → `startpage_snow_color` → CSS `--snow-color` |
-| Motion | `ensureSnowParticles()` builds 48–96 flakes from the viewport size. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for 5 minutes. |
+| Toggle | Other Options → Effects → **None**, **Snow Effect**, or **Cherry Blossom Petals** (`input[name="background-effect"]`) |
+| Persistence | `startpage_snow_effect` (`true` snow, `false` none, `petals` petals). A missing key stays on snow. Backups store `snowEffect` as `snow`, `none`, or `petals`; older boolean values still import. |
+| Color | Theme role **Snow** → `startpage_snow_color` → CSS `--snow-color`. Petals use that same color. |
+| Motion | Snow builds 48–96 flakes. Petals build 24–56 small shapes that sway and rock (they do not spin a full turn) and take longer to cross a taller screen. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for 5 minutes. |
 | Hit testing | The layer does not receive pointer events. |
 
 ---
