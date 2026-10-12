@@ -46,6 +46,12 @@ assert.ok(css.includes('var(--petal-tilt) - var(--petal-bank)'), 'rightward sway
 assert.ok(css.includes('var(--petal-tilt) + var(--petal-bank)'), 'leftward sway turns clockwise');
 assert.ok(!/@keyframes petal-fall\{[^}]*360deg/.test(css), 'petals must rock, not spin a full turn');
 
+const effectsBlock = html.slice(html.indexOf('id="other-options-effects"'), html.indexOf('id="popup-duration-settings"'));
+const effectValues = Array.from(effectsBlock.matchAll(/value="([^"]+)"/g), function (match) { return match[1]; });
+assert.deepStrictEqual(effectValues, ['none', 'petals', 'fluff', 'butterflies', 'fireflies', 'leaves', 'snow']);
+const seasons = Array.from(effectsBlock.matchAll(/other-options-modal__season">([^<]+)/g), function (match) { return match[1]; });
+assert.deepStrictEqual(seasons, ['Spring', 'Summer', 'Fall', 'Winter']);
+
 function loadState() {
     const store = {};
     const context = {

@@ -46,7 +46,7 @@
 		<link rel="preload" href="css/lucide/lucide.woff2?v=pr75-settings-icons" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="css/styles.css?v=pr85-butterflies" as="style">
+		<link rel="preload" href="css/styles.css?v=pr85-seasons" as="style">
 
 		<!-- Critical CSS (FOUC / first paint) -->
 		<style>
@@ -70,7 +70,7 @@
 		</style>
 
 		<!-- Main CSS (blocking; avoid FOUC) -->
-		<link rel="stylesheet" href="css/styles.css?v=pr85-butterflies">
+		<link rel="stylesheet" href="css/styles.css?v=pr85-seasons">
 		<link rel="stylesheet" href="css/lucide/lucide.css?v=pr75-settings-icons">
 
 		<!-- FA subset async (~1.8KB vs full) -->
@@ -699,35 +699,39 @@
 								class="settings-modal__radio">
 							<span class="settings-modal__check-label">None</span>
 						</label>
-						<label class="settings-modal__check-row">
-							<input type="radio" name="background-effect" id="effect-snow-radio" value="snow"
-								class="settings-modal__radio" checked>
-							<span class="settings-modal__check-label">Snow Effect</span>
-						</label>
+						<span class="other-options-modal__season">Spring</span>
 						<label class="settings-modal__check-row">
 							<input type="radio" name="background-effect" id="effect-petals-radio" value="petals"
 								class="settings-modal__radio">
 							<span class="settings-modal__check-label">Cherry Blossom Petals</span>
 						</label>
 						<label class="settings-modal__check-row">
-							<input type="radio" name="background-effect" id="effect-leaves-radio" value="leaves"
-								class="settings-modal__radio">
-							<span class="settings-modal__check-label">Falling Leaves</span>
-						</label>
-						<label class="settings-modal__check-row">
 							<input type="radio" name="background-effect" id="effect-fluff-radio" value="fluff"
 								class="settings-modal__radio">
 							<span class="settings-modal__check-label">Dandelion Fluff</span>
+						</label>
+						<span class="other-options-modal__season">Summer</span>
+						<label class="settings-modal__check-row">
+							<input type="radio" name="background-effect" id="effect-butterflies-radio" value="butterflies"
+								class="settings-modal__radio">
+							<span class="settings-modal__check-label">Butterflies</span>
 						</label>
 						<label class="settings-modal__check-row">
 							<input type="radio" name="background-effect" id="effect-fireflies-radio" value="fireflies"
 								class="settings-modal__radio">
 							<span class="settings-modal__check-label">Fireflies</span>
 						</label>
+						<span class="other-options-modal__season">Fall</span>
 						<label class="settings-modal__check-row">
-							<input type="radio" name="background-effect" id="effect-butterflies-radio" value="butterflies"
+							<input type="radio" name="background-effect" id="effect-leaves-radio" value="leaves"
 								class="settings-modal__radio">
-							<span class="settings-modal__check-label">Butterflies</span>
+							<span class="settings-modal__check-label">Falling Leaves</span>
+						</label>
+						<span class="other-options-modal__season">Winter</span>
+						<label class="settings-modal__check-row">
+							<input type="radio" name="background-effect" id="effect-snow-radio" value="snow"
+								class="settings-modal__radio" checked>
+							<span class="settings-modal__check-label">Snow Effect</span>
 						</label>
 					</div>
 
@@ -1618,15 +1622,15 @@
 
 		<!-- Defer JS (tag order = execute order) -->
 		<script defer src="js/config.js?v=pr63-tally"></script>
-		<script defer src="js/state.js?v=pr85-butterflies"></script>
-		<script defer src="js/storage.js?v=pr85-butterflies"></script>
+		<script defer src="js/state.js?v=pr85-seasons"></script>
+		<script defer src="js/storage.js?v=pr85-seasons"></script>
 		<script defer src="js/github.js"></script>
 		<script defer src="js/render.js?v=pr66-clear"></script>
 		<script defer src="js/quotes.js"></script>
 		<script defer src="js/addeditlink.js?v=pr78-google-ai"></script>
 		<script defer src="js/settingsmodal.js?v=pr76-unsaved-warning"></script>
 		<script defer src="js/gsmodal.js?v=pr82-clear"></script>
-		<script defer src="js/app.js?v=pr85-butterflies"></script>
+		<script defer src="js/app.js?v=pr85-seasons"></script>
 		<script defer src="js/script.js"></script>
 	</body>
 </html>
