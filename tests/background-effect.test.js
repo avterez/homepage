@@ -24,7 +24,7 @@ assert.ok(!html.includes('effect-fireflies-radio'), 'fireflies option should be 
 assert.ok(html.includes('>Snow*<'), 'Snow option label missing');
 assert.ok(html.includes('Dandelion Fluff*'), 'Dandelion Fluff asterisk missing');
 assert.ok(html.includes('* Uses "Effects" color in the "Color Theme Editor"'), 'effects color note missing');
-assert.ok(html.includes('Effects Timeout (in minutes)'), 'effects timeout label missing');
+assert.ok(html.includes('Effects Timeout (in minutes):'), 'effects timeout label missing');
 assert.ok(/id="effects-timeout-minutes"[^>]*maxlength="2"[^>]*value="5"/.test(html), 'effects timeout defaults to 5 and allows 2 digits');
 assert.ok(!html.includes('Snow Effect'), 'Snow Effect label should be renamed');
 assert.ok(html.indexOf('id="other-options-effects"') < html.indexOf('id="other-options-sight"'), 'Effects should come before Sight');
