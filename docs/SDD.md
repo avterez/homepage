@@ -463,7 +463,7 @@ Starter link pack shipped with the repo. Used for first-run seed and as the file
 | `startpage_view_mode` | `full` \| `compact` (default `compact`) |
 | `startpage_sort_mode` | `default` (My Order) \| `tally` \| `abc` \| `date` (default `tally`) |
 | `startpage_hide_categories` | Hide the category sidebar |
-| `startpage_snow_effect` | `true` \| `false` (missing = on) |
+| `startpage_snow_effect` | `true` snow, `false` none, `season` (missing = season), `leaves`, `fluff`, `butterflies` |
 | `startpage_snow_color` | Snowflake color (`--snow-color`) |
 | `startpage_mobile_link_desc_seconds` | Compact description tooltip seconds on mobile (default 5) |
 | `startpage_emoji_desc_seconds` | Emoji full-description tip seconds (default 4) |
@@ -3595,12 +3595,12 @@ Refresh paths: open panel, manual refresh button, window **resize** (while visib
 
 ### 6.15 Snow
 
-Optional falling snow on the landing page (`#snow-layer`). It is on by default.
+Optional background effects on the landing page (`#snow-layer`). A first visit uses **Season**.
 
 | Item | Behavior |
 |------|----------|
 | Toggle | Other Options shows **Effects** before **Sight**. Effects order: **None**, **Season**, **Dandelion Fluff***, **Butterflies**, **Falling Leaves**, **Snow***. The asterisk note says those two use the Effects color from the Color Theme Editor. Sight, Effects, and Description Timing start collapsed. **show more...** stays visible. |
-| Persistence | `startpage_snow_effect` (`true` snow, `false` none, `season`, `leaves`, `fluff`, `butterflies`). A missing key stays on snow. **Season** shows snow in Dec–Feb, dandelion fluff in Mar–May, butterflies in Jun–Aug, and falling leaves in Sep–Nov. |
+| Persistence | `startpage_snow_effect` (`true` snow, `false` none, `season`, `leaves`, `fluff`, `butterflies`). A missing key starts on **Season**. **Season** shows snow in Dec–Feb, dandelion fluff in Mar–May, butterflies in Jun–Aug, and falling leaves in Sep–Nov. |
 | Color | Theme role **Effects** → `startpage_snow_color` → CSS `--snow-color`. Snow and dandelion fluff use that color. Falling leaves use an autumn palette. Butterflies use several wing colors. |
 | Motion | Snow builds 48–96 flakes. Falling leaves are 24–56 wide shapes that glide side to side and turn at most 40 degrees with the sway. Dandelion fluff is 18–40 soft balls of different sizes and opacities that wander around the screen. Butterflies are 8–16 fliers of different sizes and colors; the wings flap separately from the flight path. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for 5 minutes. |
 | Hit testing | The layer does not receive pointer events. |

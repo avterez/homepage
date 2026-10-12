@@ -136,7 +136,7 @@ function savePopupSeconds(key, value, fallback) {
 
 var SNOW_EFFECT_KEY = 'startpage_snow_effect';
 var snowEffect = true;
-var backgroundEffect = 'snow';
+var backgroundEffect = 'season';
 
 /** Month index 0–11. Dec–Feb snow, Mar–May fluff, Jun–Aug butterflies, Sep–Nov leaves. */
 function effectForMonth(monthIndex) {
@@ -160,10 +160,10 @@ function parseSnowEffectFlag(value) {
 function readBackgroundEffect() {
     try {
         var raw = localStorage.getItem(SNOW_EFFECT_KEY);
-        if (raw == null || raw === '') return 'snow';
+        if (raw == null || raw === '') return 'season';
         return parseSnowEffectFlag(raw) || 'snow';
     } catch (e) {
-        return 'snow';
+        return 'season';
     }
 }
 

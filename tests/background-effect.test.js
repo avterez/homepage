@@ -79,7 +79,7 @@ function loadState() {
 }
 
 const missing = loadState();
-assert.strictEqual(missing.context.readBackgroundEffect(), 'snow', 'missing key stays on snow');
+assert.strictEqual(missing.context.readBackgroundEffect(), 'season', 'missing key starts on season');
 
 const legacyOn = loadState();
 legacyOn.store.startpage_snow_effect = 'true';
