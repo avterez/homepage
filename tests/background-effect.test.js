@@ -15,6 +15,12 @@ const css = fs.readFileSync(path.join(root, 'css/styles.css'), 'utf8');
 
 assert.ok(html.includes('>Seasonal<'), 'Seasonal option missing');
 assert.ok(html.includes('id="seasonal-info-btn"'), 'seasonal info button missing');
+const seasonalBtn = html.slice(html.indexOf('id="seasonal-info-btn"'), html.indexOf('id="effect-fluff-radio"'));
+assert.ok(seasonalBtn.includes('icon-settings'), 'seasonal control should use the settings gear');
+assert.ok(!seasonalBtn.includes('<svg'), 'seasonal control should not keep the info mark');
+const hemiTitle = html.slice(html.indexOf('id="hemisphere-modal-title"'), html.indexOf('</h3>', html.indexOf('id="hemisphere-modal-title"')));
+assert.ok(hemiTitle.includes('icon-settings'), 'seasonal modal should use the settings gear');
+assert.ok(!hemiTitle.includes('icon-info'), 'seasonal modal should not keep the info icon');
 assert.ok(html.includes('id="hemisphere-modal"'), 'hemisphere modal missing');
 assert.ok(html.includes('>Northern<') && html.includes('>Southern<'), 'hemisphere options missing');
 assert.ok(html.includes('Effects automatically change with the seasons.'), 'seasonal instructions missing');
