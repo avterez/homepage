@@ -1351,7 +1351,7 @@ Link cards are the primary presentation of `links[]` on the Landing Screen. Rend
 | C8 | Tooltip delay **1s**; hide delays 250/150 ms | Reduce flicker; allow mouse into tooltip | **Current** |
 | C9 | Delete focuses link search + re-applies keyboard highlight | Continuity after destructive action | **Current** |
 | C10 | Orphan tooltip cleanup on every `renderLinks` | Prevent ghost tooltips after filter | **Current** |
-| C11 | URL preview hidden below breakpoints (full: &lt;md; compact: &lt;1320px) | Prioritize name/actions on narrow widths | **Current** |
+| C11 | URL preview hidden below breakpoints (full: &lt;md; compact: 1475px and narrower) | Prioritize name/actions on narrow widths | **Current** |
 
 ##### 6.1.2.6 Data Model / Schema
 
