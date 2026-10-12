@@ -4,6 +4,7 @@ var UI_MODAL_IDS = [
     'github-credentials-modal',
     'attribution-modal',
     'about-modal',
+    'hemisphere-modal',
     'other-options-modal',
     'search-modal',
     'gists-list-modal',

@@ -421,6 +421,7 @@ function setupAppKeyboardShortcuts() {
         'color-theme-modal': closeColorThemeModal,
         'attribution-modal': closeAttributionModal,
         'about-modal': closeAboutModal,
+        'hemisphere-modal': closeHemisphereModal,
         'other-options-modal': closeOtherOptionsModal,
         'reset-confirm-modal': cancelResetConfirm,
         'sync-modal': closeSyncModal,
@@ -984,7 +985,8 @@ function clearSnowIdlePause() {
 
 function resolvedBackgroundEffect() {
     if (backgroundEffect === 'season' && typeof effectForMonth === 'function') {
-        return effectForMonth(new Date().getMonth());
+        var hemisphere = (typeof readHemisphere === 'function') ? readHemisphere() : 'northern';
+        return effectForMonth(new Date().getMonth(), hemisphere);
     }
     return backgroundEffect;
 }

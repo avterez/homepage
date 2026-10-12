@@ -138,12 +138,36 @@ var SNOW_EFFECT_KEY = 'startpage_snow_effect';
 var snowEffect = true;
 var backgroundEffect = 'season';
 
-/** Month index 0–11. Dec–Feb snow, Mar–May fluff, Jun–Aug butterflies, Sep–Nov leaves. */
-function effectForMonth(monthIndex) {
-    if (monthIndex === 11 || monthIndex <= 1) return 'snow';
-    if (monthIndex <= 4) return 'fluff';
-    if (monthIndex <= 7) return 'butterflies';
+var HEMISPHERE_KEY = 'startpage_hemisphere';
+
+/** Month index 0–11. Northern: Dec–Feb snow, Mar–May fluff, Jun–Aug butterflies, Sep–Nov leaves. Southern is six months later. */
+function effectForMonth(monthIndex, hemisphere) {
+    var month = monthIndex;
+    if (hemisphere === 'southern') month = (month + 6) % 12;
+    if (month === 11 || month <= 1) return 'snow';
+    if (month <= 4) return 'fluff';
+    if (month <= 7) return 'butterflies';
     return 'leaves';
+}
+
+function readHemisphere() {
+    try {
+        return localStorage.getItem(HEMISPHERE_KEY) === 'southern' ? 'southern' : 'northern';
+    } catch (e) {
+        return 'northern';
+    }
+}
+
+function setHemisphere(value) {
+    var hemisphere = value === 'southern' ? 'southern' : 'northern';
+    try {
+        localStorage.setItem(HEMISPHERE_KEY, hemisphere);
+    } catch (e) { /* ignore quota */ }
+    if (typeof syncHemisphereControls === 'function') syncHemisphereControls();
+    if (typeof backgroundEffect !== 'undefined' && backgroundEffect === 'season' && typeof applySnowEffect === 'function') {
+        applySnowEffect('season');
+    }
+    return hemisphere;
 }
 
 /** 'snow', 'none', 'season', 'leaves', 'fluff', or 'butterflies'. null when an older backup should leave the setting alone. */

@@ -13,7 +13,10 @@ const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'css/styles.css'), 'utf8');
 
-assert.ok(html.includes('>Season<'), 'Season option missing');
+assert.ok(html.includes('>Seasonal<'), 'Seasonal option missing');
+assert.ok(html.includes('id="seasonal-info-btn"'), 'seasonal info button missing');
+assert.ok(html.includes('id="hemisphere-modal"'), 'hemisphere modal missing');
+assert.ok(html.includes('(1) Northern') && html.includes('(2) Southern'), 'hemisphere options missing');
 assert.ok(html.includes('id="effect-season-radio"'), 'season radio missing');
 assert.ok(!html.includes('Cherry Blossom Petals'), 'cherry blossom option should be removed');
 assert.ok(!html.includes('effect-fireflies-radio'), 'fireflies option should be removed');
@@ -53,7 +56,7 @@ assert.ok(!/@keyframes petal-fall\{[^}]*360deg/.test(css), 'petals must rock, no
 const effectsBlock = html.slice(html.indexOf('id="other-options-effects"'), html.indexOf('id="popup-duration-settings"'));
 const effectValues = Array.from(effectsBlock.matchAll(/value="([^"]+)"/g), function (match) { return match[1]; });
 assert.deepStrictEqual(effectValues, ['none', 'season', 'fluff', 'butterflies', 'leaves', 'snow']);
-assert.ok(!effectsBlock.includes('other-options-modal__season'), 'season labels are not shown');
+assert.ok(!/>Spring<|>Summer<|>Fall<|>Winter</.test(effectsBlock), 'season labels are not shown');
 assert.ok(html.includes('id="sight-toggle"'), 'sight disclosure missing');
 assert.ok(/id="sight-choices"[^>]*hidden/.test(html), 'sight choices start hidden');
 assert.ok(html.includes('id="effects-toggle"'), 'effects disclosure missing');
@@ -102,6 +105,13 @@ assert.strictEqual(season.context.parseSnowEffectFlag('fireflies'), null);
 [2, 3, 4].forEach(function (month) { assert.strictEqual(season.context.effectForMonth(month), 'fluff', 'month ' + month); });
 [5, 6, 7].forEach(function (month) { assert.strictEqual(season.context.effectForMonth(month), 'butterflies', 'month ' + month); });
 [8, 9, 10].forEach(function (month) { assert.strictEqual(season.context.effectForMonth(month), 'leaves', 'month ' + month); });
+[11, 0, 1].forEach(function (month) { assert.strictEqual(season.context.effectForMonth(month, 'southern'), 'butterflies', 'south ' + month); });
+[2, 3, 4].forEach(function (month) { assert.strictEqual(season.context.effectForMonth(month, 'southern'), 'leaves', 'south ' + month); });
+[5, 6, 7].forEach(function (month) { assert.strictEqual(season.context.effectForMonth(month, 'southern'), 'snow', 'south ' + month); });
+[8, 9, 10].forEach(function (month) { assert.strictEqual(season.context.effectForMonth(month, 'southern'), 'fluff', 'south ' + month); });
+assert.strictEqual(season.context.readHemisphere(), 'northern');
+assert.strictEqual(season.context.setHemisphere('southern'), 'southern');
+assert.strictEqual(season.store.startpage_hemisphere, 'southern');
 
 assert.strictEqual(season.context.setSnowEffectEnabled(false), 'none');
 assert.strictEqual(season.store.startpage_snow_effect, 'false');

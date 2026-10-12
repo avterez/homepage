@@ -358,6 +358,7 @@ function buildBackupPayload(options) {
         snowEffect: (typeof readBackgroundEffect === 'function')
             ? readBackgroundEffect()
             : 'snow',
+        hemisphere: (typeof readHemisphere === 'function') ? readHemisphere() : 'northern',
         github: {
             username: username,
             token: maskToken(token),
@@ -452,6 +453,9 @@ function applyBackupPayload(imported, options) {
         if (snowFlag !== null && typeof setSnowEffectEnabled === 'function') {
             setSnowEffectEnabled(snowFlag);
         }
+    }
+    if ((data.hemisphere === 'northern' || data.hemisphere === 'southern') && typeof setHemisphere === 'function') {
+        setHemisphere(data.hemisphere);
     }
 
     if (data.github) {
