@@ -833,21 +833,17 @@ function appendSnowFlakes(layer) {
 
 var AUTUMN_LEAF_COLORS = ['#c4512c', '#e07a2f', '#e2b007', '#8d3b2c', '#c4842a', '#a3472c'];
 
-function appendDriftingPieces(layer, kind) {
+function appendDriftingPieces(layer) {
     var count = petalParticleCount();
     var screenH = window.innerHeight || 800;
     var frag = document.createDocumentFragment();
     for (var i = 0; i < count; i++) {
         var piece = document.createElement('span');
         var flip = Math.random() < 0.5;
-        if (kind === 'leaves') {
-            piece.className = flip ? 'snow-flake snow-flake--leaf snow-flake--leaf-flip' : 'snow-flake snow-flake--leaf';
-            var color = AUTUMN_LEAF_COLORS[Math.floor(Math.random() * AUTUMN_LEAF_COLORS.length)];
-            piece.style.backgroundColor = color;
-            piece.style.color = color;
-        } else {
-            piece.className = flip ? 'snow-flake snow-flake--petal snow-flake--petal-slim' : 'snow-flake snow-flake--petal';
-        }
+        piece.className = flip ? 'snow-flake snow-flake--leaf snow-flake--leaf-flip' : 'snow-flake snow-flake--leaf';
+        var color = AUTUMN_LEAF_COLORS[Math.floor(Math.random() * AUTUMN_LEAF_COLORS.length)];
+        piece.style.backgroundColor = color;
+        piece.style.color = color;
         var width = 13 + Math.random() * 6;
         var height = width * (0.52 + Math.random() * 0.16);
         var duration = Math.max(22, (screenH / 900) * (28 + Math.random() * 16));
@@ -867,12 +863,8 @@ function appendDriftingPieces(layer, kind) {
     layer.appendChild(frag);
 }
 
-function appendPetals(layer) {
-    appendDriftingPieces(layer, 'petals');
-}
-
 function appendLeaves(layer) {
-    appendDriftingPieces(layer, 'leaves');
+    appendDriftingPieces(layer);
 }
 
 function fluffParticleCount() {
@@ -905,34 +897,6 @@ function appendFluff(layer) {
         puff.style.setProperty('--fluff-x', travelX.toFixed(1) + 'px');
         puff.style.setProperty('--fluff-y', travelY.toFixed(1) + 'px');
         frag.appendChild(puff);
-    }
-    layer.appendChild(frag);
-}
-
-function fireflyParticleCount() {
-    var w = window.innerWidth || 1280;
-    var h = window.innerHeight || 800;
-    var count = Math.round((w * h) / 70000);
-    if (count < 12) count = 12;
-    if (count > 28) count = 28;
-    return count;
-}
-
-function appendFireflies(layer) {
-    var count = fireflyParticleCount();
-    var frag = document.createDocumentFragment();
-    for (var i = 0; i < count; i++) {
-        var fly = document.createElement('span');
-        fly.className = 'snow-flake snow-flake--firefly';
-        var size = 4 + Math.random() * 5;
-        var duration = 17.6 + Math.random() * 14.4;
-        fly.style.left = (3 + Math.random() * 94) + '%';
-        fly.style.top = (4 + Math.random() * 88) + '%';
-        fly.style.width = size.toFixed(1) + 'px';
-        fly.style.height = size.toFixed(1) + 'px';
-        fly.style.animationDuration = duration.toFixed(2) + 's';
-        fly.style.animationDelay = (-Math.random() * duration).toFixed(2) + 's';
-        frag.appendChild(fly);
     }
     layer.appendChild(frag);
 }
@@ -985,10 +949,8 @@ function ensureBackgroundParticles(kind) {
     var layer = document.getElementById('snow-layer');
     if (!layer) return;
     while (layer.firstChild) layer.removeChild(layer.firstChild);
-    if (kind === 'petals') appendPetals(layer);
-    else if (kind === 'leaves') appendLeaves(layer);
+    if (kind === 'leaves') appendLeaves(layer);
     else if (kind === 'fluff') appendFluff(layer);
-    else if (kind === 'fireflies') appendFireflies(layer);
     else if (kind === 'butterflies') appendButterflies(layer);
     else if (kind === 'snow') appendSnowFlakes(layer);
     backgroundParticlesKind = kind;
@@ -1020,19 +982,26 @@ function clearSnowIdlePause() {
     snowIdlePaused = false;
 }
 
+function resolvedBackgroundEffect() {
+    if (backgroundEffect === 'season' && typeof effectForMonth === 'function') {
+        return effectForMonth(new Date().getMonth());
+    }
+    return backgroundEffect;
+}
+
 function backgroundEffectIsOn() {
-    return backgroundEffect === 'snow' || backgroundEffect === 'petals' || backgroundEffect === 'leaves' || backgroundEffect === 'fluff' || backgroundEffect === 'fireflies' || backgroundEffect === 'butterflies';
+    var effect = resolvedBackgroundEffect();
+    return effect === 'snow' || effect === 'leaves' || effect === 'fluff' || effect === 'butterflies';
 }
 
 function syncSnowPausedNote() {
     var note = document.getElementById('snow-paused-note');
     if (!note) return;
     var effectOn = backgroundEffectIsOn();
-    if (backgroundEffect === 'petals') note.textContent = '(Petals paused)';
-    else if (backgroundEffect === 'leaves') note.textContent = '(Leaves paused)';
-    else if (backgroundEffect === 'fluff') note.textContent = '(Fluff paused)';
-    else if (backgroundEffect === 'fireflies') note.textContent = '(Fireflies paused)';
-    else if (backgroundEffect === 'butterflies') note.textContent = '(Butterflies paused)';
+    var shown = resolvedBackgroundEffect();
+    if (shown === 'leaves') note.textContent = '(Leaves paused)';
+    else if (shown === 'fluff') note.textContent = '(Fluff paused)';
+    else if (shown === 'butterflies') note.textContent = '(Butterflies paused)';
     else note.textContent = '(Snow paused)';
     if (effectOn && snowIdlePaused) note.removeAttribute('hidden');
     else note.setAttribute('hidden', '');
@@ -1041,6 +1010,10 @@ function syncSnowPausedNote() {
 function syncSnowPlayback() {
     var layer = document.getElementById('snow-layer');
     if (!layer) return;
+    if (backgroundEffect === 'season' && backgroundParticlesKind && backgroundParticlesKind !== resolvedBackgroundEffect()) {
+        applySnowEffect('season');
+        return;
+    }
     var effectOn = backgroundEffectIsOn();
     var pause = !effectOn || snowIdlePaused || snowTabIsHidden() || layer.classList.contains('is-covered');
     layer.classList.toggle('is-paused', !!pause);
@@ -1064,25 +1037,24 @@ function applySnowEffect(enabled) {
     var effect = (typeof parseSnowEffectFlag === 'function') ? parseSnowEffectFlag(enabled) : null;
     if (!effect) effect = enabled ? 'snow' : 'none';
     backgroundEffect = effect;
-    snowEffect = effect !== 'none';
+    var shown = effect === 'season' ? resolvedBackgroundEffect() : effect;
+    snowEffect = shown !== 'none';
     var snowRadio = document.getElementById('effect-snow-radio');
     var noneRadio = document.getElementById('effect-none-radio');
-    var petalRadio = document.getElementById('effect-petals-radio');
+    var seasonRadio = document.getElementById('effect-season-radio');
     var leafRadio = document.getElementById('effect-leaves-radio');
     var fluffRadio = document.getElementById('effect-fluff-radio');
-    var fireflyRadio = document.getElementById('effect-fireflies-radio');
     var butterflyRadio = document.getElementById('effect-butterflies-radio');
     if (snowRadio) snowRadio.checked = effect === 'snow';
     if (noneRadio) noneRadio.checked = effect === 'none';
-    if (petalRadio) petalRadio.checked = effect === 'petals';
+    if (seasonRadio) seasonRadio.checked = effect === 'season';
     if (leafRadio) leafRadio.checked = effect === 'leaves';
     if (fluffRadio) fluffRadio.checked = effect === 'fluff';
-    if (fireflyRadio) fireflyRadio.checked = effect === 'fireflies';
     if (butterflyRadio) butterflyRadio.checked = effect === 'butterflies';
     var layer = document.getElementById('snow-layer');
     if (!layer) return;
-    if (effect === 'snow' || effect === 'petals' || effect === 'leaves' || effect === 'fluff' || effect === 'fireflies' || effect === 'butterflies') {
-        ensureBackgroundParticles(effect);
+    if (shown === 'snow' || shown === 'leaves' || shown === 'fluff' || shown === 'butterflies') {
+        ensureBackgroundParticles(shown);
         layer.classList.add('is-on');
         if (!snowIdleTimer && !snowIdlePaused) scheduleSnowIdlePause();
     } else {

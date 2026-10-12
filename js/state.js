@@ -136,16 +136,23 @@ function savePopupSeconds(key, value, fallback) {
 
 var SNOW_EFFECT_KEY = 'startpage_snow_effect';
 var snowEffect = true;
-var backgroundEffect = 'snow';
+var backgroundEffect = 'season';
 
-/** 'snow', 'none', 'petals', 'leaves', 'fluff', 'fireflies', or 'butterflies'. null when an older backup should leave the setting alone. */
+/** Month index 0–11. Dec–Feb snow, Mar–May fluff, Jun–Aug butterflies, Sep–Nov leaves. */
+function effectForMonth(monthIndex) {
+    if (monthIndex === 11 || monthIndex <= 1) return 'snow';
+    if (monthIndex <= 4) return 'fluff';
+    if (monthIndex <= 7) return 'butterflies';
+    return 'leaves';
+}
+
+/** 'snow', 'none', 'season', 'leaves', 'fluff', or 'butterflies'. null when an older backup should leave the setting alone. */
 function parseSnowEffectFlag(value) {
     if (value === true || value === 'true' || value === 'snow') return 'snow';
     if (value === false || value === 'false' || value === 'none') return 'none';
-    if (value === 'petals') return 'petals';
+    if (value === 'season') return 'season';
     if (value === 'leaves') return 'leaves';
     if (value === 'fluff') return 'fluff';
-    if (value === 'fireflies') return 'fireflies';
     if (value === 'butterflies') return 'butterflies';
     return null;
 }
@@ -153,10 +160,10 @@ function parseSnowEffectFlag(value) {
 function readBackgroundEffect() {
     try {
         var raw = localStorage.getItem(SNOW_EFFECT_KEY);
-        if (raw == null || raw === '') return 'snow';
+        if (raw == null || raw === '') return 'season';
         return parseSnowEffectFlag(raw) || 'snow';
     } catch (e) {
-        return 'snow';
+        return 'season';
     }
 }
 

@@ -360,7 +360,7 @@ Primary CRUD surface for link records (`#modal`). Full component design: **§6.1
   viewMode: string,               // full | compact
   mobileLinkDescriptionSeconds: number,
   emojiDescriptionSeconds: number,
-  snowEffect: 'snow' | 'none' | 'petals' | 'leaves' | 'fluff' | 'fireflies' | 'butterflies',  // older files may still use boolean true/false
+  snowEffect: 'snow' | 'none' | 'season' | 'leaves' | 'fluff' | 'butterflies',  // older files may still use boolean true/false
   lastSynced?: string,            // ISO — gist export only
   github: {
     username: string,
@@ -463,7 +463,7 @@ Starter link pack shipped with the repo. Used for first-run seed and as the file
 | `startpage_view_mode` | `full` \| `compact` (default `compact`) |
 | `startpage_sort_mode` | `default` (My Order) \| `tally` \| `abc` \| `date` (default `tally`) |
 | `startpage_hide_categories` | Hide the category sidebar |
-| `startpage_snow_effect` | `true` \| `false` (missing = on) |
+| `startpage_snow_effect` | `true` snow, `false` none, `season` (missing = season), `leaves`, `fluff`, `butterflies` |
 | `startpage_snow_color` | Snowflake color (`--snow-color`) |
 | `startpage_mobile_link_desc_seconds` | Compact description tooltip seconds on mobile (default 5) |
 | `startpage_emoji_desc_seconds` | Emoji full-description tip seconds (default 4) |
@@ -501,7 +501,7 @@ Starter link pack shipped with the repo. Used for first-run seed and as the file
 | `sortMode` | `default` (My Order) \| `tally` \| `abc` \| `date`; persisted; default `tally` |
 | `currentFontScale` | `95` \| `100` \| `105` \| `110` |
 | `viewMode` | `full` \| `compact`; default `compact` |
-| `snowEffect` / `backgroundEffect` | `snow` \| `none` \| `petals` \| `leaves` \| `fluff` \| `fireflies` \| `butterflies` |
+| `snowEffect` / `backgroundEffect` | `snow` \| `none` \| `season` \| `leaves` \| `fluff` \| `butterflies` |
 | `githubUsername` / `Token` / `GistId` / `LastSync` | Sync state |
 | `keyboardFocusedIndex` | Card keyboard nav index (`debug.js`) |
 | `listControlsStacked` | Layout flag for list controls (`debug.js`) |
@@ -3595,14 +3595,14 @@ Refresh paths: open panel, manual refresh button, window **resize** (while visib
 
 ### 6.15 Snow
 
-Optional falling snow on the landing page (`#snow-layer`). It is on by default.
+Optional background effects on the landing page (`#snow-layer`). A first visit uses **Season**.
 
 | Item | Behavior |
 |------|----------|
-| Toggle | Other Options → Effects (`input[name="background-effect"]`), in order: **None**, **Cherry Blossom Petals**, **Dandelion Fluff**, **Butterflies**, **Fireflies**, **Falling Leaves**, **Snow Effect**. Sight, Effects, and Description Timing start collapsed; the arrow beside each title shows the rest of that section. **show more...** stays visible. |
-| Persistence | `startpage_snow_effect` (`true` snow, `false` none, `petals`, `leaves`, `fluff`, `fireflies`, `butterflies`). A missing key stays on snow. Backups store `snowEffect` as `snow`, `none`, `petals`, `leaves`, `fluff`, `fireflies`, or `butterflies`; older boolean values still import. |
-| Color | Theme role **Snow** → `startpage_snow_color` → CSS `--snow-color`. Petals, dandelion fluff, and fireflies use that same color. Falling leaves use an autumn palette. Butterflies use several wing colors. |
-| Motion | Snow builds 48–96 flakes. Petals and falling leaves share one path: 24–56 wide shapes that lie on their side and glide side to side. While one sways right it turns counter-clockwise by at most 40 degrees; while it sways left it turns clockwise by at most 40 degrees. The angle eases along with the sideways motion. It does not spin. Dandelion fluff is 18–40 soft balls of different sizes and opacities that wander around the screen. Fireflies are 12–28 points in random places; each stays dark for most of a 17.6–32 second cycle and flashes once. Butterflies are 8–16 fliers of different sizes and colors. The body follows a wandering path while the wings flap on their own. A taller screen gets a longer petal or leaf fall. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for 5 minutes. |
+| Toggle | Other Options shows **Effects** before **Sight**. Effects order: **None**, **Season**, **Dandelion Fluff***, **Butterflies**, **Falling Leaves**, **Snow***. The note under the list reads: * Uses "Effects" color in the "Color Theme Editor". Sight, Effects, and Description Timing start collapsed. **show more...** stays visible. |
+| Persistence | `startpage_snow_effect` (`true` snow, `false` none, `season`, `leaves`, `fluff`, `butterflies`). A missing key starts on **Season**. **Season** shows snow in Dec–Feb, dandelion fluff in Mar–May, butterflies in Jun–Aug, and falling leaves in Sep–Nov. |
+| Color | Theme role **Effects** → `startpage_snow_color` → CSS `--snow-color`. Snow and dandelion fluff use that color. Falling leaves use an autumn palette. Butterflies use several wing colors. |
+| Motion | Snow builds 48–96 flakes. Falling leaves are 24–56 wide shapes that glide side to side and turn at most 40 degrees with the sway. Dandelion fluff is 18–40 soft balls of different sizes and opacities that wander around the screen. Butterflies are 8–16 fliers of different sizes and colors; the wings flap separately from the flight path. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for 5 minutes. |
 | Hit testing | The layer does not receive pointer events. |
 
 ---

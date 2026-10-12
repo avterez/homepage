@@ -13,9 +13,17 @@ const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'css/styles.css'), 'utf8');
 
-assert.ok(html.includes('Cherry Blossom Petals'), 'Effects option label missing');
-assert.ok(html.includes('id="effect-petals-radio"'), 'petals radio missing');
-assert.ok(html.includes('value="petals"'), 'petals radio value missing');
+assert.ok(html.includes('>Season<'), 'Season option missing');
+assert.ok(html.includes('id="effect-season-radio"'), 'season radio missing');
+assert.ok(!html.includes('Cherry Blossom Petals'), 'cherry blossom option should be removed');
+assert.ok(!html.includes('effect-fireflies-radio'), 'fireflies option should be removed');
+assert.ok(html.includes('>Snow*<'), 'Snow option label missing');
+assert.ok(html.includes('Dandelion Fluff*'), 'Dandelion Fluff asterisk missing');
+assert.ok(html.includes('* Uses "Effects" color in the "Color Theme Editor"'), 'effects color note missing');
+assert.ok(!html.includes('Snow Effect'), 'Snow Effect label should be renamed');
+assert.ok(html.indexOf('id="other-options-effects"') < html.indexOf('id="other-options-sight"'), 'Effects should come before Sight');
+const configSrc = fs.readFileSync(path.join(root, 'js/config.js'), 'utf8');
+assert.ok(configSrc.includes("key: 'snow', label: 'Effects'"), 'color theme Snow role should be labeled Effects');
 assert.ok(html.includes('Falling Leaves'), 'Falling Leaves option label missing');
 assert.ok(html.includes('id="effect-leaves-radio"'), 'leaves radio missing');
 assert.ok(html.includes('value="leaves"'), 'leaves radio value missing');
@@ -25,14 +33,8 @@ assert.ok(html.includes('value="fluff"'), 'fluff radio value missing');
 assert.ok(css.includes('.snow-flake--fluff'), 'fluff shape missing');
 assert.ok(css.includes('@keyframes fluff-float'), 'fluff float animation missing');
 assert.ok(css.includes('.snow-flake--fluff{') && css.includes('var(--snow-color)'), 'fluff must use the snow color');
-assert.ok(html.includes('>Fireflies<'), 'Fireflies option label missing');
-assert.ok(html.includes('id="effect-fireflies-radio"'), 'fireflies radio missing');
-assert.ok(html.includes('value="fireflies"'), 'fireflies radio value missing');
-assert.ok(css.includes('.snow-flake--firefly'), 'firefly shape missing');
-assert.ok(css.includes('@keyframes firefly-flash'), 'firefly flash animation missing');
-assert.ok(css.includes('0%,86%,100%{opacity:0}90%{opacity:1}'), 'firefly flash stays dark most of the cycle');
-const appSrc = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');
-assert.ok(appSrc.includes('var duration = 17.6 + Math.random() * 14.4;'), 'firefly flashes should be 25% more often');
+assert.ok(!css.includes('.snow-flake--firefly'), 'firefly shape should be removed');
+assert.ok(!css.includes('.snow-flake--petal{'), 'cherry blossom shape should be removed');
 assert.ok(html.includes('>Butterflies<'), 'Butterflies option label missing');
 assert.ok(html.includes('id="effect-butterflies-radio"'), 'butterflies radio missing');
 assert.ok(html.includes('value="butterflies"'), 'butterflies radio value missing');
@@ -50,7 +52,7 @@ assert.ok(!/@keyframes petal-fall\{[^}]*360deg/.test(css), 'petals must rock, no
 
 const effectsBlock = html.slice(html.indexOf('id="other-options-effects"'), html.indexOf('id="popup-duration-settings"'));
 const effectValues = Array.from(effectsBlock.matchAll(/value="([^"]+)"/g), function (match) { return match[1]; });
-assert.deepStrictEqual(effectValues, ['none', 'petals', 'fluff', 'butterflies', 'fireflies', 'leaves', 'snow']);
+assert.deepStrictEqual(effectValues, ['none', 'season', 'fluff', 'butterflies', 'leaves', 'snow']);
 assert.ok(!effectsBlock.includes('other-options-modal__season'), 'season labels are not shown');
 assert.ok(html.includes('id="sight-toggle"'), 'sight disclosure missing');
 assert.ok(/id="sight-choices"[^>]*hidden/.test(html), 'sight choices start hidden');
@@ -77,7 +79,7 @@ function loadState() {
 }
 
 const missing = loadState();
-assert.strictEqual(missing.context.readBackgroundEffect(), 'snow', 'missing key stays on snow');
+assert.strictEqual(missing.context.readBackgroundEffect(), 'season', 'missing key starts on season');
 
 const legacyOn = loadState();
 legacyOn.store.startpage_snow_effect = 'true';
@@ -91,17 +93,20 @@ assert.strictEqual(legacyOff.context.parseSnowEffectFlag(false), 'none');
 assert.strictEqual(legacyOff.context.parseSnowEffectFlag(true), 'snow');
 assert.strictEqual(legacyOff.context.parseSnowEffectFlag('nope'), null);
 
-const petals = loadState();
-assert.strictEqual(petals.context.setBackgroundEffect('petals'), 'petals');
-assert.strictEqual(petals.store.startpage_snow_effect, 'petals');
-assert.strictEqual(petals.context.readBackgroundEffect(), 'petals');
-assert.strictEqual(petals.context.backgroundEffect, 'petals');
-assert.strictEqual(petals.context.snowEffect, true);
+const season = loadState();
+assert.strictEqual(season.context.setBackgroundEffect('season'), 'season');
+assert.strictEqual(season.store.startpage_snow_effect, 'season');
+assert.strictEqual(season.context.parseSnowEffectFlag('petals'), null);
+assert.strictEqual(season.context.parseSnowEffectFlag('fireflies'), null);
+[11, 0, 1].forEach(function (month) { assert.strictEqual(season.context.effectForMonth(month), 'snow', 'month ' + month); });
+[2, 3, 4].forEach(function (month) { assert.strictEqual(season.context.effectForMonth(month), 'fluff', 'month ' + month); });
+[5, 6, 7].forEach(function (month) { assert.strictEqual(season.context.effectForMonth(month), 'butterflies', 'month ' + month); });
+[8, 9, 10].forEach(function (month) { assert.strictEqual(season.context.effectForMonth(month), 'leaves', 'month ' + month); });
 
-assert.strictEqual(petals.context.setSnowEffectEnabled(false), 'none');
-assert.strictEqual(petals.store.startpage_snow_effect, 'false');
-assert.strictEqual(petals.context.setSnowEffectEnabled(true), 'snow');
-assert.strictEqual(petals.store.startpage_snow_effect, 'true');
+assert.strictEqual(season.context.setSnowEffectEnabled(false), 'none');
+assert.strictEqual(season.store.startpage_snow_effect, 'false');
+assert.strictEqual(season.context.setSnowEffectEnabled(true), 'snow');
+assert.strictEqual(season.store.startpage_snow_effect, 'true');
 
 const leaves = loadState();
 assert.strictEqual(leaves.context.setBackgroundEffect('leaves'), 'leaves');
@@ -114,12 +119,6 @@ assert.strictEqual(fluff.context.setBackgroundEffect('fluff'), 'fluff');
 assert.strictEqual(fluff.store.startpage_snow_effect, 'fluff');
 assert.strictEqual(fluff.context.readBackgroundEffect(), 'fluff');
 assert.strictEqual(fluff.context.parseSnowEffectFlag('fluff'), 'fluff');
-
-const fireflies = loadState();
-assert.strictEqual(fireflies.context.setBackgroundEffect('fireflies'), 'fireflies');
-assert.strictEqual(fireflies.store.startpage_snow_effect, 'fireflies');
-assert.strictEqual(fireflies.context.readBackgroundEffect(), 'fireflies');
-assert.strictEqual(fireflies.context.parseSnowEffectFlag('fireflies'), 'fireflies');
 
 const butterflies = loadState();
 assert.strictEqual(butterflies.context.setBackgroundEffect('butterflies'), 'butterflies');
