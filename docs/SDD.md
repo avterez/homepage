@@ -3602,7 +3602,7 @@ Optional falling snow on the landing page (`#snow-layer`). It is on by default.
 | Toggle | Other Options → Effects → **None**, **Snow Effect**, or **Cherry Blossom Petals** (`input[name="background-effect"]`) |
 | Persistence | `startpage_snow_effect` (`true` snow, `false` none, `petals` petals). A missing key stays on snow. Backups store `snowEffect` as `snow`, `none`, or `petals`; older boolean values still import. |
 | Color | Theme role **Snow** → `startpage_snow_color` → CSS `--snow-color`. Petals use that same color. |
-| Motion | Snow builds 48–96 flakes. Petals build 24–56 small shapes that glide side to side like a falling leaf. Each petal keeps a slight tilt of its own; that tilt does not turn with the sway and never spins a full turn. A taller screen gets a longer fall. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for 5 minutes. |
+| Motion | Snow builds 48–96 flakes. Petals build 24–56 wide shapes that lie on their side, not tip-down, and glide side to side like a falling leaf. Each petal keeps a shallow tilt of its own; that tilt does not turn with the sway and never spins a full turn. A taller screen gets a longer fall. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for 5 minutes. |
 | Hit testing | The layer does not receive pointer events. |
 
 ---

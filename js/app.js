@@ -839,11 +839,11 @@ function appendPetals(layer) {
         var petal = document.createElement('span');
         var slim = Math.random() < 0.5;
         petal.className = slim ? 'snow-flake snow-flake--petal snow-flake--petal-slim' : 'snow-flake snow-flake--petal';
-        var width = 8 + Math.random() * 6;
-        var height = width * (1.35 + Math.random() * 0.45);
+        var width = 13 + Math.random() * 6;
+        var height = width * (0.52 + Math.random() * 0.16);
         var duration = Math.max(22, (screenH / 900) * (28 + Math.random() * 16));
         var drift = (56 + Math.random() * 64) * (Math.random() < 0.5 ? -1 : 1);
-        var tilt = (Math.random() * 16 - 8);
+        var tilt = (Math.random() * 64 - 32);
         petal.style.left = (Math.random() * 100) + '%';
         petal.style.width = width.toFixed(1) + 'px';
         petal.style.height = height.toFixed(1) + 'px';
