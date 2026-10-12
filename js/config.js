@@ -110,7 +110,7 @@ var COLOR_FIELDS = [
     { key: 'saveButton', label: 'Submit Button & Links', storage: 'startpage_save_button_color', prefix: 'save-button', dark: APP_THEME_HEX.save, light: '#7973e8', saveIfSet: true },
     { key: 'success', label: 'Interfaces / Headers', storage: 'startpage_success_color', prefix: 'success', dark: APP_THEME_HEX.success, light: '#0a6647', importAliases: ['connection'], legacyStorage: 'startpage_connection_color', saveIfSet: true },
     { key: 'caution', label: 'Caution', storage: 'startpage_caution_color', prefix: 'caution', dark: APP_THEME_HEX.caution, light: '#c0911b', saveIfSet: true },
-    { key: 'snow', label: 'Snow', storage: 'startpage_snow_color', prefix: 'snow', dark: '#ffffff', light: '#ffffff', saveIfSet: true, keepStoredIfMissing: true }
+    { key: 'snow', label: 'Effects', storage: 'startpage_snow_color', prefix: 'snow', dark: '#ffffff', light: '#ffffff', saveIfSet: true, keepStoredIfMissing: true }
 ];
 
 // Font size steps in Settings: Small, Normal, Large, XL (percentages are not shown in the UI).
