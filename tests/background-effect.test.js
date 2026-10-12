@@ -15,6 +15,9 @@ const css = fs.readFileSync(path.join(root, 'css/styles.css'), 'utf8');
 
 assert.ok(html.includes('>Seasonal<'), 'Seasonal option missing');
 assert.ok(html.includes('id="seasonal-info-btn"'), 'seasonal info button missing');
+const seasonalBtn = html.slice(html.indexOf('id="seasonal-info-btn"'), html.indexOf('id="effect-fluff-radio"'));
+assert.ok(seasonalBtn.includes('icon-settings'), 'seasonal control should use the settings gear');
+assert.ok(!seasonalBtn.includes('<svg'), 'seasonal control should not keep the info mark');
 assert.ok(html.includes('id="hemisphere-modal"'), 'hemisphere modal missing');
 assert.ok(html.includes('id="hemisphere-modal-icon"'), 'seasonal header icon missing');
 const settingsSrc = fs.readFileSync(path.join(root, 'js/settingsmodal.js'), 'utf8');

@@ -46,7 +46,7 @@
 		<link rel="preload" href="css/lucide/lucide.woff2?v=pr75-settings-icons" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="css/styles.css?v=pr90-seasonal-icons" as="style">
+		<link rel="preload" href="css/styles.css?v=pr90-seasonal-gear" as="style">
 
 		<!-- Critical CSS (FOUC / first paint) -->
 		<style>
@@ -70,7 +70,7 @@
 		</style>
 
 		<!-- Main CSS (blocking; avoid FOUC) -->
-		<link rel="stylesheet" href="css/styles.css?v=pr90-seasonal-icons">
+		<link rel="stylesheet" href="css/styles.css?v=pr90-seasonal-gear">
 		<link rel="stylesheet" href="css/lucide/lucide.css?v=pr75-settings-icons">
 
 		<!-- FA subset async (~1.8KB vs full) -->
@@ -708,13 +708,7 @@
 								class="add-edit-modal__info"
 								title="About Seasonal"
 								aria-label="About Seasonal">
-								<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-									<circle cx="12" cy="12" r="10.15" fill="none" stroke="currentColor" stroke-width="1.15"/>
-									<g fill="currentColor" transform="translate(12 12) skewX(-8) translate(-12 -12)">
-										<circle cx="12" cy="7.7" r="1.05"/>
-										<rect x="11.2" y="10.25" width="1.6" height="6.15" rx="0.7"/>
-									</g>
-								</svg>
+								<i class="icon-settings" aria-hidden="true"></i>
 							</button>
 						</div>
 						<label class="settings-modal__check-row">
