@@ -654,7 +654,7 @@ function openHemisphereModal() {
     syncHemisphereControls();
     openUiModal('hemisphere-modal');
     setTimeout(function () {
-        var closeBtn = document.querySelector('#hemisphere-modal .hemisphere-modal__close');
+        var closeBtn = document.querySelector('#hemisphere-modal .about-modal__footer-close');
         if (closeBtn) closeBtn.focus();
     }, 50);
 }
