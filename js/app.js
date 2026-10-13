@@ -857,7 +857,7 @@ function appendDriftingPieces(layer) {
         piece.style.animationDelay = (-Math.random() * duration).toFixed(2) + 's';
         piece.style.setProperty('--snow-drift', drift.toFixed(1) + 'px');
         var fallingRight = drift > 0;
-        piece.style.setProperty('--leaf-low', (fallingRight ? (25 + Math.random() * 10) : (35 + Math.random() * 10)).toFixed(1) + 'deg');
+        piece.style.setProperty('--leaf-low', '35deg');
         piece.style.setProperty('--leaf-rock', (fallingRight ? 35 : -35) + 'deg');
         piece.style.setProperty('--leaf-min', fallingRight ? '-5deg' : '-180deg');
         piece.style.setProperty('--leaf-max', '75deg');
