@@ -32,6 +32,20 @@ assert.strictEqual(
     'expected one clear button per search-modal field'
 );
 
+const searchOpen = html.slice(
+    html.indexOf('<div id="search-modal"'),
+    html.indexOf('>', html.indexOf('<div id="search-modal"')) + 1
+);
+assert.ok(!/onclick\s*=/.test(searchOpen), 'clicking off the search modal does not close it');
+assert.ok(
+    /<button type="button" onclick="closeSearchModal\(\)" class="ui-modal__close" aria-label="Close">/.test(html),
+    'the X button still closes the search modal'
+);
+assert.ok(
+    /onclick="closeSearchModal\(\)"\s+class="search-modal__close ui-modal__btn ui-modal__btn--block ui-modal__btn--bordered">\s*Close\s*<\/button>/.test(html),
+    'the Close button closes the search modal'
+);
+
 function loadGsmodal() {
     const inputs = {};
     FIELD_IDS.forEach(function (id) {

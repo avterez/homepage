@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<!-- AI: The Debug screen shows this pull request number. When a new PR starts, update content below to that PR number. -->
-		<meta name="homepage-pr" content="94">
+		<meta name="homepage-pr" content="95">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<script>
 		(function () {
@@ -46,7 +46,7 @@
 		<link rel="preload" href="css/lucide/lucide.woff2?v=pr75-settings-icons" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="css/styles.css?v=pr94-dleaf-mid" as="style">
+		<link rel="preload" href="css/styles.css?v=pr95-search-persist" as="style">
 
 		<!-- Critical CSS (FOUC / first paint) -->
 		<style>
@@ -70,7 +70,7 @@
 		</style>
 
 		<!-- Main CSS (blocking; avoid FOUC) -->
-		<link rel="stylesheet" href="css/styles.css?v=pr94-dleaf-mid">
+		<link rel="stylesheet" href="css/styles.css?v=pr95-search-persist">
 		<link rel="stylesheet" href="css/lucide/lucide.css?v=pr75-settings-icons">
 
 		<!-- FA subset async (~1.8KB vs full) -->
@@ -359,7 +359,6 @@
 		<!-- Search -->
 		<div id="search-modal"
 			class="ui-modal ui-modal--top ui-modal--topmost search-modal"
-			onclick="closeSearchModal()"
 			role="dialog" aria-modal="true" aria-labelledby="search-modal-title">
 			<div onclick="event.stopImmediatePropagation()"
 				class="ui-modal__panel ui-modal__panel--lg ui-modal__panel--padded search-modal__panel modal">
@@ -490,6 +489,10 @@
 					</section>
 				</div>
 
+				<button type="button" onclick="closeSearchModal()"
+					class="search-modal__close ui-modal__btn ui-modal__btn--block ui-modal__btn--bordered">
+					Close
+				</button>
 			</div>
 		</div>
 
