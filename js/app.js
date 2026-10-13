@@ -860,7 +860,7 @@ function appendDriftingPieces(layer) {
         var wobble = 0.08 + Math.random() * 0.1;
         var wobbleRatio = 1.45 + Math.random() * 0.7;
         var phaseDeg = Math.random() * 360;
-        var lift = (1.785 + Math.random() * 1.115);
+        var lift = (1.161 + Math.random() * 0.725);
         piece.style.setProperty('--leaf-low', '35deg');
         piece.style.setProperty('--leaf-sign', drift > 0 ? '1' : '-1');
         piece.style.setProperty('--leaf-cycles', cycles.toFixed(3));
