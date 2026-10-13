@@ -833,6 +833,81 @@ function appendSnowFlakes(layer) {
 }
 
 var AUTUMN_LEAF_COLORS = ['#c4512c', '#e07a2f', '#e2b007', '#8d3b2c', '#c4842a', '#a3472c'];
+var LEAF_HEADING_START = 35;
+var LEAF_HEADING_MIN = -20;
+var LEAF_HEADING_MAX = 65;
+var LEAF_LEFT_RATE = 0.55;
+var LEAF_RIGHT_RATE = -1;
+var leafHeadingStates = [];
+var leafHeadingFrame = 0;
+
+function leafPoseAt(state, t) {
+    var ang = t * state.cycles * Math.PI * 2;
+    var y = -10 + 122 * t
+        + (3.735 / state.cycles) * Math.sin(ang * 2)
+        - state.lift * Math.pow(Math.abs(Math.sin(ang)), 6);
+    var x = state.drift * Math.sin(ang)
+        + state.drift * state.wobble * Math.sin(ang * state.wobbleRatio + state.phase);
+    return { x: x, y: y };
+}
+
+function advanceLeafHeading(state, from, to) {
+    var span = to - from;
+    if (span <= 0) return;
+    var steps = Math.max(1, Math.ceil(span / 0.002));
+    var prev = leafPoseAt(state, from);
+    for (var i = 1; i <= steps; i++) {
+        var next = leafPoseAt(state, from + span * (i / steps));
+        var dx = next.x - prev.x;
+        var dy = next.y - prev.y;
+        var delta = 0;
+        if (dx < 0) delta = LEAF_LEFT_RATE * dy;
+        else if (dx > 0) delta = LEAF_RIGHT_RATE * dy;
+        state.angle = Math.min(LEAF_HEADING_MAX, Math.max(LEAF_HEADING_MIN, state.angle + delta));
+        prev = next;
+    }
+    state.t = to;
+}
+
+function stepLeafHeadings() {
+    leafHeadingFrame = 0;
+    var alive = [];
+    for (var i = 0; i < leafHeadingStates.length; i++) {
+        var state = leafHeadingStates[i];
+        if (!state.el.isConnected) continue;
+        alive.push(state);
+        var raw = getComputedStyle(state.el).getPropertyValue('--leaf-t');
+        var t = parseFloat(raw);
+        if (!isFinite(t)) continue;
+        if (!state.primed || t + 0.001 < state.t) {
+            state.angle = LEAF_HEADING_START;
+            state.t = 0;
+            state.primed = true;
+            advanceLeafHeading(state, 0, t);
+        } else if (t > state.t) {
+            advanceLeafHeading(state, state.t, t);
+        }
+        state.el.style.setProperty('--leaf-heading', state.angle.toFixed(2) + 'deg');
+    }
+    leafHeadingStates = alive;
+    if (alive.length) leafHeadingFrame = requestAnimationFrame(stepLeafHeadings);
+}
+
+function trackLeafHeading(piece, drift, cycles, wobble, wobbleRatio, phaseDeg, lift) {
+    leafHeadingStates.push({
+        el: piece,
+        drift: drift,
+        cycles: cycles,
+        wobble: wobble,
+        wobbleRatio: wobbleRatio,
+        phase: phaseDeg * Math.PI / 180,
+        lift: lift,
+        angle: LEAF_HEADING_START,
+        t: 0,
+        primed: false
+    });
+    if (!leafHeadingFrame) leafHeadingFrame = requestAnimationFrame(stepLeafHeadings);
+}
 
 function appendDriftingPieces(layer) {
     var count = petalParticleCount();
@@ -856,16 +931,18 @@ function appendDriftingPieces(layer) {
         piece.style.animationDuration = duration.toFixed(2) + 's';
         piece.style.animationDelay = (-Math.random() * duration).toFixed(2) + 's';
         piece.style.setProperty('--snow-drift', drift.toFixed(1) + 'px');
-        var fallingRight = drift > 0;
+        var cycles = 1.45 + Math.random() * 1.15;
+        var wobble = 0.08 + Math.random() * 0.1;
+        var wobbleRatio = 1.45 + Math.random() * 0.7;
+        var phaseDeg = Math.random() * 360;
+        var lift = (1.785 + Math.random() * 1.115);
         piece.style.setProperty('--leaf-low', '35deg');
-        piece.style.setProperty('--leaf-rock', (fallingRight ? 55 : -30) + 'deg');
-        piece.style.setProperty('--leaf-min', fallingRight ? '-20deg' : '-180deg');
-        piece.style.setProperty('--leaf-max', fallingRight ? '75deg' : '65deg');
-        piece.style.setProperty('--leaf-cycles', (1.45 + Math.random() * 1.15).toFixed(3));
-        piece.style.setProperty('--leaf-wobble', (0.08 + Math.random() * 0.1).toFixed(3));
-        piece.style.setProperty('--leaf-wobble-ratio', (1.45 + Math.random() * 0.7).toFixed(3));
-        piece.style.setProperty('--leaf-phase', (Math.random() * 360).toFixed(1) + 'deg');
-        piece.style.setProperty('--leaf-lift', (1.785 + Math.random() * 1.115).toFixed(2) + 'vh');
+        piece.style.setProperty('--leaf-cycles', cycles.toFixed(3));
+        piece.style.setProperty('--leaf-wobble', wobble.toFixed(3));
+        piece.style.setProperty('--leaf-wobble-ratio', wobbleRatio.toFixed(3));
+        piece.style.setProperty('--leaf-phase', phaseDeg.toFixed(1) + 'deg');
+        piece.style.setProperty('--leaf-lift', lift.toFixed(2) + 'vh');
+        trackLeafHeading(piece, drift, cycles, wobble, wobbleRatio, phaseDeg, lift);
         frag.appendChild(piece);
     }
     layer.appendChild(frag);
