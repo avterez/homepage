@@ -68,10 +68,29 @@ assert.ok(css.includes('var(--petal-tilt) + var(--petal-bank)'), 'leftward sway 
 assert.ok(!/@keyframes petal-fall\{[^}]*360deg/.test(css), 'petals must rock, not spin a full turn');
 const petalFall = css.match(/@keyframes petal-fall\{(.+)\}/)[1];
 assert.ok(!petalFall.includes('ease-in-out'), 'leaves should not ease to a stop');
-const leafHeights = Array.from(petalFall.matchAll(/,(-?\d+)vh/g), function (match) { return Number(match[1]); });
-let upwardSwoops = 0;
-for (let i = 1; i < leafHeights.length; i++) if (leafHeights[i] < leafHeights[i - 1]) upwardSwoops++;
-assert.strictEqual(upwardSwoops, 2, 'leaves swoop upward once on each side of the arc');
+assert.ok(petalFall.includes('cubic-bezier(0.3, 0.12, 0.6, 0.28)'), 'the lift should accelerate');
+assert.ok(petalFall.includes('cubic-bezier(0.25, 0.45, 0.7, 0.9)'), 'the lift should then decelerate');
+const leafHeights = Array.from(petalFall.matchAll(/,(-?\d+(?:\.\d+)?)vh/g), function (match) { return Number(match[1]); });
+const swoopRises = [];
+let rising = false;
+let rise = 0;
+for (let i = 1; i < leafHeights.length; i++) {
+    if (leafHeights[i] < leafHeights[i - 1]) {
+        if (!rising) {
+            rising = true;
+            rise = 0;
+        }
+        rise += leafHeights[i - 1] - leafHeights[i];
+    } else if (rising) {
+        swoopRises.push(rise);
+        rising = false;
+    }
+}
+if (rising) swoopRises.push(rise);
+assert.strictEqual(swoopRises.length, 2, 'leaves swoop upward once on each side of the arc');
+swoopRises.forEach(function (amount) {
+    assert.ok(amount > 0 && amount <= 3, 'each lift stays slight, got ' + amount);
+});
 
 const effectsBlock = html.slice(html.indexOf('id="other-options-effects"'), html.indexOf('id="popup-duration-settings"'));
 const effectValues = Array.from(effectsBlock.matchAll(/name="background-effect"[^>]*value="([^"]+)"/g), function (match) { return match[1]; });
