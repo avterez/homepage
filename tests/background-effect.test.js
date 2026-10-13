@@ -78,6 +78,8 @@ const debugSrc = fs.readFileSync(path.join(root, 'js/debug.js'), 'utf8');
 assert.ok(debugSrc.includes('id="debug-dleaf-checkbox"'), 'debug panel has a DLEAF checkbox');
 assert.ok(debugSrc.includes('leaf.hidden = !dleafToggle.checked'), 'the DLEAF checkbox shows and hides the header leaf');
 assert.ok(debugSrc.includes('id="debug-dleaf-angle"') && debugSrc.includes('value="35"'), 'debug panel has a DLEAF angle textbox that starts at 35');
+assert.ok(debugSrc.includes('id="debug-dleaf-angle-minus"') && debugSrc.includes('id="debug-dleaf-angle-plus"'), 'DLEAF angle has minus and plus buttons');
+assert.ok(debugSrc.includes('stepDleafAngle(-1)') && debugSrc.includes('stepDleafAngle(1)'), 'the buttons step the DLEAF angle by one degree');
 assert.ok(debugSrc.includes("setProperty('--dleaf-angle'"), 'the textbox rotates DLEAF');
 assert.ok(css.includes('--dleaf-angle:35deg') && css.includes('rotate(var(--dleaf-angle))'), 'DLEAF rotation follows its angle');
 assert.ok(!/@keyframes petal-fall\{[^}]*360deg/.test(css), 'petals must rock, not spin a full turn');

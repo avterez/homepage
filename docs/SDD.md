@@ -3523,7 +3523,7 @@ Complements §6.12.3 load bootstrap with UX and chrome for the **first empty ses
      - **Refresh** — `.debug-panel__btn--refresh`; muted → active text on hover; hover bg `var(--color-hairline)`
      - **Close** — `.debug-panel__btn--close`; muted → active text on hover; hover bg `rgb(127 29 29 / 0.3)`
 2. **Content** — `#debug-content` (`.debug-panel__content`); rows rebuilt by `updateDebugInfo()`
-3. **DLEAF** — `.debug-panel__dleaf` at the bottom, outside `#debug-content`, so the live refresh does not clear it. The checkbox is unchecked by default. Checking it shows `#dleaf`: a 60px-wide copy of the falling-leaf shape to the left of the rocket. The angle textbox defaults to 35. Editing that value rotates the leaf clockwise by that many degrees. Unchecking the checkbox hides the leaf.
+3. **DLEAF** — `.debug-panel__dleaf` at the bottom, outside `#debug-content`, so the live refresh does not clear it. The checkbox is unchecked by default. Checking it shows `#dleaf`: a 60px-wide copy of the falling-leaf shape to the left of the rocket. The angle textbox defaults to 35. Editing that value rotates the leaf clockwise by that many degrees. Minus and plus buttons beside the box step the angle by one degree, and the value can go below zero. Unchecking the checkbox hides the leaf.
 
 **Metric row pattern**
 
