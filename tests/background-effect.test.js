@@ -26,6 +26,8 @@ const settingsSrc = fs.readFileSync(path.join(root, 'js/settingsmodal.js'), 'utf
     assert.ok(settingsSrc.includes(name + ':'), 'seasonal header icon missing: ' + name);
 });
 assert.ok(settingsSrc.includes('paintSeasonalHeaderIcon()'), 'seasonal header icon should be chosen when the modal opens');
+assert.ok(settingsSrc.includes('paintSeasonalHeaderIcon(true)'), 'tapping the seasonal header picks a new icon');
+assert.ok(settingsSrc.includes("closest('.ui-modal__close')"), 'the seasonal close control does not reshuffle the icon');
 assert.ok(html.includes('>Northern<') && html.includes('>Southern<'), 'hemisphere options missing');
 assert.ok(html.includes('Effects automatically change with the seasons.'), 'seasonal instructions missing');
 assert.ok(html.includes('id="effect-season-radio"'), 'season radio missing');

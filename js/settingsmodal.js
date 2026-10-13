@@ -658,10 +658,14 @@ var SEASONAL_HEADER_ICONS = {
     feather: '<path d="M14.086 18.412A2 2 0 0112.67 19H5v-7.672a2 2 0 01.586-1.414L11.75 3.75a6 6 0 118.49 8.49z"/><path d="M16 8 2 22"/><path d="M17.488 15H9"/>'
 };
 
-function paintSeasonalHeaderIcon() {
+function paintSeasonalHeaderIcon(forceChange) {
     var icon = document.getElementById('hemisphere-modal-icon');
     if (!icon) return;
     var names = Object.keys(SEASONAL_HEADER_ICONS);
+    var current = icon.getAttribute('data-seasonal-icon');
+    if (forceChange && current) {
+        names = names.filter(function (name) { return name !== current; });
+    }
     var name = names[Math.floor(Math.random() * names.length)];
     icon.setAttribute('data-seasonal-icon', name);
     icon.innerHTML = SEASONAL_HEADER_ICONS[name];
@@ -689,6 +693,14 @@ function bindHemisphereControls() {
             event.preventDefault();
             event.stopPropagation();
             openHemisphereModal();
+        });
+    }
+    var header = document.querySelector('#hemisphere-modal .ui-modal__header');
+    if (header && header.getAttribute('data-seasonal-icon-bound') !== '1') {
+        header.setAttribute('data-seasonal-icon-bound', '1');
+        header.addEventListener('click', function (event) {
+            if (event.target.closest('.ui-modal__close')) return;
+            paintSeasonalHeaderIcon(true);
         });
     }
     var radios = document.querySelectorAll('input[name="hemisphere"]');
