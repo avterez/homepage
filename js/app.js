@@ -860,7 +860,7 @@ function appendDriftingPieces(layer) {
         piece.style.setProperty('--leaf-low', (fallingRight ? (25 + Math.random() * 10) : (35 + Math.random() * 10)).toFixed(1) + 'deg');
         piece.style.setProperty('--leaf-rock', (fallingRight ? 35 : -35) + 'deg');
         piece.style.setProperty('--leaf-min', fallingRight ? '-5deg' : '-180deg');
-        piece.style.setProperty('--leaf-max', fallingRight ? '75deg' : '180deg');
+        piece.style.setProperty('--leaf-max', '75deg');
         piece.style.setProperty('--leaf-cycles', (1.45 + Math.random() * 1.15).toFixed(3));
         piece.style.setProperty('--leaf-wobble', (0.08 + Math.random() * 0.1).toFixed(3));
         piece.style.setProperty('--leaf-wobble-ratio', (1.45 + Math.random() * 0.7).toFixed(3));

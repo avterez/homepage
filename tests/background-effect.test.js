@@ -70,7 +70,8 @@ assert.ok(css.includes('rotate(clamp(var(--leaf-min), calc(var(--leaf-low) - var
 assert.ok(css.includes('--leaf-min:-5deg') && css.includes('--leaf-max:75deg'), 'right-falling leaves stay between -5 and 75 degrees');
 assert.ok(!css.includes('--petal-tilt') && !css.includes('--petal-bank'), 'old tilt and bank formula is gone');
 assert.ok(appSrc.includes('(25 + Math.random() * 10)') && appSrc.includes('(35 + Math.random() * 10)'), 'right-falling leaves start at 25 to 35 degrees and left-falling leaves start at 35 to 45');
-assert.ok(appSrc.includes("fallingRight ? '-5deg' : '-180deg'") && appSrc.includes("fallingRight ? '75deg' : '180deg'"), 'only right-falling leaves are clamped to -5 and 75 degrees');
+assert.ok(appSrc.includes("fallingRight ? '-5deg' : '-180deg'"), 'the -5 degree floor applies to right-falling leaves');
+assert.ok(appSrc.includes("setProperty('--leaf-max', '75deg')"), 'falling leaves stay at or below 75 degrees');
 assert.ok(appSrc.includes('fallingRight ? 35 : -35'), 'left-falling leaves flip the 35-degree rock');
 assert.ok(/id="dleaf"[^>]*hidden/.test(html), 'DLEAF stays hidden until debug enables it');
 const debugSrc = fs.readFileSync(path.join(root, 'js/debug.js'), 'utf8');
