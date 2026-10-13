@@ -265,7 +265,7 @@ Primary shell after load. Full component design: **§6.0**.
 
 | Region | Key elements |
 |--------|----------------|
-| **Sticky header** | `#daily-quote`; `#dleaf` (DLEAF), a 60px-wide static copy of the falling-leaf shape turned 35 degrees clockwise, to the left of the rocket; brand `#header-logo` / `#page-title`; center (md+) `#greeting` / `#date` / `#clock`; actions Search · Settings · Backup · GitHub Sync (`.menu-text-label` width×scale collapse) |
+| **Sticky header** | `#daily-quote`; brand `#header-logo` / `#page-title`; center (md+) `#greeting` / `#date` / `#clock`; actions Search · Settings · Backup · GitHub Sync (`.menu-text-label` width×scale collapse) |
 | **Legacy Google field** | `#old-search-wrapper` **hidden**; modal search is primary (§6.7) |
 | **Body (two-column)** | Left (lg+): categories sidebar; Main: Quick Access controls, `#links-grid`, `#privacy-note` |
 | **Floating actions** | `#go-to-top`, `#go-to-bottom` (`.floating-goto`, `z-index: 90`) |
@@ -827,7 +827,6 @@ Landing Screen **reads** shared app state (does not define a separate entity mod
 | ID | Role |
 |----|------|
 | `#daily-quote` | Quote |
-| `#dleaf` | DLEAF, the default leaf drawing at 60px wide, turned 35 degrees clockwise, left of the rocket |
 | `#header-logo`, `#page-title` | Brand |
 | `#greeting`, `#date`, `#clock` | Time context |
 | `#category-search`, `#categories-sidebar`, `#clear-filter-link` | Sidebar |

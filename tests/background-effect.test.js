@@ -75,11 +75,6 @@ assert.ok(css.includes('pow(abs(sin(var(--leaf-ang))), 6)'), 'the lift is concen
 assert.ok(css.includes('--leaf-wobble'), 'a second wave keeps swings from matching');
 assert.ok(css.includes('(3.735vh / var(--leaf-cycles))'), 'the fastest vertical drop is another fifteen percent slower');
 assert.ok(appSrc.includes('(2.052 + Math.random() * 1.282)'), 'leaf lift stays inside the slower drop');
-assert.ok(html.includes('id="dleaf"') && html.includes('aria-label="DLEAF"'), 'DLEAF is the header leaf');
-assert.ok(/\.dleaf\{[^}]*width:60px/.test(css), 'DLEAF is 60px wide');
-const dleafRule = css.slice(css.indexOf('.dleaf{'), css.indexOf('}', css.indexOf('.dleaf{')) + 1);
-assert.ok(dleafRule.endsWith('transform:rotate(35deg)}'), 'DLEAF transform is exactly rotate(35deg)');
-assert.ok(css.includes('.snow-flake--leaf::before,.dleaf::before'), 'DLEAF uses the default leaf vein');
 assert.ok(appSrc.includes("setProperty('--leaf-cycles'"), 'each leaf varies its sway frequency');
 assert.ok(appSrc.includes('/ 24348') && appSrc.includes('count > 64'), 'leaf count is fifteen percent higher, up to 64');
 
