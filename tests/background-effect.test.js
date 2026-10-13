@@ -64,10 +64,12 @@ assert.ok(css.includes('animation-name:petal-fall'), 'leaves must use the petal 
 assert.ok(css.includes('@keyframes petal-fall'), 'petal fall animation missing');
 assert.ok(css.includes('--leaf-low'), 'low-point angle is a leaf custom property');
 assert.ok(css.includes('--leaf-rock:35deg'), 'rock reaches 35 degrees at the outer hang');
-assert.ok(css.includes('rotate(calc(var(--leaf-low) - var(--leaf-rock) * sin(var(--leaf-ang))))'), 'rotation is the low-point angle minus rock times the sway sine');
+assert.ok(css.includes('rotate(clamp(var(--leaf-min), calc(var(--leaf-low) - var(--leaf-rock) * sin(var(--leaf-ang))), var(--leaf-max)))'), 'rotation stays inside the leaf angle limits');
+assert.ok(css.includes('--leaf-min:-5deg') && css.includes('--leaf-max:75deg'), 'right-falling leaves stay between -5 and 75 degrees');
 assert.ok(!css.includes('--petal-tilt') && !css.includes('--petal-bank'), 'old tilt and bank formula is gone');
-assert.ok(appSrc.includes('(30 + Math.random() * 20)'), 'each leaf starts at a random angle from 30 to 50 degrees');
-assert.ok(appSrc.includes("drift < 0 ? -35 : 35"), 'negative drift flips the 35-degree rock');
+assert.ok(appSrc.includes('(25 + Math.random() * 10)') && appSrc.includes('(35 + Math.random() * 10)'), 'right-falling leaves start at 25 to 35 degrees and left-falling leaves start at 35 to 45');
+assert.ok(appSrc.includes("fallingRight ? '-5deg' : '-180deg'") && appSrc.includes("fallingRight ? '75deg' : '180deg'"), 'only right-falling leaves are clamped to -5 and 75 degrees');
+assert.ok(appSrc.includes('fallingRight ? 35 : -35'), 'left-falling leaves flip the 35-degree rock');
 assert.ok(/id="dleaf"[^>]*hidden/.test(html), 'DLEAF stays hidden until debug enables it');
 const debugSrc = fs.readFileSync(path.join(root, 'js/debug.js'), 'utf8');
 assert.ok(debugSrc.includes('id="debug-dleaf-checkbox"'), 'debug panel has a DLEAF checkbox');
