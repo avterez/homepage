@@ -3523,7 +3523,7 @@ Complements §6.12.3 load bootstrap with UX and chrome for the **first empty ses
      - **Refresh** — `.debug-panel__btn--refresh`; muted → active text on hover; hover bg `var(--color-hairline)`
      - **Close** — `.debug-panel__btn--close`; muted → active text on hover; hover bg `rgb(127 29 29 / 0.3)`
 2. **Content** — `#debug-content` (`.debug-panel__content`); rows rebuilt by `updateDebugInfo()`
-3. **DLEAF** — `.debug-panel__dleaf` at the bottom, outside `#debug-content`, so the live refresh does not clear it. The label reads **DLEAF**. `#dleaf`, a 30px-wide copy of the falling-leaf shape, sits beside that label and stays visible. The angle textbox defaults to 35, is 3rem wide, and centers its text. Editing that value rotates the leaf clockwise by that many degrees. Minus and plus buttons beside the box step the angle by one degree, and the value can go below zero.
+3. **DLEAF** — `.debug-panel__dleaf` at the bottom, outside `#debug-content`, so the live refresh does not clear it. The label reads **DLEAF**. `#dleaf`, a 30px-wide copy of the falling-leaf shape, stays visible and is centered in the space between that label and the minus button. The angle textbox defaults to 35, is 3rem wide, and centers its text. Editing that value rotates the leaf clockwise by that many degrees. Minus and plus buttons beside the box step the angle by one degree, and the value can go below zero.
 
 **Metric row pattern**
 

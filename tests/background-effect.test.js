@@ -69,6 +69,8 @@ assert.ok(css.includes('35deg - 60deg * max(var(--leaf-sign) * sin(var(--leaf-an
 assert.ok(css.includes('.debug-panel__dleaf-angle{width:3rem'), 'the DLEAF angle textbox is 3rem wide');
 assert.ok(css.includes('.debug-panel__dleaf-angle{width:3rem;padding:0.125rem 0.375rem;border:1px solid var(--color-border-strong);border-radius:0.25rem;background-color:#27272a;color:#e4e4e7 !important;font:inherit;font-variant-numeric:tabular-nums;text-align:center;'), 'the DLEAF angle text is centered in the box');
 assert.ok(css.includes('.dleaf{position:relative;flex:0 0 30px;width:30px;height:18px'), 'DLEAF is half the previous size');
+assert.ok(css.includes('.debug-panel__dleaf-preview{position:relative;flex:1 1 auto;min-width:2.375rem;height:2.25rem}'), 'DLEAF fills the space between its label and the angle controls');
+assert.ok(css.includes('.debug-panel__dleaf-angle-row{display:flex;align-items:center;column-gap:0.25rem}.debug-panel__dleaf-step'), 'the angle controls stay grouped after the centered leaf');
 assert.ok(!css.includes('--petal-tilt') && !css.includes('--petal-bank'), 'old tilt and bank formula is gone');
 assert.ok(appSrc.includes("setProperty('--leaf-low', '35deg')"), 'every leaf starts at 35 degrees');
 assert.ok(appSrc.includes('Math.random() < 0.5 ? -1 : 1'), 'each leaf picks left or right with an even chance');
