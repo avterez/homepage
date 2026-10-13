@@ -26,6 +26,8 @@ const settingsSrc = fs.readFileSync(path.join(root, 'js/settingsmodal.js'), 'utf
     assert.ok(settingsSrc.includes(name + ':'), 'seasonal header icon missing: ' + name);
 });
 assert.ok(settingsSrc.includes('paintSeasonalHeaderIcon()'), 'seasonal header icon should be chosen when the modal opens');
+assert.ok(settingsSrc.includes('paintSeasonalHeaderIcon(true)'), 'tapping the seasonal header picks a new icon');
+assert.ok(settingsSrc.includes("closest('.ui-modal__close')"), 'the seasonal close control does not reshuffle the icon');
 assert.ok(html.includes('>Northern<') && html.includes('>Southern<'), 'hemisphere options missing');
 assert.ok(html.includes('Effects automatically change with the seasons.'), 'seasonal instructions missing');
 assert.ok(html.includes('id="effect-season-radio"'), 'season radio missing');
@@ -64,10 +66,13 @@ assert.ok(css.includes('animation-name:petal-fall'), 'leaves must use the petal 
 assert.ok(css.includes('@keyframes petal-fall'), 'petal fall animation missing');
 assert.ok(css.includes('--leaf-low'), 'low-point angle is a leaf custom property');
 assert.ok(css.includes('--leaf-rock:35deg'), 'rock reaches 35 degrees at the outer hang');
-assert.ok(css.includes('rotate(calc(var(--leaf-low) - var(--leaf-rock) * sin(var(--leaf-ang))))'), 'rotation is the low-point angle minus rock times the sway sine');
+assert.ok(css.includes('rotate(clamp(var(--leaf-min), calc(var(--leaf-low) - var(--leaf-rock) * abs(sin(var(--leaf-ang)))), var(--leaf-max)))'), 'rotation stays on one side of the starting angle');
+assert.ok(css.includes('--leaf-min:-5deg') && css.includes('--leaf-max:75deg'), 'right-falling leaves stay between -5 and 75 degrees');
 assert.ok(!css.includes('--petal-tilt') && !css.includes('--petal-bank'), 'old tilt and bank formula is gone');
-assert.ok(appSrc.includes('(30 + Math.random() * 20)'), 'each leaf starts at a random angle from 30 to 50 degrees');
-assert.ok(appSrc.includes("drift < 0 ? -35 : 35"), 'negative drift flips the 35-degree rock');
+assert.ok(appSrc.includes('(25 + Math.random() * 10)') && appSrc.includes('(35 + Math.random() * 10)'), 'right-falling leaves start at 25 to 35 degrees and left-falling leaves start at 35 to 45');
+assert.ok(appSrc.includes("fallingRight ? '-5deg' : '-180deg'"), 'the -5 degree floor applies to right-falling leaves');
+assert.ok(appSrc.includes("setProperty('--leaf-max', '75deg')"), 'falling leaves stay at or below 75 degrees');
+assert.ok(appSrc.includes('fallingRight ? 35 : -35'), 'left-falling leaves flip the 35-degree rock');
 assert.ok(/id="dleaf"[^>]*hidden/.test(html), 'DLEAF stays hidden until debug enables it');
 const debugSrc = fs.readFileSync(path.join(root, 'js/debug.js'), 'utf8');
 assert.ok(debugSrc.includes('id="debug-dleaf-checkbox"'), 'debug panel has a DLEAF checkbox');
