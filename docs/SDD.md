@@ -265,7 +265,7 @@ Primary shell after load. Full component design: **§6.0**.
 
 | Region | Key elements |
 |--------|----------------|
-| **Sticky header** | `#daily-quote`; brand `#header-logo` / `#page-title`; center (md+) `#greeting` / `#date` / `#clock`; actions Search · Settings · Backup · GitHub Sync (`.menu-text-label` width×scale collapse) |
+| **Sticky header** | `#daily-quote`; `#dleaf` (DLEAF), a 60px-wide static copy of the falling-leaf shape turned 35 degrees clockwise, to the left of the rocket; brand `#header-logo` / `#page-title`; center (md+) `#greeting` / `#date` / `#clock`; actions Search · Settings · Backup · GitHub Sync (`.menu-text-label` width×scale collapse) |
 | **Legacy Google field** | `#old-search-wrapper` **hidden**; modal search is primary (§6.7) |
 | **Body (two-column)** | Left (lg+): categories sidebar; Main: Quick Access controls, `#links-grid`, `#privacy-note` |
 | **Floating actions** | `#go-to-top`, `#go-to-bottom` (`.floating-goto`, `z-index: 90`) |
@@ -827,6 +827,7 @@ Landing Screen **reads** shared app state (does not define a separate entity mod
 | ID | Role |
 |----|------|
 | `#daily-quote` | Quote |
+| `#dleaf` | DLEAF, the default leaf drawing at 60px wide, turned 35 degrees clockwise, left of the rocket |
 | `#header-logo`, `#page-title` | Brand |
 | `#greeting`, `#date`, `#clock` | Time context |
 | `#category-search`, `#categories-sidebar`, `#clear-filter-link` | Sidebar |
@@ -3602,7 +3603,7 @@ Optional background effects on the landing page (`#snow-layer`). A first visit u
 | Toggle | Other Options shows **Effects** before **Sight**. Effects order: **None**, **Season**, **Dandelion Fluff***, **Butterflies**, **Falling Leaves**, **Snow***. The note under the list reads: * Uses "Effects" color in the "Color Theme Editor". Sight, Effects, and Description Timing start collapsed. **show more...** stays visible when Other Options is opened from Settings, and stays hidden when it is opened from the perspective control. |
 | Persistence | `startpage_snow_effect` (`true` snow, `false` none, `season`, `leaves`, `fluff`, `butterflies`). A missing key starts on **Seasonal**. Northern shows snow in Dec–Feb, dandelion fluff in Mar–May, butterflies in Jun–Aug, and falling leaves in Sep–Nov. Southern shifts that calendar by six months. The hemisphere is saved as `startpage_hemisphere`. The control beside **Seasonal** uses the Settings gear. Each time the Seasonal modal opens, its header icon is chosen at random from the Lucide snowflake, flower, butterfly, sun, and feather marks. |
 | Color | Theme role **Effects** → `startpage_snow_color` → CSS `--snow-color`. Snow and dandelion fluff use that color. Falling leaves use an autumn palette. Butterflies use several wing colors. |
-| Motion | Snow builds 48–96 flakes. Falling leaves are 28–64 wide shapes. Sideways position follows a sine wave, so each swing accelerates out of a turn, moves fastest across the center, and decelerates to a brief hang at the far side. The fall flattens and lifts slightly at those hangs, and is steepest on the center crossings. A smaller second wave keeps successive swings from matching. Leaves turn at most 40 degrees with their sideways speed. Dandelion fluff is 18–40 soft balls of different sizes and opacities that wander around the screen. Butterflies are 8–16 fliers of different sizes and colors; the wings flap separately from the flight path. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for the Effects Timeout. That value is 1–99 minutes and defaults to 5. The timeout field uses the same up and down arrows as Description Timing, with an **m** after the box. |
+| Motion | Snow builds 48–96 flakes. Falling leaves are 28–64 wide shapes. Sideways position follows a sine wave, so each swing accelerates out of a turn, moves fastest across the center, and decelerates to a brief hang at the far side. The fall flattens and lifts slightly at those hangs, and is steepest on the center crossings. A smaller second wave keeps successive swings from matching. At the fast center crossing each leaf sits at a random angle from 30 to 40 degrees clockwise of the unrotated drawing. From that low-point angle it rocks continuously by up to 50 degrees, returning to the low point at the center and reaching the full 50 degrees at the outer hang: clockwise while swaying left and counter-clockwise while swaying right. Dandelion fluff is 18–40 soft balls of different sizes and opacities that wander around the screen. Butterflies are 8–16 fliers of different sizes and colors; the wings flap separately from the flight path. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for the Effects Timeout. That value is 1–99 minutes and defaults to 5. The timeout field uses the same up and down arrows as Description Timing, with an **m** after the box. |
 | Hit testing | The layer does not receive pointer events. |
 
 ---
