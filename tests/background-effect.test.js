@@ -66,7 +66,7 @@ assert.ok(css.includes('animation-name:petal-fall'), 'leaves must use the petal 
 assert.ok(css.includes('@keyframes petal-fall'), 'petal fall animation missing');
 assert.ok(css.includes('--leaf-low'), 'low-point angle is a leaf custom property');
 assert.ok(css.includes('--leaf-rock:35deg'), 'rock reaches 35 degrees at the outer hang');
-assert.ok(css.includes('rotate(clamp(var(--leaf-min), calc(var(--leaf-low) - var(--leaf-rock) * sin(var(--leaf-ang))), var(--leaf-max)))'), 'rotation stays inside the leaf angle limits');
+assert.ok(css.includes('rotate(clamp(var(--leaf-min), calc(var(--leaf-low) - var(--leaf-rock) * abs(sin(var(--leaf-ang)))), var(--leaf-max)))'), 'rotation stays on one side of the starting angle');
 assert.ok(css.includes('--leaf-min:-5deg') && css.includes('--leaf-max:75deg'), 'right-falling leaves stay between -5 and 75 degrees');
 assert.ok(!css.includes('--petal-tilt') && !css.includes('--petal-bank'), 'old tilt and bank formula is gone');
 assert.ok(appSrc.includes('(25 + Math.random() * 10)') && appSrc.includes('(35 + Math.random() * 10)'), 'right-falling leaves start at 25 to 35 degrees and left-falling leaves start at 35 to 45');
