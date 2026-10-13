@@ -22,10 +22,10 @@ function ensureDebugPanel() {
             </div>
             <div id="debug-content" class="debug-panel__content"></div>
             <div class="debug-panel__dleaf">
-                <label class="debug-panel__dleaf-toggle">
-                    <input type="checkbox" id="debug-dleaf-checkbox">
-                    <span>DLEAF</span>
-                </label>
+                <span class="debug-panel__dleaf-name">DLEAF</span>
+                <span class="debug-panel__dleaf-preview">
+                    <span id="dleaf" class="dleaf" role="img" aria-label="DLEAF" title="DLEAF"></span>
+                </span>
                 <div class="debug-panel__dleaf-angle-row">
                     <button type="button" id="debug-dleaf-angle-minus" class="debug-panel__dleaf-step" aria-label="Decrease DLEAF angle">−</button>
                     <input type="text" id="debug-dleaf-angle" class="debug-panel__dleaf-angle" value="35" inputmode="decimal" aria-label="DLEAF angle" spellcheck="false">
@@ -36,7 +36,6 @@ function ensureDebugPanel() {
         `;
 
         document.body.appendChild(debugPanel);
-        var dleafToggle = debugPanel.querySelector('#debug-dleaf-checkbox');
         var dleafAngle = debugPanel.querySelector('#debug-dleaf-angle');
         function applyDleafAngle(raw) {
             var leaf = document.getElementById('dleaf');
@@ -44,12 +43,6 @@ function ensureDebugPanel() {
             var value = parseFloat(String(raw).trim());
             if (!isFinite(value)) return;
             leaf.style.setProperty('--dleaf-angle', value + 'deg');
-        }
-        if (dleafToggle) {
-            dleafToggle.addEventListener('change', function () {
-                var leaf = document.getElementById('dleaf');
-                if (leaf) leaf.hidden = !dleafToggle.checked;
-            });
         }
         function readDleafAngle() {
             var value = parseFloat(String(dleafAngle.value).trim());
