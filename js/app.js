@@ -358,7 +358,7 @@ function ensureDebugLoaded() {
 
     __debugScriptPromise = new Promise(function (resolve, reject) {
         var s = document.createElement('script');
-        s.src = 'js/debug.js?v=pr91-dleaf-toggle';
+        s.src = 'js/debug.js?v=pr93-dleaf-angle';
         s.onload = function () {
             window.__debugModuleLoaded = true;
             resolve();
