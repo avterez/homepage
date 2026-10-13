@@ -804,9 +804,9 @@ function snowParticleCount() {
 function petalParticleCount() {
     var w = window.innerWidth || 1280;
     var h = window.innerHeight || 800;
-    var count = Math.round((w * h) / 28000);
-    if (count < 24) count = 24;
-    if (count > 56) count = 56;
+    var count = Math.round((w * h) / 24348);
+    if (count < 28) count = 28;
+    if (count > 64) count = 64;
     return count;
 }
 

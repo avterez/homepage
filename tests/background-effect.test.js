@@ -70,7 +70,9 @@ assert.ok(css.includes('@property --leaf-t'), 'leaf time is a continuous numeric
 assert.ok(css.includes('sin(var(--leaf-ang))'), 'sideways motion is a sine of time');
 assert.ok(css.includes('pow(abs(sin(var(--leaf-ang))), 6)'), 'the lift is concentrated at the outer hang');
 assert.ok(css.includes('--leaf-wobble'), 'a second wave keeps swings from matching');
+assert.ok(css.includes('(5.825vh / var(--leaf-cycles))'), 'the fastest vertical drop is a fifth slower');
 assert.ok(appSrc.includes("setProperty('--leaf-cycles'"), 'each leaf varies its sway frequency');
+assert.ok(appSrc.includes('/ 24348') && appSrc.includes('count > 64'), 'leaf count is fifteen percent higher, up to 64');
 
 const effectsBlock = html.slice(html.indexOf('id="other-options-effects"'), html.indexOf('id="popup-duration-settings"'));
 const effectValues = Array.from(effectsBlock.matchAll(/name="background-effect"[^>]*value="([^"]+)"/g), function (match) { return match[1]; });
