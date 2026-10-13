@@ -68,6 +68,10 @@ assert.ok(css.includes('rotate(calc(var(--leaf-low) - var(--leaf-rock) * sin(var
 assert.ok(!css.includes('--petal-tilt') && !css.includes('--petal-bank'), 'old tilt and bank formula is gone');
 assert.ok(appSrc.includes('(30 + Math.random() * 10)'), 'each leaf picks a low-point angle from 30 to 40 degrees');
 assert.ok(appSrc.includes("drift < 0 ? -35 : 35"), 'negative drift flips the 35-degree rock');
+assert.ok(/id="dleaf"[^>]*hidden/.test(html), 'DLEAF stays hidden until debug enables it');
+const debugSrc = fs.readFileSync(path.join(root, 'js/debug.js'), 'utf8');
+assert.ok(debugSrc.includes('id="debug-dleaf-checkbox"'), 'debug panel has a DLEAF checkbox');
+assert.ok(debugSrc.includes('leaf.hidden = !dleafToggle.checked'), 'the DLEAF checkbox shows and hides the header leaf');
 assert.ok(!/@keyframes petal-fall\{[^}]*360deg/.test(css), 'petals must rock, not spin a full turn');
 assert.ok(css.includes('@property --leaf-t'), 'leaf time is a continuous numeric property');
 assert.ok(css.includes('sin(var(--leaf-ang))'), 'sideways motion is a sine of time');

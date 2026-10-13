@@ -21,9 +21,20 @@ function ensureDebugPanel() {
                 </div>
             </div>
             <div id="debug-content" class="debug-panel__content"></div>
+            <label class="debug-panel__dleaf">
+                <input type="checkbox" id="debug-dleaf-checkbox">
+                <span>DLEAF</span>
+            </label>
         `;
 
         document.body.appendChild(debugPanel);
+        var dleafToggle = debugPanel.querySelector('#debug-dleaf-checkbox');
+        if (dleafToggle) {
+            dleafToggle.addEventListener('change', function () {
+                var leaf = document.getElementById('dleaf');
+                if (leaf) leaf.hidden = !dleafToggle.checked;
+            });
+        }
 
         debugPanel.style.cursor = 'grab';
         debugPanel.style.touchAction = 'none';
@@ -44,7 +55,7 @@ function ensureDebugPanel() {
         function startDebugDrag(e) {
             if (e.type === 'mousedown' && e.button !== 0) return;
             if (e.touches && e.touches.length > 1) return;
-            if (e.target.closest('button')) return;
+            if (e.target.closest('button, label, input')) return;
 
             const point = debugDragPoint(e);
             isDraggingDebug = true;

@@ -265,7 +265,7 @@ Primary shell after load. Full component design: **§6.0**.
 
 | Region | Key elements |
 |--------|----------------|
-| **Sticky header** | `#daily-quote`; brand `#header-logo` / `#page-title`; center (md+) `#greeting` / `#date` / `#clock`; actions Search · Settings · Backup · GitHub Sync (`.menu-text-label` width×scale collapse) |
+| **Sticky header** | `#daily-quote`; `#dleaf` (hidden until the debug panel DLEAF checkbox is checked); brand `#header-logo` / `#page-title`; center (md+) `#greeting` / `#date` / `#clock`; actions Search · Settings · Backup · GitHub Sync (`.menu-text-label` width×scale collapse) |
 | **Legacy Google field** | `#old-search-wrapper` **hidden**; modal search is primary (§6.7) |
 | **Body (two-column)** | Left (lg+): categories sidebar; Main: Quick Access controls, `#links-grid`, `#privacy-note` |
 | **Floating actions** | `#go-to-top`, `#go-to-bottom` (`.floating-goto`, `z-index: 90`) |
@@ -827,6 +827,7 @@ Landing Screen **reads** shared app state (does not define a separate entity mod
 | ID | Role |
 |----|------|
 | `#daily-quote` | Quote |
+| `#dleaf` | Default leaf drawing, hidden until the debug DLEAF checkbox is on |
 | `#header-logo`, `#page-title` | Brand |
 | `#greeting`, `#date`, `#clock` | Time context |
 | `#category-search`, `#categories-sidebar`, `#clear-filter-link` | Sidebar |
@@ -3522,8 +3523,7 @@ Complements §6.12.3 load bootstrap with UX and chrome for the **first empty ses
      - **Refresh** — `.debug-panel__btn--refresh`; muted → active text on hover; hover bg `var(--color-hairline)`
      - **Close** — `.debug-panel__btn--close`; muted → active text on hover; hover bg `rgb(127 29 29 / 0.3)`
 2. **Content** — `#debug-content` (`.debug-panel__content`); rows rebuilt by `updateDebugInfo()`
-3. **Footer hint** — `.debug-panel__hint` (top border; centered; `var(--color-muted-strong)`; `user-select: none`)  
-   Copy: *“Drag header/area to move • Ctrl+Shift+D to toggle • Auto-clamps on release”*
+3. **DLEAF checkbox** — `.debug-panel__dleaf` at the bottom, outside `#debug-content`, so the live refresh does not clear it. It is unchecked by default. Checking it shows `#dleaf`: a 60px-wide copy of the falling-leaf shape, turned 35 degrees clockwise, to the left of the rocket. Unchecking hides it.
 
 **Metric row pattern**
 
@@ -3554,7 +3554,7 @@ Refresh paths: open panel, manual refresh button, window **resize** (while visib
 
 | Phase | Behavior |
 |-------|----------|
-| **Start** | `mousedown` on panel **except** when target is inside a `button`. Sets `isDraggingDebug`, records offset from panel top-left, disables CSS transition, cursor → grabbing. First drag converts CSS `right` placement to explicit `left`/`top` px and sets `right: auto`. |
+| **Start** | `mousedown` on panel **except** when target is inside a `button`, `label`, or `input`. Sets `isDraggingDebug`, records offset from panel top-left, disables CSS transition, cursor → grabbing. First drag converts CSS `right` placement to explicit `left`/`top` px and sets `right: auto`. |
 | **Move** | Document `mousemove`: free `left`/`top` follow pointer (**no live clamp** — intentional for smooth feel). `preventDefault()` while dragging. |
 | **End** | Document `mouseup`: clear drag flag, restore transition/cursor, **clamp** so entire panel stays inside viewport with **12px** edge padding (all four corners remain visible). |
 | **Resize** | If panel visible and any edge breaches the 12px inset, re-clamp `left`/`top`; always refresh metrics when visible. |
