@@ -70,10 +70,10 @@ assert.ok(!css.includes('--petal-tilt') && !css.includes('--petal-bank'), 'old t
 assert.ok(appSrc.includes("setProperty('--leaf-low', '35deg')"), 'every leaf starts at 35 degrees');
 assert.ok(appSrc.includes('Math.random() < 0.5 ? -1 : 1'), 'each leaf picks left or right with an even chance');
 assert.ok(appSrc.includes("setProperty('--leaf-sign', drift > 0 ? '1' : '-1')"), 'the sine sway keeps the same left and right sides for both drift directions');
-assert.ok(/id="dleaf"[^>]*hidden/.test(html), 'DLEAF stays hidden until debug enables it');
+assert.ok(!html.includes('id="dleaf"'), 'the header no longer holds DLEAF');
 const debugSrc = fs.readFileSync(path.join(root, 'js/debug.js'), 'utf8');
-assert.ok(debugSrc.includes('id="debug-dleaf-checkbox"'), 'debug panel has a DLEAF checkbox');
-assert.ok(debugSrc.includes('leaf.hidden = !dleafToggle.checked'), 'the DLEAF checkbox shows and hides the header leaf');
+assert.ok(debugSrc.includes('>DLEAF<') && debugSrc.includes('id="dleaf"'), 'the debug panel shows the DLEAF label and leaf');
+assert.ok(!debugSrc.includes('debug-dleaf-checkbox'), 'the debug panel has no DLEAF checkbox');
 assert.ok(debugSrc.includes('id="debug-dleaf-angle"') && debugSrc.includes('value="35"'), 'debug panel has a DLEAF angle textbox that starts at 35');
 assert.ok(debugSrc.includes('id="debug-dleaf-angle-minus"') && debugSrc.includes('id="debug-dleaf-angle-plus"'), 'DLEAF angle has minus and plus buttons');
 assert.ok(debugSrc.includes('stepDleafAngle(-1)') && debugSrc.includes('stepDleafAngle(1)'), 'the buttons step the DLEAF angle by one degree');
