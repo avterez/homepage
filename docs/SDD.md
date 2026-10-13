@@ -2086,7 +2086,7 @@ Quick-launch overlay for a **Google web search** from the start page. Module: **
 | Item | Description |
 |------|-------------|
 | **Purpose** | Let the user run a Google search (new browser tab) without leaving the start-page chrome, via header control or keyboard **`/`**. |
-| **In scope** | Open/close lifecycle; clear + autofocus input; form submit → Google query URL; backdrop and × dismiss; Esc; drag with viewport clamp; focus restore to link search / keyboard card highlight on close. |
+| **In scope** | Open/close lifecycle; clear + autofocus input; form submit → Google query URL; × and Close dismiss; Esc; drag with viewport clamp; focus restore to link search / keyboard card highlight on close. A click on the backdrop leaves the modal open. |
 | **Out of scope** | In-page link fuzzy search (§6.5); browser default search engine configuration; Google account/session; search suggestions/autocomplete API; true URL navigation (placeholder text implies URL; **implementation always searches Google** — see D7); enterprise search proxies. |
 | **Actors** | End user of the local start page. |
 | **Primary artifacts** | `index.html` `#search-modal`; `js/gsmodal.js`; submit + shortcut listeners in `js/app.js`. |
@@ -2106,7 +2106,7 @@ No external BRD / FRS / Jira linkage in-repo. Internal IDs below; map **External
 | **REQ-GSM-007** | Query shall be URL-encoded | `encodeURIComponent(query)` | *TBD* |
 | **REQ-GSM-008** | Empty submit shall not navigate | Guard `if (query)` | *TBD* |
 | **REQ-GSM-009** | After successful submit, modal shall close and field clear | `closeSearchModal` + `input.value = ''` | *TBD* |
-| **REQ-GSM-010** | User shall close via ×, backdrop click, or Escape | `closeSearchModal`; backdrop `onclick`; Esc handlers | *TBD* |
+| **REQ-GSM-010** | User shall close via ×, the Close button, or Escape. A backdrop click shall leave the modal open | `closeSearchModal` on `.ui-modal__close` and `.search-modal__close`; no backdrop `onclick`; Esc handlers | *TBD* |
 | **REQ-GSM-011** | Panel shall be draggable except from input/buttons | `setupSearchModalDragging` | *TBD* |
 | **REQ-GSM-012** | On drag end, panel shall clamp so all corners stay in viewport | **8px** edge padding clamp | *TBD* |
 | **REQ-GSM-013** | Drag wiring shall initialize once per panel | `content.dataset.draggable === 'true'` guard | *TBD* |
@@ -2152,7 +2152,7 @@ No external BRD / FRS / Jira linkage in-repo. Internal IDs below; map **External
               │
      ┌────────┼──────────────┬─────────────┐
      ▼        ▼              ▼             ▼
-  type     Enter/submit   drag panel    Esc / × / backdrop
+  type     Enter/submit   drag panel    Esc / × / Close
      │        │              │             │
      │        ▼              ▼             │
      │   encode + open    free move;       │
@@ -2173,7 +2173,7 @@ No external BRD / FRS / Jira linkage in-repo. Internal IDs below; map **External
 | Backdrop | `.ui-modal` / `.search-modal`: `position: fixed; inset: 0`; `background rgb(0 0 0 / 0.7)` + `backdrop-filter: blur(4px)`; `.ui-modal--topmost` → `z-index: 120` |
 | Vertical placement | `.ui-modal--top` (`align-items: flex-start`; padding-top `25vh`) |
 | Panel | `.ui-modal__panel--lg` (`max-width: 32rem`), `border-radius: 1.5rem`, `.ui-modal__panel--draggable` (`cursor: move`) |
-| Backdrop click | Closes (`onclick="closeSearchModal()"` on root) |
+| Backdrop click | Leaves the modal open (no `onclick` on `#search-modal`) |
 | Panel click | `stopImmediatePropagation` (does not close) |
 
 #### 6.7.4 Tech Stack & Versions
@@ -2205,7 +2205,7 @@ No external BRD / FRS / Jira linkage in-repo. Internal IDs below; map **External
 | D11 | Residual legacy `/` path focuses hidden `#search-input` when `BODY` focused in one keydown branch | Historical dual behavior; can confuse vs modal open | **Current / tech debt** (also §13) |
 | D12 | Form `preventDefault` + manual `window.open` | Avoid full-page navigation away from start page | **Current** |
 | D13 | No storage of search history in app | Privacy-light; history is browser/Google’s domain | **Current** |
-| D14 | Backdrop click closes (unlike some app modals) | Fast dismiss for a lightweight tool | **Current** |
+| D14 | Backdrop click leaves the modal open. Dismiss is the × button, the Close button, or Escape | Avoid losing an in-progress query by clicking the dimmed page | **Current** |
 
 #### 6.7.6 Data Model / Schema
 
@@ -2256,7 +2256,8 @@ https://www.google.com/search?q=<encodeURIComponent(trimmedQuery)>
 | **`/`** on BODY in alternate keydown branch | Focuses **legacy** `#search-input` (hidden) — residual |
 | Enter in form (implicit submit) | Google open + close |
 | × button | `closeSearchModal` |
-| Backdrop click | `closeSearchModal` |
+| Close button | `closeSearchModal` |
+| Backdrop click | No close |
 | Escape (dedicated + modal stack) | `closeSearchModal` if open |
 
 **DOM anchors**
