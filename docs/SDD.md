@@ -827,7 +827,7 @@ Landing Screen **reads** shared app state (does not define a separate entity mod
 | ID | Role |
 |----|------|
 | `#daily-quote` | Quote |
-| `#dleaf` | Default leaf drawing, always shown in the debug panel beside the DLEAF label. The angle textbox rotates it and starts at 35 degrees |
+| `#dleaf` | Default leaf drawing, always shown in the debug panel, centered between the DLEAF label and the minus button. The angle textbox rotates it and starts at 35 degrees |
 | `#header-logo`, `#page-title` | Brand |
 | `#greeting`, `#date`, `#clock` | Time context |
 | `#category-search`, `#categories-sidebar`, `#clear-filter-link` | Sidebar |
