@@ -358,7 +358,7 @@ function ensureDebugLoaded() {
 
     __debugScriptPromise = new Promise(function (resolve, reject) {
         var s = document.createElement('script');
-        s.src = 'js/debug.js?v=pr91-dleaf-toggle';
+        s.src = 'js/debug.js?v=pr93-dleaf-step';
         s.onload = function () {
             window.__debugModuleLoaded = true;
             resolve();
@@ -856,16 +856,18 @@ function appendDriftingPieces(layer) {
         piece.style.animationDuration = duration.toFixed(2) + 's';
         piece.style.animationDelay = (-Math.random() * duration).toFixed(2) + 's';
         piece.style.setProperty('--snow-drift', drift.toFixed(1) + 'px');
-        var fallingRight = drift > 0;
-        piece.style.setProperty('--leaf-low', (fallingRight ? (25 + Math.random() * 10) : (35 + Math.random() * 10)).toFixed(1) + 'deg');
-        piece.style.setProperty('--leaf-rock', (fallingRight ? 35 : -35) + 'deg');
-        piece.style.setProperty('--leaf-min', fallingRight ? '-5deg' : '-180deg');
-        piece.style.setProperty('--leaf-max', '75deg');
-        piece.style.setProperty('--leaf-cycles', (1.45 + Math.random() * 1.15).toFixed(3));
-        piece.style.setProperty('--leaf-wobble', (0.08 + Math.random() * 0.1).toFixed(3));
-        piece.style.setProperty('--leaf-wobble-ratio', (1.45 + Math.random() * 0.7).toFixed(3));
-        piece.style.setProperty('--leaf-phase', (Math.random() * 360).toFixed(1) + 'deg');
-        piece.style.setProperty('--leaf-lift', (1.785 + Math.random() * 1.115).toFixed(2) + 'vh');
+        var cycles = 1.45 + Math.random() * 1.15;
+        var wobble = 0.08 + Math.random() * 0.1;
+        var wobbleRatio = 1.45 + Math.random() * 0.7;
+        var phaseDeg = Math.random() * 360;
+        var lift = (1.161 + Math.random() * 0.725);
+        piece.style.setProperty('--leaf-low', '35deg');
+        piece.style.setProperty('--leaf-sign', drift > 0 ? '1' : '-1');
+        piece.style.setProperty('--leaf-cycles', cycles.toFixed(3));
+        piece.style.setProperty('--leaf-wobble', wobble.toFixed(3));
+        piece.style.setProperty('--leaf-wobble-ratio', wobbleRatio.toFixed(3));
+        piece.style.setProperty('--leaf-phase', phaseDeg.toFixed(1) + 'deg');
+        piece.style.setProperty('--leaf-lift', lift.toFixed(2) + 'vh');
         frag.appendChild(piece);
     }
     layer.appendChild(frag);

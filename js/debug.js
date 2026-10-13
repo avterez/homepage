@@ -21,19 +21,57 @@ function ensureDebugPanel() {
                 </div>
             </div>
             <div id="debug-content" class="debug-panel__content"></div>
-            <label class="debug-panel__dleaf">
-                <input type="checkbox" id="debug-dleaf-checkbox">
-                <span>DLEAF</span>
-            </label>
+            <div class="debug-panel__dleaf">
+                <label class="debug-panel__dleaf-toggle">
+                    <input type="checkbox" id="debug-dleaf-checkbox">
+                    <span>DLEAF</span>
+                </label>
+                <div class="debug-panel__dleaf-angle-row">
+                    <button type="button" id="debug-dleaf-angle-minus" class="debug-panel__dleaf-step" aria-label="Decrease DLEAF angle">−</button>
+                    <input type="text" id="debug-dleaf-angle" class="debug-panel__dleaf-angle" value="35" inputmode="decimal" aria-label="DLEAF angle" spellcheck="false">
+                    <button type="button" id="debug-dleaf-angle-plus" class="debug-panel__dleaf-step" aria-label="Increase DLEAF angle">+</button>
+                    <span class="debug-panel__unit">°</span>
+                </div>
+            </div>
         `;
 
         document.body.appendChild(debugPanel);
         var dleafToggle = debugPanel.querySelector('#debug-dleaf-checkbox');
+        var dleafAngle = debugPanel.querySelector('#debug-dleaf-angle');
+        function applyDleafAngle(raw) {
+            var leaf = document.getElementById('dleaf');
+            if (!leaf) return;
+            var value = parseFloat(String(raw).trim());
+            if (!isFinite(value)) return;
+            leaf.style.setProperty('--dleaf-angle', value + 'deg');
+        }
         if (dleafToggle) {
             dleafToggle.addEventListener('change', function () {
                 var leaf = document.getElementById('dleaf');
                 if (leaf) leaf.hidden = !dleafToggle.checked;
             });
+        }
+        function readDleafAngle() {
+            var value = parseFloat(String(dleafAngle.value).trim());
+            return isFinite(value) ? value : 0;
+        }
+        function writeDleafAngle(value) {
+            var rounded = Math.round(value * 1000) / 1000;
+            dleafAngle.value = String(rounded);
+            applyDleafAngle(dleafAngle.value);
+        }
+        function stepDleafAngle(delta) {
+            writeDleafAngle(readDleafAngle() + delta);
+        }
+        if (dleafAngle) {
+            applyDleafAngle(dleafAngle.value);
+            dleafAngle.addEventListener('input', function () {
+                applyDleafAngle(dleafAngle.value);
+            });
+            var dleafMinus = debugPanel.querySelector('#debug-dleaf-angle-minus');
+            var dleafPlus = debugPanel.querySelector('#debug-dleaf-angle-plus');
+            if (dleafMinus) dleafMinus.addEventListener('click', function () { stepDleafAngle(-1); });
+            if (dleafPlus) dleafPlus.addEventListener('click', function () { stepDleafAngle(1); });
         }
 
         debugPanel.style.cursor = 'grab';
