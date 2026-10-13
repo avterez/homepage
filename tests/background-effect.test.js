@@ -78,7 +78,7 @@ assert.ok(css.includes('sin(var(--leaf-ang))'), 'sideways motion is a sine of ti
 assert.ok(css.includes('pow(abs(sin(var(--leaf-ang))), 6)'), 'the lift is concentrated at the outer hang');
 assert.ok(css.includes('--leaf-wobble'), 'a second wave keeps swings from matching');
 assert.ok(css.includes('(3.735vh / var(--leaf-cycles))'), 'the fastest vertical drop is another fifteen percent slower');
-assert.ok(appSrc.includes('(2.052 + Math.random() * 1.282)'), 'leaf lift stays inside the slower drop');
+assert.ok(appSrc.includes('(1.785 + Math.random() * 1.115)'), 'leaf lift stays small enough that the fast drop is the 30 to 40 degree pose');
 assert.ok(appSrc.includes("setProperty('--leaf-cycles'"), 'each leaf varies its sway frequency');
 assert.ok(appSrc.includes('/ 24348') && appSrc.includes('count > 64'), 'leaf count is fifteen percent higher, up to 64');
 

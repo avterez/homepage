@@ -862,7 +862,7 @@ function appendDriftingPieces(layer) {
         piece.style.setProperty('--leaf-wobble', (0.08 + Math.random() * 0.1).toFixed(3));
         piece.style.setProperty('--leaf-wobble-ratio', (1.45 + Math.random() * 0.7).toFixed(3));
         piece.style.setProperty('--leaf-phase', (Math.random() * 360).toFixed(1) + 'deg');
-        piece.style.setProperty('--leaf-lift', (2.052 + Math.random() * 1.282).toFixed(2) + 'vh');
+        piece.style.setProperty('--leaf-lift', (1.785 + Math.random() * 1.115).toFixed(2) + 'vh');
         frag.appendChild(piece);
     }
     layer.appendChild(frag);
