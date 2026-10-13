@@ -859,6 +859,11 @@ function appendDriftingPieces(layer) {
         piece.style.setProperty('--snow-drift', drift.toFixed(1) + 'px');
         piece.style.setProperty('--petal-tilt', tilt.toFixed(1) + 'deg');
         piece.style.setProperty('--petal-bank', (drift < 0 ? -40 : 40) + 'deg');
+        piece.style.setProperty('--leaf-cycles', (1.45 + Math.random() * 1.15).toFixed(3));
+        piece.style.setProperty('--leaf-wobble', (0.08 + Math.random() * 0.1).toFixed(3));
+        piece.style.setProperty('--leaf-wobble-ratio', (1.45 + Math.random() * 0.7).toFixed(3));
+        piece.style.setProperty('--leaf-phase', (Math.random() * 360).toFixed(1) + 'deg');
+        piece.style.setProperty('--leaf-lift', (3.2 + Math.random() * 2).toFixed(2) + 'vh');
         frag.appendChild(piece);
     }
     layer.appendChild(frag);

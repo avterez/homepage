@@ -12,6 +12,7 @@ const assert = require('assert');
 const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const css = fs.readFileSync(path.join(root, 'css/styles.css'), 'utf8');
+const appSrc = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');
 
 assert.ok(html.includes('>Seasonal<'), 'Seasonal option missing');
 assert.ok(html.includes('id="seasonal-info-btn"'), 'seasonal info button missing');
@@ -63,34 +64,13 @@ assert.ok(css.includes('animation-name:petal-fall'), 'leaves must use the petal 
 assert.ok(css.includes('@keyframes petal-fall'), 'petal fall animation missing');
 assert.ok(css.includes('--petal-tilt'), 'petal tilt angle missing');
 assert.ok(css.includes('--petal-bank:40deg'), 'sway bank is capped at 40 degrees');
-assert.ok(css.includes('var(--petal-tilt) - var(--petal-bank)'), 'rightward sway turns counter-clockwise');
-assert.ok(css.includes('var(--petal-tilt) + var(--petal-bank)'), 'leftward sway turns clockwise');
+assert.ok(css.includes('var(--petal-tilt) - var(--petal-bank) * cos('), 'bank follows sideways speed and reverses with it');
 assert.ok(!/@keyframes petal-fall\{[^}]*360deg/.test(css), 'petals must rock, not spin a full turn');
-const petalFall = css.match(/@keyframes petal-fall\{(.+)\}/)[1];
-assert.ok(!petalFall.includes('ease-in-out'), 'leaves should not ease to a stop');
-assert.ok(petalFall.includes('cubic-bezier(0.3, 0.12, 0.6, 0.28)'), 'the lift should accelerate');
-assert.ok(petalFall.includes('cubic-bezier(0.25, 0.45, 0.7, 0.9)'), 'the lift should then decelerate');
-const leafHeights = Array.from(petalFall.matchAll(/,(-?\d+(?:\.\d+)?)vh/g), function (match) { return Number(match[1]); });
-const swoopRises = [];
-let rising = false;
-let rise = 0;
-for (let i = 1; i < leafHeights.length; i++) {
-    if (leafHeights[i] < leafHeights[i - 1]) {
-        if (!rising) {
-            rising = true;
-            rise = 0;
-        }
-        rise += leafHeights[i - 1] - leafHeights[i];
-    } else if (rising) {
-        swoopRises.push(rise);
-        rising = false;
-    }
-}
-if (rising) swoopRises.push(rise);
-assert.strictEqual(swoopRises.length, 2, 'leaves swoop upward once on each side of the arc');
-swoopRises.forEach(function (amount) {
-    assert.ok(amount > 0 && amount <= 3, 'each lift stays slight, got ' + amount);
-});
+assert.ok(css.includes('@property --leaf-t'), 'leaf time is a continuous numeric property');
+assert.ok(css.includes('sin(var(--leaf-ang))'), 'sideways motion is a sine of time');
+assert.ok(css.includes('pow(abs(sin(var(--leaf-ang))), 6)'), 'the lift is concentrated at the outer hang');
+assert.ok(css.includes('--leaf-wobble'), 'a second wave keeps swings from matching');
+assert.ok(appSrc.includes("setProperty('--leaf-cycles'"), 'each leaf varies its sway frequency');
 
 const effectsBlock = html.slice(html.indexOf('id="other-options-effects"'), html.indexOf('id="popup-duration-settings"'));
 const effectValues = Array.from(effectsBlock.matchAll(/name="background-effect"[^>]*value="([^"]+)"/g), function (match) { return match[1]; });
