@@ -66,6 +66,12 @@ assert.ok(css.includes('--petal-bank:40deg'), 'sway bank is capped at 40 degrees
 assert.ok(css.includes('var(--petal-tilt) - var(--petal-bank)'), 'rightward sway turns counter-clockwise');
 assert.ok(css.includes('var(--petal-tilt) + var(--petal-bank)'), 'leftward sway turns clockwise');
 assert.ok(!/@keyframes petal-fall\{[^}]*360deg/.test(css), 'petals must rock, not spin a full turn');
+const petalFall = css.match(/@keyframes petal-fall\{(.+)\}/)[1];
+assert.ok(!petalFall.includes('ease-in-out'), 'leaves should not ease to a stop');
+const leafHeights = Array.from(petalFall.matchAll(/,(-?\d+)vh/g), function (match) { return Number(match[1]); });
+let upwardSwoops = 0;
+for (let i = 1; i < leafHeights.length; i++) if (leafHeights[i] < leafHeights[i - 1]) upwardSwoops++;
+assert.strictEqual(upwardSwoops, 2, 'leaves swoop upward once on each side of the arc');
 
 const effectsBlock = html.slice(html.indexOf('id="other-options-effects"'), html.indexOf('id="popup-duration-settings"'));
 const effectValues = Array.from(effectsBlock.matchAll(/name="background-effect"[^>]*value="([^"]+)"/g), function (match) { return match[1]; });
