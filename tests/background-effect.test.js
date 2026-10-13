@@ -67,6 +67,7 @@ assert.ok(css.includes('@keyframes petal-fall'), 'petal fall animation missing')
 assert.ok(css.includes('--leaf-low'), 'low-point angle is a leaf custom property');
 assert.ok(css.includes('35deg - 60deg * max(var(--leaf-sign) * sin(var(--leaf-ang)), 0) - 25deg * min(var(--leaf-sign) * sin(var(--leaf-ang)), 0)'), 'a leaf rocks to -25 degrees on the right of its sway and 60 degrees on the left');
 assert.ok(css.includes('.debug-panel__dleaf-angle{width:3rem'), 'the DLEAF angle textbox is 3rem wide');
+assert.ok(css.includes('.debug-panel__dleaf-angle{width:3rem;padding:0.125rem 0.375rem;border:1px solid var(--color-border-strong);border-radius:0.25rem;background-color:#27272a;color:#e4e4e7 !important;font:inherit;font-variant-numeric:tabular-nums;text-align:center;'), 'the DLEAF angle text is centered in the box');
 assert.ok(css.includes('.dleaf{position:relative;flex:0 0 30px;width:30px;height:18px'), 'DLEAF is half the previous size');
 assert.ok(!css.includes('--petal-tilt') && !css.includes('--petal-bank'), 'old tilt and bank formula is gone');
 assert.ok(appSrc.includes("setProperty('--leaf-low', '35deg')"), 'every leaf starts at 35 degrees');
