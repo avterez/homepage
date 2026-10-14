@@ -62,7 +62,7 @@ This SDD is large because it doubles as both an architecture overview and a deta
    - [6.7 Google Search Modal](#67-google-search-modal)
    - [6.8 Settings & Theme](#68-settings-hub--related-modals)
    - [6.9 Font Scale Side Effects](#69-font-scale-side-effects)
-   - [6.10 Daily Quote](#610-daily-quote-system-linkedlist)
+   - [6.10 Daily Quote](#610-daily-quote)
    - [6.11 GitHub Gist Sync](#611-github-gist-sync-hub--related-modals)
    - [6.12 File Import/Export & First-Run](#612-file-import--export--local-persistence-bootstrap)
    - [6.13 Floating Actions](#613-floating-actions)
@@ -176,7 +176,7 @@ Startpage_NE is a customizable browser **start page / new-tab page** built with 
 │  js/storage  — localStorage + file import/export                │
 │  js/github   — Gist sync                                        │
 │  js/render   — DOM views (sidebar, cards, filters)              │
-│  js/quotes   — daily quote LinkedList                           │
+│  js/quotes   — daily quote from docs/q.txt                      │
 │  js/*modal*  — feature UI (add/edit, settings, search)          │
 │  js/app      — controller: actions, keyboard, clock, init       │
 │  js/script   — deferred boot tail                               │
@@ -210,7 +210,7 @@ startpage_NE/
 │   ├── storage.js             # load/save, export/import, first-run UX
 │   ├── github.js              # Gist credentials + sync API/UI
 │   ├── render.js              # Sidebar, links grid, fuzzy match helpers
-│   ├── quotes.js              # Quotes LinkedList + day-of-year picker
+│   ├── quotes.js              # Daily quote from docs/q.txt
 │   ├── addeditlink.js         # Add/Edit link modal, emoji picker, categories
 │   ├── settingsmodal.js       # Settings, color theme, attribution, applyColors
 │   ├── gsmodal.js             # Google Search modal (open/close/drag)
@@ -219,6 +219,7 @@ startpage_NE/
 │   └── script.js              # Boot: initQuotes + idle font prefetch
 │
 ├── docs/
+│   ├── q.txt                  # Daily quotes, one quote per line
 │   └── SDD.md                 # This document
 │
 └── tools/
@@ -601,7 +602,7 @@ Use this table for reviews. Open the deep section only when you need APIs, diagr
 | Google Search | Draggable modal → Google `q=` new tab | [§6.7](#67-google-search-modal) |
 | Settings / theme | Name, font scale, color roles, attribution | [§6.8](#68-settings-hub--related-modals) |
 | Font scale layout | Header label collapse + list-controls stack | [§6.9](#69-font-scale-side-effects) |
-| Daily quote | Day-of-year → LinkedList index | [§6.10](#610-daily-quote-system-linkedlist) |
+| Daily quote | Days since Jan 1, 2026 mod `docs/q.txt` lines | [§6.10](#610-daily-quote) |
 | GitHub Gist sync | Private gist export/import + credentials | [§6.11](#611-github-gist-sync-hub--related-modals) |
 | File backup / first-run | JSON export/import; `default.json`; file:// welcome | [§6.12](#612-file-import--export--local-persistence-bootstrap) |
 | Floating actions | Quick Add / Top / Bottom visibility | [§6.13](#613-floating-actions) |
@@ -644,7 +645,7 @@ No external BRD / FRS / Jira linkage in-repo. Internal IDs below; map **External
 |--------|---------------------|----------------|--------------|
 | **REQ-LS-001** | Shell shall paint a dark critical frame before deferred JS | Inline critical CSS in `<head>` | *TBD* |
 | **REQ-LS-002** | Header shall remain sticky while scrolling | `.app-header` (`position: sticky; top: 0; z-index: 50`) | *TBD* |
-| **REQ-LS-003** | Header shall show day-of-year quote when available | `#daily-quote` + `displayDailyQuote` | *TBD* |
+| **REQ-LS-003** | Header shall show the quote for today from `docs/q.txt` | `#daily-quote` + `displayDailyQuote` | *TBD* |
 | **REQ-LS-004** | Page title shall reflect saved user name or `Start` | `#page-title` + `startpage_user_name` | *TBD* |
 | **REQ-LS-005** | Header (md+) shall show greeting, date, and clock | `#greeting`, `#date`, `#clock`; 30s refresh | *TBD* |
 | **REQ-LS-006** | Header shall expose Search, Settings, Backup, GitHub Sync | Buttons / dropdown → respective open/export APIs | *TBD* |
@@ -766,7 +767,7 @@ Landing Screen **reads** shared app state (does not define a separate entity mod
 | Font scale | `currentFontScale` / `startpage_font_scale` | `95` \| `100` \| `105` \| `110` |
 | User name | `startpage_user_name` | Title personalization |
 | Colors | theme keys §4.6 / §5 | CSS variables |
-| Quote | `window.dailyQuotes` + day-of-year | Display only |
+| Quote | `docs/q.txt` lines + days since Jan 1, 2026 | Display only |
 | Keyboard card index | `keyboardFocusedIndex` | Nav highlight |
 | List controls stack flag | `listControlsStacked` | Layout |
 
@@ -2726,125 +2727,111 @@ threshold = 580 / (currentFontScale / 100)
 if innerWidth < threshold → stack Show list by / View vertically
 ```
 
-### 6.10 Daily Quote System (LinkedList)
+### 6.10 Daily Quote
 
-Header quote strip on the Landing Screen (`#daily-quote`). Module: **`js/quotes.js`**. Selects one motivational quote per calendar day using a custom singly linked list and day-of-year index. Boot-safe: eager `initQuotes()` at end of module + idempotent call from `script.js`; `displayDailyQuote()` from `initializeApp`.
+Header quote strip on the Landing Screen (`#daily-quote`). Module: **`js/quotes.js`**. Loads `docs/q.txt` and shows one line for the local calendar day. `initQuotes()` starts the load at the end of the module; `script.js` calls it again (no second fetch once the file is in memory); `displayDailyQuote()` from `initializeApp` paints the line, and paints again when the file arrives if boot ran first.
 
-> *Detail note:* P1 expansion — LinkedList API, day-of-year math, corpus maintenance, display/hover title, init race handling.
+> *Detail note:* The corpus is the quote file, not an in-script list. Line 0 is the first line of `docs/q.txt`.
 
 #### 6.10.1 Purpose & Scope
 
 | Item | Description |
 |------|-------------|
-| **Purpose** | Show a single daily inspirational quote in the sticky header without network calls or user configuration. |
-| **In scope** | `Node` / `LinkedList` implementation; quote corpus load; `getDayOfYear`; `initQuotes` / `displayDailyQuote`; global exports; console diagnostics. |
-| **Out of scope** | User-editable quotes; multi-language packs; remote quote APIs; random-per-refresh (day-stable by design). |
-| **Primary artifacts** | `js/quotes.js`; `#daily-quote` in `index.html`; fixed header color §5.4. |
+| **Purpose** | Show one quote in the sticky header, chosen from `docs/q.txt`, stable for the local calendar day. |
+| **In scope** | Fetch `docs/q.txt`; count quote lines; days since January 1, 2026; modulo wrap; `initQuotes` / `displayDailyQuote`; header text and hover title. |
+| **Out of scope** | User-editable quotes; multi-language packs; remote quote APIs; random-per-refresh. |
+| **Primary artifacts** | `docs/q.txt`; `js/quotes.js`; `#daily-quote` in `index.html`; fixed header color §5.4. |
 
 #### 6.10.2 Requirements Traceability
 
 | Req ID | Requirement (shall) | Implementation | External ref |
 |--------|---------------------|----------------|--------------|
-| **REQ-DQ-001** | App shall display a quote in the header when corpus non-empty | `displayDailyQuote` | *TBD* |
-| **REQ-DQ-002** | Quote shall be stable for a given calendar day | `(dayOfYear - 1) % size` | *TBD* |
-| **REQ-DQ-003** | Day-of-year shall be 1-based and leap-aware | `getDayOfYear` via date diff from Jan 1 | *TBD* |
-| **REQ-DQ-004** | Corpus shall load into a LinkedList once | `initQuotes` idempotent guard | *TBD* |
-| **REQ-DQ-005** | Empty / failed corpus shall leave quote area empty | Clear `textContent` | *TBD* |
+| **REQ-DQ-001** | Header shall show a quote whenever `docs/q.txt` has at least one line | `displayDailyQuote` after `initQuotes` | *TBD* |
+| **REQ-DQ-002** | Quote shall be stable for a given local calendar day | `daysSinceJanuary1_2026` + `quoteLineIndex` | *TBD* |
+| **REQ-DQ-003** | Day count shall be calendar days from January 1, 2026, and 0 on that date | `Date.UTC` year/month/day difference | *TBD* |
+| **REQ-DQ-004** | Corpus shall load from `docs/q.txt` once | `initQuotes` reuses the in-flight or finished load | *TBD* |
+| **REQ-DQ-005** | A loaded file shall not leave the header blank | Modulo index always in range; blank lines are skipped | *TBD* |
 | **REQ-DQ-006** | Full quote shall be available on hover when truncated | `title` attribute = quote text | *TBD* |
-| **REQ-DQ-007** | Init shall not race past display on deferred load | Eager init at end of `quotes.js` + `script.js` | *TBD* |
-| **REQ-DQ-008** | Only non-empty strings shall enter the list | `LinkedList.add` + forEach trim guard | *TBD* |
+| **REQ-DQ-007** | Display before the file arrives shall still paint when the load finishes | `initQuotes` calls `displayDailyQuote` on success | *TBD* |
+| **REQ-DQ-008** | When the day count reaches the line count, the quote shall be the first line again | `(days) mod lineCount === 0` | *TBD* |
 
 #### 6.10.3 High-Level Architecture & Diagrams
 
 ```
-  quotes.js parse
+  initQuotes() ──► fetch docs/q.txt ──► quote lines ──► window.dailyQuotes
        │
-       ▼
-  initQuotes() ──► LinkedList ──► window.dailyQuotes
-       │
-       │  (eager at module end)
-       │  (again from script.js if needed — no-op if size>0)
+       │  (again from script.js: same promise, or a retry if the fetch failed)
        ▼
   initializeApp → displayDailyQuote()
        │
-       ├─ day = getDayOfYear()          // 1..365/366
-       ├─ index = (day - 1) % size
-       ├─ quote = dailyQuotes.get(index)
+       ├─ days  = calendar days from local January 1, 2026 to today
+       ├─ index = days mod line count          // 0 .. lineCount-1
+       ├─ quote = lines[index]
        └─ #daily-quote textContent + title
-```
-
-**LinkedList structure**
-
-```
-  head → Node(value, next) → Node → … → null
-         size = N
 ```
 
 #### 6.10.4 Tech Stack & Versions
 
 | Layer | Technology | Notes |
 |-------|------------|-------|
-| Structure | Custom singly linked list | Teaching/simplicity; not a performance bottleneck |
-| Corpus | In-module string array → list | ~**360+** quotes (static; expands with source) |
-| Calendar | Local `Date` | Browser timezone |
+| Corpus | `docs/q.txt` | One quote per line; trailing newline is not an extra line; blank lines are skipped |
+| Calendar | Local `Date` year/month/day via `Date.UTC` | Daylight-saving transitions do not skip a calendar day |
+| Selection | Modulo | `index = ((days % count) + count) % count` |
 | Display | DOM text node | No HTML quote markup injection |
 
 #### 6.10.5 Key Design Decisions & Rationale
 
 | # | Decision | Rationale | Status |
 |---|----------|-----------|--------|
-| Q1 | Day-of-year modulo selection | Same quote all day; cycles yearly if N ≠ 365 | **Current** |
-| Q2 | LinkedList vs array | Explicit educational structure; O(n) get acceptable for N~hundreds | **Current** |
-| Q3 | Eager init at module bottom | Defers + app init order safe | **Current** |
-| Q4 | Idempotent `initQuotes` | `script.js` may call again without duplicating | **Current** |
+| Q1 | Days since January 1, 2026, modulo line count | Same quote all day; line 0 is the first line; the sequence restarts when the day count reaches the line count | **Current** |
+| Q2 | Corpus lives in `docs/q.txt` | Edit the file, not a script array | **Current** |
+| Q3 | Positive modulo | Dates before the epoch still map to a line, so the header is not blank | **Current** |
+| Q4 | Idempotent `initQuotes` | `script.js` may call again without a second fetch | **Current** |
 | Q5 | `textContent` + `title` | XSS-safe display; hover full text | **Current** |
 | Q6 | No user preference / random button | Zero chrome; set-and-forget | **Current** |
-| Q7 | Console log size + day on init | Dev visibility | **Current** |
+| Q7 | Skip blank lines | A blank line is not shown in the header | **Current** |
 | Q8 | Fixed light header color for quote | Legibility on sticky dark bar (§5.4) | **Current** |
 
 #### 6.10.6 Data Model / Schema
 
-**Node**
+**Quote file**
 
-```js
-{ value: string, next: Node | null }
-```
-
-**LinkedList**
-
-| Field / method | Behavior |
-|----------------|----------|
-| `head` | First node or null |
-| `size` | Count of nodes |
-| `add(value)` | Append if non-empty string; else warn + no-op |
-| `get(index)` | 0-based walk; null if OOB |
+`docs/q.txt` is plain text, one quote per line, attribution included in the line. The loader trims each line, drops blank lines, and does not count a final trailing newline as a line.
 
 **Globals**
 
 | Name | Meaning |
 |------|---------|
-| `window.dailyQuotes` | Populated `LinkedList` |
-| `window.getDayOfYear` | Function export |
-| `window.LinkedList` | Constructor export |
-| `window.displayDailyQuote` | Render function |
+| `window.dailyQuotes` | Array of quote lines after a successful load |
+| `window.daysSinceJanuary1_2026` | Calendar-day offset; `0` on January 1, 2026 |
+| `window.quoteLineIndex` | Positive modulo into the line array |
+| `window.parseQuoteFile` | Text → quote lines |
+| `window.quoteForDate` | Line for a date |
+| `window.displayDailyQuote` | Write `#daily-quote` |
+| `window.initQuotes` | Fetch the file once and display |
 
 **Selection formula**
 
 ```
-index = (getDayOfYear() - 1) % dailyQuotes.size
+days  = calendar days from local January 1, 2026 to today
+index = ((days % lineCount) + lineCount) % lineCount
+quote = lines[index]
 ```
 
-**Corpus:** Static strings in `initQuotes` (attribution style: quote — author). Maintenance is source edit only; no runtime CMS.
+January 1, 2026 is line 0 (the first line). The day the count equals the number of lines is line 0 again.
 
 #### 6.10.7 API / Interface Specifications
 
 | Function | Behavior |
 |----------|----------|
-| `getDayOfYear()` | `floor((now - Jan1Local) / 86400000) + 1` |
-| `initQuotes()` | If `dailyQuotes.size > 0` return; else build list from array; set global; log |
-| `displayDailyQuote()` | Resolve index; set `#daily-quote` text + title; no-op if missing el/empty list |
+| `daysSinceJanuary1_2026(date)` | `round((UTC(y,m,d) - UTC(2026,0,1)) / 86400000)` using the date's local calendar fields |
+| `quoteLineIndex(days, lineCount)` | Positive modulo; `0` when `lineCount < 1` |
+| `parseQuoteFile(text)` | Split lines, drop a trailing empty line and blank lines |
+| `quoteForDate(lines, date)` | Line at `quoteLineIndex`, or `''` when there are no lines |
+| `initQuotes()` | Fetch `docs/q.txt` once; on success store lines and display; on failure allow a later retry |
+| `displayDailyQuote(date)` | Set `#daily-quote` text and title; no-op when the element is missing or no line is ready |
 
-**Call sites:** end of `quotes.js`; `script.js` idle path companion; `initializeApp` display.
+**Call sites:** end of `quotes.js`; `script.js`; `initializeApp`.
 
 #### 6.10.8 Security & Compliance Requirements
 
@@ -2859,16 +2846,16 @@ index = (getDayOfYear() - 1) % dailyQuotes.size
 
 | Category | Behavior |
 |----------|----------|
-| **Performance** | O(N) list build once; O(index) get per display (index &lt; N) |
-| **Reliability** | Idempotent init; empty-safe display |
-| **i18n** | English-only corpus |
-| **Maintainability** | Add strings to array in `initQuotes`; keep non-empty |
+| **Performance** | One fetch; selection is O(1) after the lines are in memory |
+| **Reliability** | A non-empty file always yields a line, including dates before 2026 and after the line count |
+| **i18n** | English corpus in `docs/q.txt` |
+| **Maintainability** | Add or remove lines in `docs/q.txt` |
 
 #### 6.10.10 Assumptions, Risks, Dependencies & Constraints
 
-**Assumptions:** Local clock roughly correct; header element present.  
-**Risks:** Timezone change at midnight boundary; corpus size not equal to 365 → multi-year phase shift; very long quotes may truncate visually (title backup).  
-**Constraints:** No shuffle without code change; LinkedList get is linear (fine at current N).
+**Assumptions:** Local clock roughly correct; header element present; the page is served over HTTP so `fetch('docs/q.txt')` can read the file (same constraint as `default.json`).  
+**Risks:** A failed fetch leaves the header blank until a later `initQuotes()` retry succeeds; very long quotes may truncate visually (title backup).  
+**Constraints:** Opening `index.html` via `file://` cannot fetch `docs/q.txt` in Chrome. Serve the folder over HTTP.
 
 #### 6.10.11 Updated Diagrams & Screenshots
 
@@ -2876,7 +2863,7 @@ index = (getDayOfYear() - 1) % dailyQuotes.size
 |------|---------|
 | Header with quote | Italic centered text under top bar |
 | Hover | Browser tooltip with full quote |
-| Empty | Blank quote region if list empty |
+| Empty | Blank only before the file loads, or if the file has no quote lines |
 
 **Recommended assets:** `docs/assets/daily-quote/header-quote.png`.
 
@@ -3783,7 +3770,7 @@ After app init, a short delay (~**150** ms) focuses `#link-search-input` so arro
 |-----------|--------|
 | `defer` on all modules | Non-blocking parse; ordered execute |
 | Idle prefetch | Brands font after `requestIdleCallback` (`script.js`, timeout 2000) |
-| Quotes race-safe | `initQuotes()` at end of `quotes.js` before/with app boot |
+| Quotes race-safe | `initQuotes()` fetches `docs/q.txt` once; `displayDailyQuote()` runs again when the file arrives |
 
 ### 8.3 Offline CSS Tooling (`tools/optimize_css.py`)
 
@@ -3942,7 +3929,7 @@ Runtime `applyColors` overwrites many vars (§5.2).
 | Clear-filter visibility | `render.js` | IO on first sidebar item when scrollable |
 | FAB visibility | `app.js` | IO on Add Link button + scroll bottom heuristic |
 | Card keyboard step | `app.js` | Columns from computed grid |
-| Daily quote | `quotes.js` | `(dayOfYear - 1) % size` |
+| Daily quote | `quotes.js` | `(days since Jan 1, 2026) mod lines in docs/q.txt` |
 | Gist update | `github.js` | PATCH then create-on-401/404 |
 | URL preview | `render.js` | Strip scheme/www; truncate |
 | Debug panel drag/clamp | `debug.js` | Free move while dragging; 12px viewport clamp on release/resize |
@@ -3978,7 +3965,7 @@ Runtime `applyColors` overwrites many vars (§5.2).
 
 1. HTML parse; critical CSS paints dark shell + header icons  
 2. Deferred scripts download in parallel, run in order  
-3. `quotes.js` populates `window.dailyQuotes`  
+3. `quotes.js` starts loading `docs/q.txt` into `window.dailyQuotes`  
 4. `app.js` `initializeApp()` (or on DOM ready):
    - Restore `viewMode`
    - `loadLinks()` (localStorage or `default.json`)
@@ -4203,6 +4190,7 @@ Minimum before tagging a release:
 | 3.2 | September 23, 2026 | Compact link-card description tooltip on mobile stays **5** seconds before auto-hide |
 | 3.3 | September 23, 2026 | Other Options modal holds Show by, View, Hide Categories, and Show Debug; main page shows Perspective; one link-card description tooltip at a time; Settings button is Edit Colors; Debug PR 37 |
 | 3.4 | September 28, 2026 | Brought the living spec in line with the app through PR 63: four font-size steps; persisted Tally / My Order / ABC / Date Added; link `tally`; Add/Edit field order, collapsed POSITION, and Categories / Position / Tally help notes; URL suggestions; desktop emoji search under the title plus the description tip; snow; debug panel PR number from `homepage-pr` |
+| 3.5 | October 14, 2026 | Daily quote is the `docs/q.txt` line at `(days since January 1, 2026) mod line count`. The sequence starts at the first line and starts over when the day count reaches the number of lines. |
 
 ---
 
