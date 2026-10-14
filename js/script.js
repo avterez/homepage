@@ -1,4 +1,4 @@
-/** Loaded last: idempotent initQuotes + idle prefetch of fa-brands font. */
+/** Loaded last: idempotent initQuotes (docs/q.txt) + idle prefetch of fa-brands font. */
 (function () {
   "use strict";
 
