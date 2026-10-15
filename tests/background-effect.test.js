@@ -223,14 +223,20 @@ assert.ok(!html.includes('effect-fireworks-checkbox'), 'Fireworks! should not st
 assert.ok(html.indexOf('id="effect-snow-radio"') < html.indexOf('id="effect-fireworks-radio"'), 'Fireworks! comes after Snow');
 assert.ok(html.indexOf('id="effect-fireworks-radio"') < html.indexOf('id="effects-timeout-minutes"'), 'Fireworks! stays in the Effects list');
 assert.ok(css.includes('.fireworks-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}'), 'fireworks canvas covers the background');
-assert.ok(appSrc.includes('playFireworksBoom') && appSrc.includes('playFireworksCrackle'), 'fireworks plays booms and spark crackles');
+assert.ok(appSrc.includes('playFireworksBoom'), 'fireworks plays booms');
+assert.ok(!appSrc.includes('playFireworksCrackle'), 'spark crackle is removed');
+assert.ok(!appSrc.includes('FIREWORKS_CRACKLE_GAIN'), 'crackle gain is removed');
+assert.ok(!appSrc.includes('fireworksLastCrackle'), 'crackle timer is removed');
+assert.ok(appSrc.includes("document.addEventListener('pointerdown', resumeFireworksAudio, true)"), 'a pointerdown gesture unlocks fireworks audio');
+assert.ok(appSrc.includes("document.addEventListener('keydown', resumeFireworksAudio, true)"), 'a keydown gesture unlocks fireworks audio');
+assert.ok(appSrc.includes("document.addEventListener('touchstart', resumeFireworksAudio, true)"), 'a touchstart gesture unlocks fireworks audio');
+assert.ok(appSrc.includes("ctx.state !== 'running'"), 'booms are not scheduled while audio is suspended');
 function fireworksGain(name) {
     const match = appSrc.match(new RegExp('var ' + name + ' = ([0-9.]+);'));
     assert.ok(match, name + ' missing');
     return Number(match[1]);
 }
 assert.ok(fireworksGain('FIREWORKS_WHITE_BOOM_GAIN') > fireworksGain('FIREWORKS_COLOR_BOOM_GAIN'), 'white booms are louder than colorful booms');
-assert.ok(fireworksGain('FIREWORKS_COLOR_BOOM_GAIN') > fireworksGain('FIREWORKS_CRACKLE_GAIN'), 'spark crackles stay softer than the booms');
 assert.ok(fireworksGain('FIREWORKS_WHITE_BOOM_HZ') < fireworksGain('FIREWORKS_COLOR_BOOM_HZ'), 'white booms start lower than colorful booms');
 assert.ok(fireworksGain('FIREWORKS_WHITE_NOISE_HZ') < fireworksGain('FIREWORKS_COLOR_NOISE_HZ'), 'white boom noise is deeper than colorful boom noise');
 assert.ok(appSrc.includes('var bursts = 3 + Math.floor(Math.random() * 4)'), 'white flurries fire 3 to 6 booms');

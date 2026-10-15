@@ -979,7 +979,6 @@ function appendButterflies(layer) {
 
 var FIREWORKS_COLOR_BOOM_GAIN = 0.22;
 var FIREWORKS_WHITE_BOOM_GAIN = 0.55;
-var FIREWORKS_CRACKLE_GAIN = 0.045;
 var FIREWORKS_COLOR_BOOM_HZ = 150;
 var FIREWORKS_WHITE_BOOM_HZ = 78;
 var FIREWORKS_COLOR_NOISE_HZ = 380;
@@ -1002,7 +1001,7 @@ var fireworksResizeBound = false;
 var fireworksAudio = null;
 var fireworksMaster = null;
 var fireworksNoiseClip = null;
-var fireworksLastCrackle = 0;
+var fireworksAudioUnlockBound = false;
 
 function fireworksAudioContext() {
     var AC = window.AudioContext || window.webkitAudioContext;
@@ -1014,10 +1013,20 @@ function fireworksAudioContext() {
             return null;
         }
     }
-    if (fireworksAudio.state === 'suspended') {
-        fireworksAudio.resume();
-    }
     return fireworksAudio;
+}
+
+function resumeFireworksAudio() {
+    var ctx = fireworksAudioContext();
+    if (ctx && ctx.state === 'suspended') ctx.resume();
+}
+
+function bindFireworksAudioUnlock() {
+    if (fireworksAudioUnlockBound) return;
+    fireworksAudioUnlockBound = true;
+    document.addEventListener('pointerdown', resumeFireworksAudio, true);
+    document.addEventListener('keydown', resumeFireworksAudio, true);
+    document.addEventListener('touchstart', resumeFireworksAudio, true);
 }
 
 function fireworksOutput() {
@@ -1059,8 +1068,9 @@ function fireworksSoundLive() {
 function playFireworksBoom(kind) {
     if (!fireworksSoundLive()) return;
     var ctx = fireworksAudioContext();
+    if (!ctx || ctx.state !== 'running') return;
     var dest = fireworksOutput();
-    if (!ctx || !dest) return;
+    if (!dest) return;
     var white = kind === 'white';
     var now = ctx.currentTime;
     var peak = white ? FIREWORKS_WHITE_BOOM_GAIN : FIREWORKS_COLOR_BOOM_GAIN;
@@ -1090,28 +1100,6 @@ function playFireworksBoom(kind) {
     oscGain.connect(dest);
     osc.start(now);
     osc.stop(now + hold + 0.02);
-}
-
-function playFireworksCrackle() {
-    if (!fireworksSoundLive()) return;
-    var ctx = fireworksAudioContext();
-    var dest = fireworksOutput();
-    if (!ctx || !dest) return;
-    var now = ctx.currentTime;
-    var noise = ctx.createBufferSource();
-    noise.buffer = fireworksNoiseBuffer(ctx, 1.2);
-    var filter = ctx.createBiquadFilter();
-    filter.type = 'highpass';
-    filter.frequency.value = 2800 + Math.random() * 2200;
-    var gain = ctx.createGain();
-    gain.gain.setValueAtTime(FIREWORKS_CRACKLE_GAIN * (0.55 + Math.random() * 0.7), now);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045 + Math.random() * 0.04);
-    noise.connect(filter);
-    filter.connect(gain);
-    gain.connect(dest);
-    var offset = Math.random() * 0.8;
-    noise.start(now, offset);
-    noise.stop(now + 0.1);
 }
 
 function resizeFireworks() {
@@ -1251,7 +1239,6 @@ function fireworksTick(ts) {
             ri++;
         }
     }
-    var falling = false;
     var si = 0;
     while (si < fireworksSparks.length) {
         var spark = fireworksSparks[si];
@@ -1267,12 +1254,7 @@ function fireworksTick(ts) {
         spark.py = spark.y;
         spark.x += spark.vx * dt;
         spark.y += spark.vy * dt;
-        if (spark.vy > 20) falling = true;
         si++;
-    }
-    if (falling && ts - fireworksLastCrackle > 85) {
-        fireworksLastCrackle = ts;
-        playFireworksCrackle();
     }
     var fi = 0;
     while (fi < fireworksFlashes.length) {
@@ -1343,7 +1325,8 @@ function startFireworks(layer) {
         window.addEventListener('resize', resizeFireworks);
         fireworksResizeBound = true;
     }
-    fireworksAudioContext();
+    bindFireworksAudioUnlock();
+    resumeFireworksAudio();
     fireworksFrame = requestAnimationFrame(fireworksTick);
 }
 
