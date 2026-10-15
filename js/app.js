@@ -1178,7 +1178,7 @@ function launchFireworksRocket() {
 function queueWhiteFlurry() {
     var w = window.innerWidth || 1280;
     var h = window.innerHeight || 800;
-    var bursts = 5 + Math.floor(Math.random() * 3);
+    var bursts = 3 + Math.floor(Math.random() * 4);
     var start = fireworksClock;
     for (var i = 0; i < bursts; i++) {
         fireworksQueue.push({

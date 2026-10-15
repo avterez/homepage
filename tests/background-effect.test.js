@@ -230,6 +230,7 @@ function fireworksGain(name) {
 }
 assert.ok(fireworksGain('FIREWORKS_WHITE_BOOM_GAIN') > fireworksGain('FIREWORKS_COLOR_BOOM_GAIN'), 'white booms are louder than colorful booms');
 assert.ok(fireworksGain('FIREWORKS_COLOR_BOOM_GAIN') > fireworksGain('FIREWORKS_CRACKLE_GAIN'), 'spark crackles stay softer than the booms');
+assert.ok(appSrc.includes('var bursts = 3 + Math.floor(Math.random() * 4)'), 'white flurries fire 3 to 6 booms');
 assert.ok(appSrc.includes("setBackgroundEffect(fireworksCheckbox.checked ? 'fireworks' : 'none')"), 'the checkbox turns the fireworks show on and off');
 
 const fireworks = loadState();
