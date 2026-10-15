@@ -15,7 +15,7 @@ const quotesSrc = fs.readFileSync(path.join(root, 'js/quotes.js'), 'utf8');
 const debugSrc = fs.readFileSync(path.join(root, 'js/debug.js'), 'utf8');
 const appSrc = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');
 
-assert.ok(appSrc.includes('js/debug.js?v=pr98-quote-shown'), 'debug.js cache key should change with this panel');
+assert.ok(appSrc.includes('js/debug.js?v=pr104-dleaf-modal'), 'debug.js cache key should change with this panel');
 
 function makeElement() {
   const content = { innerHTML: '' };
@@ -34,6 +34,9 @@ function makeElement() {
       if (sel === '#debug-content') return content;
       if (sel === '#debug-dleaf-angle') return { value: '35', addEventListener: function () {} };
       if (sel === '#debug-dleaf-angle-minus' || sel === '#debug-dleaf-angle-plus') {
+        return { addEventListener: function () {} };
+      }
+      if (sel === '#dleaf' || sel === '.debug-panel__dleaf-preview') {
         return { addEventListener: function () {} };
       }
       return null;

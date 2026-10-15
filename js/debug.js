@@ -83,16 +83,13 @@ function ensureDebugPanel() {
             return { x: e.clientX, y: e.clientY };
         }
 
-        function startDebugDrag(e) {
-            if (e.type === 'mousedown' && e.button !== 0) return;
-            if (e.touches && e.touches.length > 1) return;
-            if (e.target.closest('button, label, input')) return;
+        function isDleafEventTarget(target) {
+            if (!target || typeof target.closest !== 'function') return false;
+            return !!target.closest('#dleaf, .debug-panel__dleaf-preview');
+        }
 
-            const point = debugDragPoint(e);
+        function commitDebugDrag(rect) {
             isDraggingDebug = true;
-            const rect = debugPanel.getBoundingClientRect();
-            debugDragOffsetX = point.x - rect.left;
-            debugDragOffsetY = point.y - rect.top;
             debugPanel.style.transition = 'none';
             debugPanel.style.cursor = 'grabbing';
             if (!debugPanel.style.left || debugPanel.style.left === 'auto') {
@@ -100,22 +97,67 @@ function ensureDebugPanel() {
                 debugPanel.style.top = rect.top + 'px';
                 debugPanel.style.right = 'auto';
             }
-            if (e.cancelable) e.preventDefault();
+        }
+
+        function startDebugDrag(e) {
+            if (e.type === 'mousedown' && e.button !== 0) return;
+            if (e.touches && e.touches.length > 1) return;
+            if (e.target && typeof e.target.closest === 'function' && e.target.closest('button, label, input')) return;
+
+            const point = debugDragPoint(e);
+            const rect = debugPanel.getBoundingClientRect();
+            debugDragOffsetX = point.x - rect.left;
+            debugDragOffsetY = point.y - rect.top;
+            debugDragOriginX = point.x;
+            debugDragOriginY = point.y;
+            debugDragMoved = false;
+            debugDragPending = true;
+            debugDragOnLeaf = isDleafEventTarget(e.target);
+
+            // A still press on the leaf is a click. Movement past the threshold becomes a drag.
+            if (!debugDragOnLeaf) {
+                commitDebugDrag(rect);
+                if (e.cancelable) e.preventDefault();
+            }
         }
 
         function moveDebugDrag(e) {
-            if (!isDraggingDebug || !debugPanel) return;
+            if (!debugPanel || (!debugDragPending && !isDraggingDebug)) return;
             if (e.touches && e.touches.length > 1) return;
-            if (e.cancelable) e.preventDefault();
 
             const point = debugDragPoint(e);
+            if (debugDragPending && !debugDragMoved) {
+                var dx = point.x - debugDragOriginX;
+                var dy = point.y - debugDragOriginY;
+                if ((dx * dx + dy * dy) >= (DLEAF_DRAG_THRESHOLD_PX * DLEAF_DRAG_THRESHOLD_PX)) {
+                    debugDragMoved = true;
+                }
+            }
+            if (debugDragOnLeaf && debugDragPending && !isDraggingDebug) {
+                if (!debugDragMoved) return;
+                commitDebugDrag(debugPanel.getBoundingClientRect());
+            }
+            if (!isDraggingDebug) return;
+            if (e.cancelable) e.preventDefault();
+
             debugPanel.style.left = (point.x - debugDragOffsetX) + 'px';
             debugPanel.style.top = (point.y - debugDragOffsetY) + 'px';
         }
 
         function endDebugDrag(e) {
-            if (!isDraggingDebug || !debugPanel) return;
             if (e && e.touches && e.touches.length > 0) return;
+
+            var pending = debugDragPending;
+            var onLeaf = debugDragOnLeaf;
+            var moved = debugDragMoved;
+            var cancelled = !!(e && e.type === 'touchcancel');
+            debugDragPending = false;
+            debugDragOnLeaf = false;
+            debugDragMoved = false;
+
+            if (pending && onLeaf && !moved && !cancelled) noteDleafClick();
+
+            if (!isDraggingDebug || !debugPanel) return;
 
             isDraggingDebug = false;
             debugPanel.style.transition = '';
@@ -130,6 +172,17 @@ function ensureDebugPanel() {
 
             debugPanel.style.left = clampedLeft + 'px';
             debugPanel.style.top = clampedTop + 'px';
+        }
+
+        function onLeafPointerDown(e) {
+            startDebugDrag(e);
+            if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+        }
+
+        var leafHit = debugPanel.querySelector('.debug-panel__dleaf-preview');
+        if (leafHit && typeof leafHit.addEventListener === 'function') {
+            leafHit.addEventListener('mousedown', onLeafPointerDown);
+            leafHit.addEventListener('touchstart', onLeafPointerDown, { passive: false });
         }
 
         debugPanel.addEventListener('mousedown', startDebugDrag);
@@ -210,6 +263,32 @@ function isDebugPanelOpen() {
 let isDraggingDebug = false;
 let debugDragOffsetX = 0;
 let debugDragOffsetY = 0;
+let debugDragPending = false;
+let debugDragOnLeaf = false;
+let debugDragMoved = false;
+let debugDragOriginX = 0;
+let debugDragOriginY = 0;
+let dleafClickTimes = [];
+var DLEAF_CLICKS_TO_OPEN = 10;
+var DLEAF_CLICK_WINDOW_MS = 10000;
+var DLEAF_DRAG_THRESHOLD_PX = 5;
+
+function noteDleafClick() {
+    var now = Date.now();
+    var cutoff = now - DLEAF_CLICK_WINDOW_MS;
+    var next = [];
+    var i;
+    for (i = 0; i < dleafClickTimes.length; i++) {
+        if (dleafClickTimes[i] >= cutoff) next.push(dleafClickTimes[i]);
+    }
+    next.push(now);
+    if (next.length >= DLEAF_CLICKS_TO_OPEN) {
+        dleafClickTimes = [];
+        if (typeof openUiModal === 'function') openUiModal('dleaf-modal');
+        return;
+    }
+    dleafClickTimes = next;
+}
 
 function updateDebugInfo() {
     if (!debugPanel) return;

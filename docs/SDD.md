@@ -291,6 +291,7 @@ Primary shell after load. Full component design: **§6.0**.
 | `#category-info-modal` | Categories help, opened above Add/Edit |
 | `#position-info-modal` | Position help, opened above Add/Edit |
 | `#tally-info-modal` | Tally help, opened above Add/Edit |
+| `#dleaf-modal` | FDATE (date) and FNAME (text), opened by ten DLEAF clicks within ten seconds (**§6.14**). PR 104 |
 
 **Created dynamically in JS (not in static HTML):**
 
@@ -828,7 +829,7 @@ Landing Screen **reads** shared app state (does not define a separate entity mod
 | ID | Role |
 |----|------|
 | `#daily-quote` | Quote |
-| `#dleaf` | Default leaf drawing, always shown in the debug panel, centered between the DLEAF label and the minus button. The angle textbox rotates it and starts at 35 degrees |
+| `#dleaf` | Default leaf drawing, always shown in the debug panel, centered between the DLEAF label and the minus button. The angle textbox rotates it and starts at 35 degrees. Ten clicks on the leaf within ten seconds open `#dleaf-modal` |
 | `#header-logo`, `#page-title` | Brand |
 | `#greeting`, `#date`, `#clock` | Time context |
 | `#category-search`, `#categories-sidebar`, `#clear-filter-link` | Sidebar |
@@ -3511,7 +3512,7 @@ Complements §6.12.3 load bootstrap with UX and chrome for the **first empty ses
      - **Refresh** — `.debug-panel__btn--refresh`; muted → active text on hover; hover bg `var(--color-hairline)`
      - **Close** — `.debug-panel__btn--close`; muted → active text on hover; hover bg `rgb(127 29 29 / 0.3)`
 2. **Content** — `#debug-content` (`.debug-panel__content`); rows rebuilt by `updateDebugInfo()`
-3. **DLEAF** — `.debug-panel__dleaf` at the bottom, outside `#debug-content`, so the live refresh does not clear it. The label reads **DLEAF**. `#dleaf`, a 30px-wide copy of the falling-leaf shape, stays visible and is centered in the space between that label and the minus button. The angle textbox defaults to 35, is 3rem wide, and centers its text. Editing that value rotates the leaf clockwise by that many degrees. Minus and plus buttons beside the box step the angle by one degree, and the value can go below zero.
+3. **DLEAF** — `.debug-panel__dleaf` at the bottom, outside `#debug-content`, so the live refresh does not clear it. The label reads **DLEAF**. `#dleaf`, a 30px-wide copy of the falling-leaf shape, stays visible and is centered in the space between that label and the minus button. The angle textbox defaults to 35, is 3rem wide, and centers its text. Editing that value rotates the leaf clockwise by that many degrees. Minus and plus buttons beside the box step the angle by one degree, and the value can go below zero. Ten clicks on `#dleaf` or `.debug-panel__dleaf-preview` within ten seconds open `#dleaf-modal`. Each click keeps a timestamp. A click older than ten seconds does not count. A press that moves at least 5px is a drag and does not count. Opening the modal clears that buffer so it does not open again until ten new clicks. The angle buttons do not count. `#dleaf-modal` is a `ui-modal` (Escape and the header close button dismiss it) with a date field labeled **FDATE** and a text field labeled **FNAME**. Those fields are display-only. The debug PR meta for this behavior is **104**.
 
 **Metric row pattern**
 
@@ -3544,7 +3545,7 @@ Refresh paths: open panel, manual refresh button, window **resize** (while visib
 
 | Phase | Behavior |
 |-------|----------|
-| **Start** | `mousedown` on panel **except** when target is inside a `button`, `label`, or `input`. Sets `isDraggingDebug`, records offset from panel top-left, disables CSS transition, cursor → grabbing. First drag converts CSS `right` placement to explicit `left`/`top` px and sets `right: auto`. |
+| **Start** | `mousedown` on panel **except** when target is inside a `button`, `label`, or `input`. A press on `#dleaf` or `.debug-panel__dleaf-preview` stays a click until the pointer moves at least 5px; that click is counted on pointer-up. Any other press sets `isDraggingDebug` immediately, records offset from panel top-left, disables CSS transition, cursor → grabbing. First drag converts CSS `right` placement to explicit `left`/`top` px and sets `right: auto`. |
 | **Move** | Document `mousemove`: free `left`/`top` follow pointer (**no live clamp** — intentional for smooth feel). `preventDefault()` while dragging. |
 | **End** | Document `mouseup`: clear drag flag, restore transition/cursor, **clamp** so entire panel stays inside viewport with **12px** edge padding (all four corners remain visible). |
 | **Resize** | If panel visible and any edge breaches the 12px inset, re-clamp `left`/`top`; always refresh metrics when visible. |
@@ -3557,6 +3558,7 @@ Refresh paths: open panel, manual refresh button, window **resize** (while visib
 | `debugUpdateInterval` | Interval id while panel open; cleared on close |
 | `isDraggingDebug` | Drag session flag |
 | `debugDragOffsetX` / `debugDragOffsetY` | Pointer offset within panel at drag start |
+| `dleafClickTimes` | Timestamps of DLEAF clicks inside the current ten-second window. Cleared when `#dleaf-modal` opens |
 | `keyboardFocusedIndex` | Shared card keyboard-nav index (**−1** = none); used app-wide, displayed live in panel |
 | `listControlsStacked` | Shared flag for list-controls vertical stack layout (`app.js` font-scale responsive); **not** shown in the panel UI today |
 
@@ -3568,6 +3570,7 @@ Refresh paths: open panel, manual refresh button, window **resize** (while visib
 | Click refresh | Inline `onclick` | Immediate `updateDebugInfo()` |
 | Click close | Inline `onclick` | Toggle closed |
 | mousedown (non-button) | Panel listener | Begin drag |
+| Ten DLEAF clicks within 10 seconds | `#dleaf` / `.debug-panel__dleaf-preview` pointer-up, no drag | Open `#dleaf-modal` (FDATE, FNAME) |
 | mousemove (document) | Document listener | Live reposition |
 | mouseup (document) | Document listener | End drag + clamp |
 | resize (window) | Window listener | Refresh metrics + conditional clamp |
@@ -3580,7 +3583,7 @@ Refresh paths: open panel, manual refresh button, window **resize** (while visib
 - **No app theme integration** — fixed developer value colors (`.debug-panel__val--size` / `--count` / `--index`) so the panel remains readable regardless of user color roles.
 - **Lazy DOM** — zero cost until first open; safe on `file://` and static hosting.
 - **Easy extension** — metrics are plain HTML rows inside `updateDebugInfo()`; add rows without HTML template changes.
-- **Not a modal** — does not participate in Escape-to-close modal stack; only Ctrl+Shift+D / close button dismiss it.
+- **Not a modal** — the panel does not participate in Escape-to-close; only Ctrl+Shift+D / close button dismiss it. `#dleaf-modal` is a separate `ui-modal` and does close on Escape.
 - Coexists with keyboard card focus and layout flags it also hosts as globals for non-module classic-script sharing.
 
 ### 6.15 Snow
@@ -4194,6 +4197,7 @@ Minimum before tagging a release:
 | 3.4 | September 28, 2026 | Brought the living spec in line with the app through PR 63: four font-size steps; persisted Tally / My Order / ABC / Date Added; link `tally`; Add/Edit field order, collapsed POSITION, and Categories / Position / Tally help notes; URL suggestions; desktop emoji search under the title plus the description tip; snow; debug panel PR number from `homepage-pr` |
 | 3.5 | October 14, 2026 | Daily quote is the `docs/q.txt` line at `(days since January 1, 2026) mod line count`. The sequence starts at the first line and starts over when the day count reaches the number of lines. |
 | 3.6 | October 15, 2026 | Debug panel shows `# of Quotes` and the 1-based `Quote Shown` |
+| 3.7 | October 15, 2026 | PR 104: ten DLEAF clicks within ten seconds open `#dleaf-modal` with FDATE (date) and FNAME (text). Debug panel PR meta is 104 |
 
 ---
 

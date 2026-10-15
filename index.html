@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<!-- AI: The Debug screen shows this pull request number. When a new PR starts, update content below to that PR number. -->
-		<meta name="homepage-pr" content="103">
+		<meta name="homepage-pr" content="104">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<script>
 		(function () {
@@ -46,7 +46,7 @@
 		<link rel="preload" href="css/lucide/lucide.woff2?v=pr75-settings-icons" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="css/styles.css?v=pr99-season-spacing" as="style">
+		<link rel="preload" href="css/styles.css?v=pr104-dleaf-modal" as="style">
 
 		<!-- Critical CSS (FOUC / first paint) -->
 		<style>
@@ -70,7 +70,7 @@
 		</style>
 
 		<!-- Main CSS (blocking; avoid FOUC) -->
-		<link rel="stylesheet" href="css/styles.css?v=pr99-season-spacing">
+		<link rel="stylesheet" href="css/styles.css?v=pr104-dleaf-modal">
 		<link rel="stylesheet" href="css/lucide/lucide.css?v=pr75-settings-icons">
 
 		<!-- FA subset async (~1.8KB vs full) -->
@@ -1713,6 +1713,35 @@
 			</div>
 		</div>
 
+		<!-- Ten DLEAF clicks within ten seconds. Fields are display-only. -->
+		<div id="dleaf-modal"
+			class="ui-modal ui-modal--topmost dleaf-modal"
+			role="dialog" aria-modal="true" aria-labelledby="dleaf-modal-title">
+			<div onclick="event.stopImmediatePropagation()"
+				class="ui-modal__panel modal dleaf-modal__panel">
+
+				<div class="ui-modal__header">
+					<h3 id="dleaf-modal-title" class="ui-modal__title ui-modal__title--row">
+						<span>DLEAF</span>
+					</h3>
+					<button type="button" onclick="closeDleafModal()" class="ui-modal__close" aria-label="Close">
+						<i class="fa-solid fa-times"></i>
+					</button>
+				</div>
+
+				<div class="dleaf-modal__body">
+					<div class="dleaf-modal__field">
+						<label class="dleaf-modal__label" for="dleaf-fdate">FDATE</label>
+						<input type="date" id="dleaf-fdate" class="dleaf-modal__input" name="fdate">
+					</div>
+					<div class="dleaf-modal__field">
+						<label class="dleaf-modal__label" for="dleaf-fname">FNAME</label>
+						<input type="text" id="dleaf-fname" class="dleaf-modal__input" name="fname" autocomplete="off" spellcheck="false">
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div id="landscape-lock"
 			class="landscape-lock"
 			role="alertdialog"
@@ -1729,7 +1758,7 @@
 		</div>
 
 		<!-- Defer JS (tag order = execute order) -->
-		<script defer src="js/config.js?v=pr87-hemisphere"></script>
+		<script defer src="js/config.js?v=pr104-dleaf-modal"></script>
 		<script defer src="js/state.js?v=pr87-timeout"></script>
 		<script defer src="js/storage.js?v=pr87-timeout"></script>
 		<script defer src="js/github.js"></script>
@@ -1738,7 +1767,7 @@
 		<script defer src="js/addeditlink.js?v=pr78-google-ai"></script>
 		<script defer src="js/settingsmodal.js?v=pr92-seasonal-tap"></script>
 		<script defer src="js/gsmodal.js?v=pr82-clear"></script>
-		<script defer src="js/app.js?v=pr99-goto-focus"></script>
+		<script defer src="js/app.js?v=pr104-dleaf-modal"></script>
 		<script defer src="js/script.js"></script>
 	</body>
 </html>
