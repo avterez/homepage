@@ -30,9 +30,12 @@ assert.ok(settingsSrc.includes('paintSeasonalHeaderIcon(true)'), 'tapping the se
 assert.ok(settingsSrc.includes("closest('.ui-modal__close')"), 'the seasonal close control does not reshuffle the icon');
 assert.ok(html.includes('>Northern<') && html.includes('>Southern<'), 'hemisphere options missing');
 assert.ok(
-    css.includes('.hemisphere-modal__schedule{') && css.includes('.hemisphere-modal__schedule{margin:1rem 0 0;padding:0;list-style:none;color:var(--text-color);font-size:calc(0.75rem * var(--font-scale, 1));line-height:1.45}'),
+    css.includes('.hemisphere-modal__schedule{margin:calc(1rem / var(--font-scale, 1)) 0 0;padding:0;list-style:none;color:var(--text-color);font-size:calc(0.75rem * var(--font-scale, 1));line-height:1.45}'),
     'season schedule uses the same size as the hemisphere option labels'
 );
+assert.ok(css.includes('#hemisphere-modal .ui-modal__panel{width:90%;max-width:510px;min-width:0}'), 'seasonal panel is 90% wide and capped at 510px');
+assert.ok(css.includes('#hemisphere-modal .about-modal__body{padding:calc(1.5rem / var(--font-scale, 1)) calc(1.5rem / var(--font-scale, 1)) calc(1rem / var(--font-scale, 1))}'), 'seasonal body padding stays put when the font size changes');
+assert.ok(css.includes('#hemisphere-modal .about-modal__footer{padding:calc(1.25rem / var(--font-scale, 1)) calc(1.5rem / var(--font-scale, 1)) calc(1.5rem / var(--font-scale, 1))}'), 'seasonal footer padding stays put when the font size changes');
 assert.ok(
     css.includes('.settings-modal__check-label{color:var(--text-color);font-size:calc(0.75rem * var(--font-scale,1));font-weight:500}')
     || css.includes('.settings-modal__label,.settings-modal__check-label{color:var(--text-color);font-size:calc(0.75rem * var(--font-scale,1));font-weight:500}'),
