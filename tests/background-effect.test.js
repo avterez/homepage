@@ -112,6 +112,12 @@ assert.ok(!css.includes('translate3d(var(--snow-drift),18vh,0)'), 'the zig-zag w
 assert.ok(css.includes('var(--snow-drift) * var(--snow-t) + var(--snow-drift) * sin(var(--snow-ang))'), 'sideways drift is a sine wrapped around the linear path');
 assert.ok(css.includes('-8vh + 116vh * var(--snow-t)'), 'the vertical fall is linear');
 assert.ok(css.includes('--snow-spin:calc(var(--snow-t) * 360deg)'), 'crystals spin smoothly with the fall');
+assert.ok(css.includes('.snow-flake__arm{'), 'crystal spokes are flat bars');
+assert.ok(appSrc.includes('armIndex * 60'), 'crystal spokes are sixty degrees apart');
+assert.ok(css.includes('.snow-flake--fern>.snow-flake__arm::before{left:0}') && css.includes('.snow-flake--fern>.snow-flake__arm::after{right:0}'), 'larger flakes grow a crossbar at each spoke tip');
+assert.ok(appSrc.includes("arm.className = 'snow-flake__arm'"), 'a crystal is built from three spokes');
+assert.ok(appSrc.includes('snow-flake--fern'), 'some flakes use the branched shape');
+assert.ok(appSrc.includes('roll < 0.12') && appSrc.includes('roll < 0.34'), 'most flakes stay plain dots');
 assert.ok(appSrc.includes("setProperty('--snow-sway', (1.5 + Math.random() * 1.5).toFixed(2))"), 'each flake varies how often it sways');
 assert.ok(appSrc.includes("setProperty('--snow-phase', (Math.random() * 360).toFixed(1) + 'deg')"), 'each flake starts at its own point on the sine');
 
