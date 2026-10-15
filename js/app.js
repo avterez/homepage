@@ -358,7 +358,7 @@ function ensureDebugLoaded() {
 
     __debugScriptPromise = new Promise(function (resolve, reject) {
         var s = document.createElement('script');
-        s.src = 'js/debug.js?v=pr104-dleaf-modal';
+        s.src = 'js/debug.js?v=pr104-header-drag';
         s.onload = function () {
             window.__debugModuleLoaded = true;
             resolve();

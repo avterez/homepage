@@ -67,7 +67,8 @@ function ensureDebugPanel() {
             if (dleafPlus) dleafPlus.addEventListener('click', function () { stepDleafAngle(1); });
         }
 
-        debugPanel.style.cursor = 'grab';
+        var debugHeader = debugPanel.querySelector('.debug-panel__header');
+        if (debugHeader && debugHeader.style) debugHeader.style.cursor = 'grab';
         debugPanel.style.touchAction = 'none';
         debugPanel.style.msTouchAction = 'none';
         debugPanel.style.webkitUserSelect = 'none';
@@ -91,7 +92,7 @@ function ensureDebugPanel() {
         function commitDebugDrag(rect) {
             isDraggingDebug = true;
             debugPanel.style.transition = 'none';
-            debugPanel.style.cursor = 'grabbing';
+            if (debugHeader && debugHeader.style) debugHeader.style.cursor = 'grabbing';
             if (!debugPanel.style.left || debugPanel.style.left === 'auto') {
                 debugPanel.style.left = rect.left + 'px';
                 debugPanel.style.top = rect.top + 'px';
@@ -114,7 +115,7 @@ function ensureDebugPanel() {
             debugDragPending = true;
             debugDragOnLeaf = isDleafEventTarget(e.target);
 
-            // A still press on the leaf is a click. Movement past the threshold becomes a drag.
+            // A still press on the leaf is a click. Movement past the threshold is not a click and does not move the panel.
             if (!debugDragOnLeaf) {
                 commitDebugDrag(rect);
                 if (e.cancelable) e.preventDefault();
@@ -132,10 +133,6 @@ function ensureDebugPanel() {
                 if ((dx * dx + dy * dy) >= (DLEAF_DRAG_THRESHOLD_PX * DLEAF_DRAG_THRESHOLD_PX)) {
                     debugDragMoved = true;
                 }
-            }
-            if (debugDragOnLeaf && debugDragPending && !isDraggingDebug) {
-                if (!debugDragMoved) return;
-                commitDebugDrag(debugPanel.getBoundingClientRect());
             }
             if (!isDraggingDebug) return;
             if (e.cancelable) e.preventDefault();
@@ -161,7 +158,7 @@ function ensureDebugPanel() {
 
             isDraggingDebug = false;
             debugPanel.style.transition = '';
-            debugPanel.style.cursor = 'grab';
+            if (debugHeader && debugHeader.style) debugHeader.style.cursor = 'grab';
             const rect = debugPanel.getBoundingClientRect();
             const padding = 12;
             const maxLeft = window.innerWidth - rect.width - padding;
@@ -185,8 +182,10 @@ function ensureDebugPanel() {
             leafHit.addEventListener('touchstart', onLeafPointerDown, { passive: false });
         }
 
-        debugPanel.addEventListener('mousedown', startDebugDrag);
-        debugPanel.addEventListener('touchstart', startDebugDrag, { passive: false });
+        if (debugHeader && typeof debugHeader.addEventListener === 'function') {
+            debugHeader.addEventListener('mousedown', startDebugDrag);
+            debugHeader.addEventListener('touchstart', startDebugDrag, { passive: false });
+        }
         document.addEventListener('mousemove', moveDebugDrag);
         document.addEventListener('touchmove', moveDebugDrag, { passive: false });
         document.addEventListener('mouseup', endDebugDrag);

@@ -17,11 +17,24 @@ const configSrc = fs.readFileSync(path.join(root, 'js/config.js'), 'utf8');
 
 const modalAt = html.indexOf('id="dleaf-modal"');
 assert.ok(modalAt !== -1, 'index.html should include #dleaf-modal');
-const modalHtml = html.slice(modalAt, modalAt + 1600);
-assert.ok(/<label[^>]*for="dleaf-fdate"[^>]*>FDATE<\/label>/.test(modalHtml), modalHtml);
-assert.ok(modalHtml.includes('type="date"') && modalHtml.includes('id="dleaf-fdate"'), modalHtml);
-assert.ok(/<label[^>]*for="dleaf-fname"[^>]*>FNAME<\/label>/.test(modalHtml), modalHtml);
-assert.ok(modalHtml.includes('type="text"') && modalHtml.includes('id="dleaf-fname"'), modalHtml);
+const modalEnd = html.indexOf('id="landscape-lock"', modalAt);
+const modalHtml = html.slice(modalAt, modalEnd === -1 ? modalAt + 8000 : modalEnd);
+
+function assertFdateFields(source, label) {
+  assert.ok(source.includes('>FDATE<'), label + ' should label FDATE');
+  assert.ok(source.includes('id="dleaf-fdate-month"'), label + ' should ask for a month');
+  assert.ok(source.includes('id="dleaf-fdate-day"'), label + ' should ask for a day');
+  assert.ok(/<option value="4" selected>April<\/option>/.test(source), label + ' should default the month to April');
+  assert.ok(/<option value="15" selected>15<\/option>/.test(source), label + ' should default the day to 15');
+  assert.ok(!source.includes('type="date"'), label + ' should not use a year-bearing date input');
+  assert.ok(!/year/i.test(source), label + ' should not ask for a year');
+  assert.ok(/<label[^>]*for="dleaf-fname"[^>]*>FNAME<\/label>/.test(source), label);
+  const fnameTag = source.match(/<input[^>]*id="dleaf-fname"[^>]*>/);
+  assert.ok(fnameTag && fnameTag[0].includes('type="text"'), label + ' FNAME should be a text box');
+  assert.ok(fnameTag && !/\bvalue\s*=/.test(fnameTag[0]), label + ' FNAME should start blank');
+}
+
+assertFdateFields(modalHtml, 'index.html');
 assert.ok(html.includes('name="homepage-pr" content="104"'), 'debug PR meta should be 104');
 assert.ok(configSrc.includes("'dleaf-modal'"), 'dleaf-modal should be a ui-modal id');
 assert.ok(appSrc.includes("'dleaf-modal': closeDleafModal"), 'Escape should close the DLEAF modal');
@@ -80,6 +93,9 @@ function loadPanel() {
   }
 
   const panel = node({ id: 'debug-panel', tagName: 'div', className: 'debug-panel' });
+  const header = node({ className: 'debug-panel__header', tagName: 'div', parent: panel });
+  const closeBtn = node({ tagName: 'button', className: 'debug-panel__btn--close', parent: header });
+  const content = node({ id: 'debug-content', className: 'debug-panel__content', parent: panel });
   const preview = node({
     className: 'debug-panel__dleaf-preview',
     parent: panel
@@ -92,7 +108,8 @@ function loadPanel() {
   modal.innerHTML = modalHtml;
 
   panel.querySelector = function (sel) {
-    if (sel === '#debug-content') return panel.content;
+    if (sel === '#debug-content') return content;
+    if (sel === '.debug-panel__header') return header;
     if (sel === '#debug-dleaf-angle') return angle;
     if (sel === '#debug-dleaf-angle-minus') return minus;
     if (sel === '#debug-dleaf-angle-plus') return plus;
@@ -100,7 +117,7 @@ function loadPanel() {
     if (sel === '#dleaf') return leaf;
     return null;
   };
-  panel.content = { innerHTML: '' };
+  panel.content = content;
 
   function dispatch(target, type, extra) {
     const event = Object.assign({
@@ -165,6 +182,9 @@ function loadPanel() {
     opened: opened,
     leaf: leaf,
     plus: plus,
+    header: header,
+    closeBtn: closeBtn,
+    content: content,
     dispatch: dispatch,
     panel: panel
   };
@@ -182,10 +202,7 @@ assert.ok(!within.modal.classList.contains('is-open'), 'nine clicks should not o
 click(within, within.leaf, 16, 16);
 assert.ok(within.modal.classList.contains('is-open'), 'the tenth click within ten seconds should open the modal');
 assert.strictEqual(within.opened[0], 'dleaf-modal');
-assert.ok(/<label[^>]*for="dleaf-fdate"[^>]*>FDATE<\/label>/.test(within.modal.innerHTML));
-assert.ok(within.modal.innerHTML.includes('type="date"') && within.modal.innerHTML.includes('id="dleaf-fdate"'));
-assert.ok(/<label[^>]*for="dleaf-fname"[^>]*>FNAME<\/label>/.test(within.modal.innerHTML));
-assert.ok(within.modal.innerHTML.includes('type="text"') && within.modal.innerHTML.includes('id="dleaf-fname"'));
+assertFdateFields(within.modal.innerHTML, 'opened modal');
 
 within.modal.classList.remove('is-open');
 within.opened.length = 0;
@@ -210,6 +227,7 @@ dragged.dispatch(dragged.leaf, 'mousedown', { clientX: 12, clientY: 12 });
 dragged.dispatch(dragged.leaf, 'mousemove', { clientX: 40, clientY: 12 });
 dragged.dispatch(dragged.leaf, 'mouseup', { clientX: 40, clientY: 12 });
 assert.ok(!dragged.modal.classList.contains('is-open'), 'a drag should not count as a DLEAF click');
+assert.strictEqual(dragged.panel.style.left, undefined, 'a leaf press that moves should not move the panel');
 click(dragged, dragged.leaf, 12, 12);
 assert.ok(dragged.modal.classList.contains('is-open'), 'the tenth still click after a drag should open the modal');
 
@@ -217,5 +235,24 @@ const angle = loadPanel();
 angle.clock(8000);
 for (let i = 0; i < 10; i++) click(angle, angle.plus, 80, 20);
 assert.ok(!angle.modal.classList.contains('is-open'), 'angle buttons should not count as DLEAF clicks');
+assert.strictEqual(angle.panel.style.left, undefined, 'angle buttons should not move the panel');
+
+function drag(ui, target, x0, y0, x1, y1) {
+  ui.dispatch(target, 'mousedown', { clientX: x0, clientY: y0 });
+  ui.dispatch(target, 'mousemove', { clientX: x1, clientY: y1 });
+  ui.dispatch(target, 'mouseup', { clientX: x1, clientY: y1 });
+}
+
+const bodyDrag = loadPanel();
+drag(bodyDrag, bodyDrag.content, 40, 90, 160, 90);
+assert.strictEqual(bodyDrag.panel.style.left, undefined, 'dragging the body should not change panel.style.left');
+
+const headerDrag = loadPanel();
+drag(headerDrag, headerDrag.header, 40, 48, 140, 48);
+assert.strictEqual(headerDrag.panel.style.left, '120px', 'dragging the header should change panel.style.left');
+
+const closeDrag = loadPanel();
+drag(closeDrag, closeDrag.closeBtn, 180, 48, 260, 48);
+assert.strictEqual(closeDrag.panel.style.left, undefined, 'the header close button should not start a drag');
 
 console.log('dleaf-modal.test.js: ok');
