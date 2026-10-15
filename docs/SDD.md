@@ -291,7 +291,7 @@ Primary shell after load. Full component design: **§6.0**.
 | `#category-info-modal` | Categories help, opened above Add/Edit |
 | `#position-info-modal` | Position help, opened above Add/Edit |
 | `#tally-info-modal` | Tally help, opened above Add/Edit |
-| `#dleaf-modal` | FDATE (month and day, default April 15, no year) and FNAME (blank text), opened by ten DLEAF clicks within ten seconds (**§6.14**). PR 104 |
+| `#founders-modal` | Founders Modal. Header **Special Date**. **Date:** is month and day, default April 15, no year. **Name:** starts blank. Opened by ten DLEAF clicks within ten seconds (**§6.14**). PR 105 |
 
 **Created dynamically in JS (not in static HTML):**
 
@@ -829,7 +829,7 @@ Landing Screen **reads** shared app state (does not define a separate entity mod
 | ID | Role |
 |----|------|
 | `#daily-quote` | Quote |
-| `#dleaf` | Default leaf drawing, always shown in the debug panel, centered between the DLEAF label and the minus button. The angle textbox rotates it and starts at 35 degrees. Ten clicks on the leaf within ten seconds open `#dleaf-modal` |
+| `#dleaf` | Default leaf drawing, always shown in the debug panel, centered between the DLEAF label and the minus button. The angle textbox rotates it and starts at 35 degrees. Ten clicks on the leaf within ten seconds open the Founders Modal (`#founders-modal`) |
 | `#header-logo`, `#page-title` | Brand |
 | `#greeting`, `#date`, `#clock` | Time context |
 | `#category-search`, `#categories-sidebar`, `#clear-filter-link` | Sidebar |
@@ -3512,7 +3512,7 @@ Complements §6.12.3 load bootstrap with UX and chrome for the **first empty ses
      - **Refresh** — `.debug-panel__btn--refresh`; muted → active text on hover; hover bg `var(--color-hairline)`
      - **Close** — `.debug-panel__btn--close`; muted → active text on hover; hover bg `rgb(127 29 29 / 0.3)`
 2. **Content** — `#debug-content` (`.debug-panel__content`); rows rebuilt by `updateDebugInfo()`
-3. **DLEAF** — `.debug-panel__dleaf` at the bottom, outside `#debug-content`, so the live refresh does not clear it. The label reads **DLEAF**. `#dleaf`, a 30px-wide copy of the falling-leaf shape, stays visible and is centered in the space between that label and the minus button. The angle textbox defaults to 35, is 3rem wide, and centers its text. Editing that value rotates the leaf clockwise by that many degrees. Minus and plus buttons beside the box step the angle by one degree, and the value can go below zero. Ten clicks on `#dleaf` or `.debug-panel__dleaf-preview` within ten seconds open `#dleaf-modal`. Each click keeps a timestamp. A click older than ten seconds does not count. A press that moves at least 5px does not count as a click and does not move the panel. Only the header moves the panel. Opening the modal clears that buffer so it does not open again until ten new clicks. The angle buttons do not count. `#dleaf-modal` is a `ui-modal` (Escape and the header close button dismiss it) with **FDATE** as month and day only (no year), defaulting to April 15, and a text field labeled **FNAME** that starts blank. Those fields are display-only. The debug PR meta for this behavior is **104**.
+3. **DLEAF** — `.debug-panel__dleaf` at the bottom, outside `#debug-content`, so the live refresh does not clear it. The label reads **DLEAF**. `#dleaf`, a 30px-wide copy of the falling-leaf shape, stays visible and is centered in the space between that label and the minus button. The angle textbox defaults to 35, is 3rem wide, and centers its text. Editing that value rotates the leaf clockwise by that many degrees. Minus and plus buttons beside the box step the angle by one degree, and the value can go below zero. Ten clicks on `#dleaf` or `.debug-panel__dleaf-preview` within ten seconds open the Founders Modal (`#founders-modal`). Each click keeps a timestamp. A click older than ten seconds does not count. A press that moves at least 5px does not count as a click and does not move the panel. Only the header moves the panel. Opening the modal clears that buffer so it does not open again until ten new clicks. The angle buttons do not count. `#founders-modal` (the Founders Modal) is a `ui-modal` (Escape and the header close button dismiss it). Its header title is **Special Date**. **Date:** is month and day only (no year), defaulting to April 15, and **Name:** is a text field that starts blank. Those fields are display-only. The debug PR meta is **105**.
 
 **Metric row pattern**
 
@@ -3558,7 +3558,7 @@ Refresh paths: open panel, manual refresh button, window **resize** (while visib
 | `debugUpdateInterval` | Interval id while panel open; cleared on close |
 | `isDraggingDebug` | Drag session flag |
 | `debugDragOffsetX` / `debugDragOffsetY` | Pointer offset within panel at drag start |
-| `dleafClickTimes` | Timestamps of DLEAF clicks inside the current ten-second window. Cleared when `#dleaf-modal` opens |
+| `dleafClickTimes` | Timestamps of DLEAF clicks inside the current ten-second window. Cleared when the Founders Modal opens |
 | `keyboardFocusedIndex` | Shared card keyboard-nav index (**−1** = none); used app-wide, displayed live in panel |
 | `listControlsStacked` | Shared flag for list-controls vertical stack layout (`app.js` font-scale responsive); **not** shown in the panel UI today |
 
@@ -3571,7 +3571,7 @@ Refresh paths: open panel, manual refresh button, window **resize** (while visib
 | Click close | Inline `onclick` | Toggle closed |
 | mousedown / touchstart on `.debug-panel__header` (not a button, label, or input) | Header listener | Begin drag |
 | mousedown / touchstart on the panel body | — | Does not move the panel |
-| Ten DLEAF clicks within 10 seconds | `#dleaf` / `.debug-panel__dleaf-preview` pointer-up, without a 5px move | Open `#dleaf-modal` (FDATE month and day, blank FNAME) |
+| Ten DLEAF clicks within 10 seconds | `#dleaf` / `.debug-panel__dleaf-preview` pointer-up, without a 5px move | Open the Founders Modal (`#founders-modal`): title Special Date, Date: month and day, Name: blank |
 | mousemove / touchmove (document) | Document listener | Live reposition while a header drag is active |
 | mouseup / touchend (document) | Document listener | End drag + clamp |
 | resize (window) | Window listener | Refresh metrics + conditional clamp |
@@ -3584,7 +3584,7 @@ Refresh paths: open panel, manual refresh button, window **resize** (while visib
 - **No app theme integration** — fixed developer value colors (`.debug-panel__val--size` / `--count` / `--index`) so the panel remains readable regardless of user color roles.
 - **Lazy DOM** — zero cost until first open; safe on `file://` and static hosting.
 - **Easy extension** — metrics are plain HTML rows inside `updateDebugInfo()`; add rows without HTML template changes.
-- **Not a modal** — the panel does not participate in Escape-to-close; only Ctrl+Shift+D / close button dismiss it. `#dleaf-modal` is a separate `ui-modal` and does close on Escape.
+- **Not a modal** — the panel does not participate in Escape-to-close; only Ctrl+Shift+D / close button dismiss it. The Founders Modal (`#founders-modal`) is a separate `ui-modal` and does close on Escape.
 - Coexists with keyboard card focus and layout flags it also hosts as globals for non-module classic-script sharing.
 
 ### 6.15 Snow
@@ -4201,6 +4201,7 @@ Minimum before tagging a release:
 | 3.7 | October 15, 2026 | PR 104: ten DLEAF clicks within ten seconds open `#dleaf-modal` with FDATE (date) and FNAME (text). Debug panel PR meta is 104 |
 | 3.8 | October 15, 2026 | FDATE asks for month and day only and defaults to April 15. It does not ask for a year. FNAME starts blank. Only the debug panel header moves the panel; body drag is disabled |
 | 3.9 | October 15, 2026 | Hovering the DLEAF image keeps the debug panel body cursor |
+| 3.10 | October 15, 2026 | PR 105: the DLEAF click modal is the Founders Modal. Its header is Special Date. The field labels are Date: and Name: |
 
 ---
 

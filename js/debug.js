@@ -283,7 +283,7 @@ function noteDleafClick() {
     next.push(now);
     if (next.length >= DLEAF_CLICKS_TO_OPEN) {
         dleafClickTimes = [];
-        if (typeof openUiModal === 'function') openUiModal('dleaf-modal');
+        if (typeof openUiModal === 'function') openUiModal('founders-modal');
         return;
     }
     dleafClickTimes = next;

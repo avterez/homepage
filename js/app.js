@@ -358,7 +358,7 @@ function ensureDebugLoaded() {
 
     __debugScriptPromise = new Promise(function (resolve, reject) {
         var s = document.createElement('script');
-        s.src = 'js/debug.js?v=pr104-header-drag';
+        s.src = 'js/debug.js?v=pr105-founders-modal';
         s.onload = function () {
             window.__debugModuleLoaded = true;
             resolve();
@@ -414,13 +414,13 @@ function refreshDebugIfOpen() {
     }
 }
 
-function closeDleafModal() {
-    closeUiModal('dleaf-modal');
+function closeFoundersModal() {
+    closeUiModal('founders-modal');
 }
 
 function setupAppKeyboardShortcuts() {
     var uiModalCloseById = {
-        'dleaf-modal': closeDleafModal,
+        'founders-modal': closeFoundersModal,
         'modal': closeModal,
         'settings-modal': closeSettingsModal,
         'color-theme-modal': closeColorThemeModal,
