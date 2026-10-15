@@ -109,7 +109,10 @@ assert.ok(css.includes('@property --snow-t'), 'snow time is a continuous numeric
 assert.ok(css.includes('@keyframes snow-fall{from{--snow-t:0}to{--snow-t:1}}'), 'snow fall advances time along a straight line');
 assert.ok(!css.includes('snow-fall-spin'), 'snow no longer snaps direction at keyframe corners');
 assert.ok(!css.includes('translate3d(var(--snow-drift),18vh,0)'), 'the zig-zag waypoints are gone');
-assert.ok(css.includes('var(--snow-drift) * var(--snow-t) + var(--snow-drift) * sin(var(--snow-ang))'), 'sideways drift is a sine wrapped around the linear path');
+assert.ok(css.includes('var(--snow-wind) * var(--snow-t) + var(--snow-drift) * sin(var(--snow-ang))'), 'sideways drift is a sine wrapped around the wind line');
+assert.ok(appSrc.includes('(1.4 + Math.random() * 5.6)'), 'each flake leans between 1.4 and 7 degrees off vertical');
+assert.ok(appSrc.includes("setProperty('--snow-wind'"), 'the linear slide uses its own wind distance');
+assert.ok(appSrc.includes('var drift = (22 + Math.random() * 64) * sign'), 'the sine sway amplitude stays 22 to 86 pixels');
 assert.ok(css.includes('-8vh + 116vh * var(--snow-t)'), 'the vertical fall is linear');
 assert.ok(css.includes('--snow-spin:calc(var(--snow-t) * 360deg)'), 'crystals spin smoothly with the fall');
 assert.ok(css.includes('.snow-flake__arm{'), 'crystal spokes are flat bars');

@@ -829,7 +829,11 @@ function appendSnowFlakes(layer) {
         }
         var size = fern ? (16 + Math.random() * 6) : (crystal ? (11 + Math.random() * 5) : ((4 + Math.random() * 5) * 0.8));
         var duration = 18 + Math.random() * 16;
-        var drift = (22 + Math.random() * 64) * (Math.random() < 0.5 ? -1 : 1);
+        var sign = Math.random() < 0.5 ? -1 : 1;
+        var drift = (22 + Math.random() * 64) * sign;
+        var angleDeg = (1.4 + Math.random() * 5.6) * sign;
+        var fallPx = (window.innerHeight || 800) * 1.16;
+        var windPx = Math.tan(angleDeg * Math.PI / 180) * fallPx;
         flake.style.left = (Math.random() * 100) + '%';
         flake.style.width = size + 'px';
         flake.style.height = size + 'px';
@@ -837,6 +841,7 @@ function appendSnowFlakes(layer) {
         flake.style.animationDuration = duration.toFixed(2) + 's';
         flake.style.animationDelay = (-Math.random() * duration).toFixed(2) + 's';
         flake.style.setProperty('--snow-drift', drift.toFixed(1) + 'px');
+        flake.style.setProperty('--snow-wind', windPx + 'px');
         flake.style.setProperty('--snow-sway', (1.5 + Math.random() * 1.5).toFixed(2));
         flake.style.setProperty('--snow-phase', (Math.random() * 360).toFixed(1) + 'deg');
         frag.appendChild(flake);
