@@ -284,5 +284,4 @@ body{position:relative;z-index:0}
 .dleaf-modal__date-part--day{flex:0.8 1 0}
 .dleaf-modal__date-caption{margin-bottom:0.2rem;font-size:calc(0.75rem * var(--font-scale,1));font-weight:500;color:var(--color-muted)}
 select.dleaf-modal__input{cursor:pointer}
-.debug-panel__dleaf-preview{cursor:pointer}
 

@@ -3502,7 +3502,7 @@ Complements §6.12.3 load bootstrap with UX and chrome for the **first empty ses
 | Border / radius | `border: 1px solid var(--color-border)`; `border-radius: 1rem` |
 | Shadow | `box-shadow: var(--app-elevation-3)` |
 | Type | `.debug-panel` uses `--app-font-mono`; rows use scaled `0.75rem` |
-| Cursor | Panel body `default`. Header `grab` idle and `grabbing` while dragging |
+| Cursor | Panel body `default`. Header `grab` idle and `grabbing` while dragging. `#dleaf` and `.debug-panel__dleaf-preview` keep that same default cursor |
 
 **Chrome layout (top → bottom)**
 
@@ -4200,6 +4200,7 @@ Minimum before tagging a release:
 | 3.6 | October 15, 2026 | Debug panel shows `# of Quotes` and the 1-based `Quote Shown` |
 | 3.7 | October 15, 2026 | PR 104: ten DLEAF clicks within ten seconds open `#dleaf-modal` with FDATE (date) and FNAME (text). Debug panel PR meta is 104 |
 | 3.8 | October 15, 2026 | FDATE asks for month and day only and defaults to April 15. It does not ask for a year. FNAME starts blank. Only the debug panel header moves the panel; body drag is disabled |
+| 3.9 | October 15, 2026 | Hovering the DLEAF image keeps the debug panel body cursor |
 
 ---
 
