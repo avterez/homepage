@@ -3527,6 +3527,8 @@ Each live value is a horizontal flex row (`.debug-panel__row`):
 | Label | Source | Value class | Notes |
 |-------|--------|-------------|--------|
 | **PR** | `<meta name="homepage-pr">` | `.debug-panel__val--pr` | Current pull-request number; `?` if the meta tag is missing |
+| **# of Quotes** | `dailyQuotes.length` | `.debug-panel__val--count` | Quote lines from `docs/q.txt` after blank lines are dropped; `0` before the file loads |
+| **Quote Shown** | `quoteLineIndex(daysSinceJanuary1_2026(), count) + 1` | `.debug-panel__val--index` | 1-based quote now in the header; `—` when no quotes are loaded. Quote 1 is the first line. Day 611 shows quote 1 again |
 | **Window Width** | `window.innerWidth` | `.debug-panel__val--size` | + `px` unit |
 | **Window Height** | `window.innerHeight` | `.debug-panel__val--size` | + `px` unit |
 | **DPR** | `devicePixelRatio` | `.debug-panel__val--size` | |
@@ -4191,6 +4193,7 @@ Minimum before tagging a release:
 | 3.3 | September 23, 2026 | Other Options modal holds Show by, View, Hide Categories, and Show Debug; main page shows Perspective; one link-card description tooltip at a time; Settings button is Edit Colors; Debug PR 37 |
 | 3.4 | September 28, 2026 | Brought the living spec in line with the app through PR 63: four font-size steps; persisted Tally / My Order / ABC / Date Added; link `tally`; Add/Edit field order, collapsed POSITION, and Categories / Position / Tally help notes; URL suggestions; desktop emoji search under the title plus the description tip; snow; debug panel PR number from `homepage-pr` |
 | 3.5 | October 14, 2026 | Daily quote is the `docs/q.txt` line at `(days since January 1, 2026) mod line count`. The sequence starts at the first line and starts over when the day count reaches the number of lines. |
+| 3.6 | October 15, 2026 | Debug panel shows `# of Quotes` and the 1-based `Quote Shown` |
 
 ---
 
