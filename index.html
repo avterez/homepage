@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<!-- AI: The Debug screen shows this pull request number. When a new PR starts, update content below to that PR number. -->
-		<meta name="homepage-pr" content="106">
+		<meta name="homepage-pr" content="107">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<script>
 		(function () {
@@ -46,7 +46,7 @@
 		<link rel="preload" href="css/lucide/lucide.woff2?v=pr75-settings-icons" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="css/styles.css?v=pr106-founders-second" as="style">
+		<link rel="preload" href="css/styles.css?v=pr107-founders-day" as="style">
 
 		<!-- Critical CSS (FOUC / first paint) -->
 		<style>
@@ -60,8 +60,9 @@
 	  @media (orientation:landscape){html.is-mobile #landscape-lock{display:flex}}
 	  #page-title,#greeting,#date,#clock{font-family:var(--app-font-display);font-weight:600}
 	  #header-logo{background-color:var(--active-cat-color,var(--active-cat-bg))!important}
-	  #daily-quote,#page-title,#greeting,#date,#clock,.menu-text-label{color:var(--color-text-primary)!important}
+	  #daily-quote,#page-title,#greeting,#date,#clock,.menu-text-label,#founders-day-message{color:var(--color-text-primary)!important}
 	  #daily-quote{font-style:italic;line-height:1.2;font-size:.875rem}
+	  #founders-day-message{font-weight:700;font-style:normal;line-height:1.25;font-size:.875rem;text-align:center;overflow-wrap:anywhere;white-space:pre-line;max-width:100%}
 	  /* Critical header icons (rocket + chrome) before async FA subset */
 	  @font-face{font-family:"Font Awesome 7 Free";font-style:normal;font-weight:900;font-display:swap;src:url(css/fontawesome/webfonts/fa-solid-900.woff2) format("woff2")}
 	  .fa-solid{font-family:"Font Awesome 7 Free";font-weight:900;display:inline-block;font-style:normal;line-height:1;-webkit-font-smoothing:antialiased}
@@ -70,7 +71,7 @@
 		</style>
 
 		<!-- Main CSS (blocking; avoid FOUC) -->
-		<link rel="stylesheet" href="css/styles.css?v=pr106-founders-second">
+		<link rel="stylesheet" href="css/styles.css?v=pr107-founders-day">
 		<link rel="stylesheet" href="css/lucide/lucide.css?v=pr75-settings-icons">
 
 		<!-- FA subset async (~1.8KB vs full) -->
@@ -87,6 +88,9 @@
 						class="header-quote__text"
 						title="">
 					</div>
+					<div id="founders-day-message"
+						class="header-quote__founders"
+						hidden></div>
 				</div>
 
 				<div class="app-header__bar">
@@ -1718,7 +1722,7 @@
 			</div>
 		</div>
 
-		<!-- Founders Modal. Ten DLEAF clicks within ten seconds. Fields are display-only. -->
+		<!-- Founders Modal. Ten DLEAF clicks within ten seconds. Dates and messages are saved in this browser. -->
 		<div id="founders-modal"
 			class="ui-modal ui-modal--topmost founders-modal"
 			role="dialog" aria-modal="true" aria-labelledby="founders-modal-title">
@@ -1805,7 +1809,7 @@
 							<label class="founders-modal__date-part founders-modal__date-part--month" for="dleaf-f2date-month">
 								<span class="founders-modal__date-caption">Month</span>
 								<select id="dleaf-f2date-month" class="founders-modal__input" name="f2date-month">
-									<option value="">None</option>
+									<option value="" selected>None</option>
 									<option value="1">January</option>
 									<option value="2">February</option>
 									<option value="3">March</option>
@@ -1816,7 +1820,7 @@
 									<option value="8">August</option>
 									<option value="9">September</option>
 									<option value="10">October</option>
-									<option value="11" selected>November</option>
+									<option value="11">November</option>
 									<option value="12">December</option>
 								</select>
 							</label>
@@ -1891,7 +1895,8 @@
 		<script defer src="js/addeditlink.js?v=pr78-google-ai"></script>
 		<script defer src="js/settingsmodal.js?v=pr92-seasonal-tap"></script>
 		<script defer src="js/gsmodal.js?v=pr82-clear"></script>
-		<script defer src="js/app.js?v=pr106-fireworks-unlock"></script>
+		<script defer src="js/founders.js?v=pr107-founders-day"></script>
+		<script defer src="js/app.js?v=pr107-founders-day"></script>
 		<script defer src="js/script.js"></script>
 	</body>
 </html>

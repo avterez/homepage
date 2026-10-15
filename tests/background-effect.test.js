@@ -236,10 +236,11 @@ function fireworksGain(name) {
     assert.ok(match, name + ' missing');
     return Number(match[1]);
 }
+assert.strictEqual(fireworksGain('FIREWORKS_WHITE_BOOM_GAIN'), 0.715, 'white booms are 30% louder');
 assert.ok(fireworksGain('FIREWORKS_WHITE_BOOM_GAIN') > fireworksGain('FIREWORKS_COLOR_BOOM_GAIN'), 'white booms are louder than colorful booms');
 assert.ok(fireworksGain('FIREWORKS_WHITE_BOOM_HZ') < fireworksGain('FIREWORKS_COLOR_BOOM_HZ'), 'white booms start lower than colorful booms');
 assert.ok(fireworksGain('FIREWORKS_WHITE_NOISE_HZ') < fireworksGain('FIREWORKS_COLOR_NOISE_HZ'), 'white boom noise is deeper than colorful boom noise');
-assert.ok(appSrc.includes('var bursts = 3 + Math.floor(Math.random() * 4)'), 'white flurries fire 3 to 6 booms');
+assert.ok(appSrc.includes('var bursts = 3 + Math.floor(Math.random() * 6)'), 'white flurries fire 3 to 8 booms');
 assert.ok(!appSrc.includes('effect-fireworks-checkbox'), 'the fireworks control is no longer a separate checkbox');
 
 const fireworks = loadState();
