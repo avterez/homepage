@@ -42,13 +42,33 @@ const ruleAt = modalHtml.indexOf('<hr class="founders-modal__rule">');
 const f2DateAt = modalHtml.indexOf('id="dleaf-f2date-month"');
 const f2NameAt = modalHtml.indexOf('id="dleaf-f2name"');
 assert.ok(fnameAt !== -1 && ruleAt > fnameAt, 'an hr sits under FNAME');
-assert.ok(f2DateAt > ruleAt, 'F2Date sits under the hr');
-assert.ok(modalHtml.includes('>F2Date:<'), 'F2Date label missing');
-assert.ok(modalHtml.includes('id="dleaf-f2date-day"'), 'F2Date should ask for a day');
-assert.ok(f2NameAt > f2DateAt, 'F2Name sits under F2Date');
-assert.ok(/<label[^>]*for="dleaf-f2name"[^>]*>F2Name:<\/label>/.test(modalHtml), 'F2Name label missing');
+assert.ok(f2DateAt > ruleAt, 'second Date sits under the hr');
+assert.ok(/id="dleaf-f2date-label">Date:</.test(modalHtml), 'second Date label should read Date:');
+assert.ok(modalHtml.includes('id="dleaf-f2date-day"'), 'second Date should ask for a day');
+assert.ok(f2NameAt > f2DateAt, 'second Name sits under the second Date');
+assert.ok(/<label[^>]*for="dleaf-f2name"[^>]*>Name:<\/label>/.test(modalHtml), 'second Name label should read Name:');
 const f2NameTag = modalHtml.match(/<input[^>]*id="dleaf-f2name"[^>]*>/);
-assert.ok(f2NameTag && f2NameTag[0].includes('type="text"') && !/\bvalue\s*=/.test(f2NameTag[0]), 'F2Name should be a blank text box');
+assert.ok(f2NameTag && f2NameTag[0].includes('type="text"') && !/\bvalue\s*=/.test(f2NameTag[0]), 'second Name should be a blank text box');
+
+function selectBlock(source, id) {
+  const marker = 'id="' + id + '"';
+  const at = source.indexOf(marker);
+  assert.ok(at !== -1, id + ' missing');
+  const open = source.lastIndexOf('<select', at);
+  const close = source.indexOf('</select>', at);
+  return source.slice(open, close);
+}
+
+const firstMonth = selectBlock(modalHtml, 'dleaf-fdate-month');
+const firstDay = selectBlock(modalHtml, 'dleaf-fdate-day');
+const secondMonth = selectBlock(modalHtml, 'dleaf-f2date-month');
+const secondDay = selectBlock(modalHtml, 'dleaf-f2date-day');
+assert.ok(/<option value="4" selected>April<\/option>/.test(firstMonth), 'first Date month stays April');
+assert.ok(/<option value="15" selected>15<\/option>/.test(firstDay), 'first Date day stays 15');
+assert.ok(/<option value="11" selected>November<\/option>/.test(secondMonth), 'second Date month defaults to November');
+assert.ok(!/<option value="4" selected>/.test(secondMonth), 'second Date month is not April');
+assert.ok(/<option value="5" selected>5<\/option>/.test(secondDay), 'second Date day defaults to 5');
+assert.ok(!/<option value="15" selected>/.test(secondDay), 'second Date day is not 15');
 const css = fs.readFileSync(path.join(root, 'css/styles.css'), 'utf8');
 assert.ok(css.includes('#founders-modal.is-open{z-index:100000;align-items:flex-start;justify-content:center;padding-top:10vh}'), 'Founders Modal should open at 10% of the screen height');
 assert.ok(configSrc.includes("'founders-modal'"), 'founders-modal should be a ui-modal id');
