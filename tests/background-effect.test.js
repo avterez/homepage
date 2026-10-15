@@ -111,6 +111,8 @@ assert.ok(!css.includes('snow-fall-spin'), 'snow no longer snaps direction at ke
 assert.ok(!css.includes('translate3d(var(--snow-drift),18vh,0)'), 'the zig-zag waypoints are gone');
 assert.ok(css.includes('var(--snow-wind) * var(--snow-t) + var(--snow-drift) * sin(var(--snow-ang))'), 'sideways drift is a sine wrapped around the wind line');
 assert.ok(appSrc.includes('(1.4 + Math.random() * 5.6)'), 'each flake leans between 1.4 and 7 degrees off vertical');
+assert.ok(appSrc.includes('2.75 + Math.random() * (5.25 - 2.75)'), 'snow falls between 2.75vh and 5.25vh per second');
+assert.ok(appSrc.includes('var duration = 116 / speedVh'), 'fall time is the 116vh drop divided by that speed');
 assert.ok(appSrc.includes("setProperty('--snow-wind'"), 'the linear slide uses its own wind distance');
 assert.ok(appSrc.includes('var drift = (22 + Math.random() * 64) * sign'), 'the sine sway amplitude stays 22 to 86 pixels');
 assert.ok(css.includes('-8vh + 116vh * var(--snow-t)'), 'the vertical fall is linear');

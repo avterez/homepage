@@ -828,7 +828,8 @@ function appendSnowFlakes(layer) {
             }
         }
         var size = fern ? (16 + Math.random() * 6) : (crystal ? (11 + Math.random() * 5) : ((4 + Math.random() * 5) * 0.8));
-        var duration = 18 + Math.random() * 16;
+        var speedVh = 2.75 + Math.random() * (5.25 - 2.75);
+        var duration = 116 / speedVh;
         var sign = Math.random() < 0.5 ? -1 : 1;
         var drift = (22 + Math.random() * 64) * sign;
         var angleDeg = (1.4 + Math.random() * 5.6) * sign;
