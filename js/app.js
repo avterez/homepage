@@ -827,6 +827,8 @@ function appendSnowFlakes(layer) {
         flake.style.animationDuration = duration.toFixed(2) + 's';
         flake.style.animationDelay = (-Math.random() * duration).toFixed(2) + 's';
         flake.style.setProperty('--snow-drift', drift.toFixed(1) + 'px');
+        flake.style.setProperty('--snow-sway', (1.5 + Math.random() * 1.5).toFixed(2));
+        flake.style.setProperty('--snow-phase', (Math.random() * 360).toFixed(1) + 'deg');
         frag.appendChild(flake);
     }
     layer.appendChild(frag);
