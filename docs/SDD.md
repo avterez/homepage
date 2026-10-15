@@ -3461,7 +3461,7 @@ Complements §6.12.3 load bootstrap with UX and chrome for the **first empty ses
 
 - **Quick Add / Go Top:** hidden while `#add-link-btn` intersects viewport; shown when scrolled past
 - **Go Bottom:** hidden near document bottom (~400px threshold)
-- Scroll top/bottom can reset keyboard card selection
+- Scroll top/bottom can reset keyboard card selection. Go Top and Go Bottom focus `#link-search-input` on desktop. In mobile mode they scroll without focusing that field.
 
 > Full FAB visibility rules also appear under Landing Screen **§6.0** (REQ-LS-016/017).
 
