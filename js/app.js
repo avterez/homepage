@@ -358,7 +358,7 @@ function ensureDebugLoaded() {
 
     __debugScriptPromise = new Promise(function (resolve, reject) {
         var s = document.createElement('script');
-        s.src = 'js/debug.js?v=pr98-quote-shown';
+        s.src = 'js/debug.js?v=pr-snow-path';
         s.onload = function () {
             window.__debugModuleLoaded = true;
             resolve();

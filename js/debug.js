@@ -33,6 +33,10 @@ function ensureDebugPanel() {
                     <span class="debug-panel__unit">°</span>
                 </div>
             </div>
+            <label class="debug-panel__snow-path">
+                <input type="checkbox" id="debug-draw-snow-path">
+                draw snow path
+            </label>
         `;
 
         document.body.appendChild(debugPanel);
@@ -66,6 +70,8 @@ function ensureDebugPanel() {
             if (dleafMinus) dleafMinus.addEventListener('click', function () { stepDleafAngle(-1); });
             if (dleafPlus) dleafPlus.addEventListener('click', function () { stepDleafAngle(1); });
         }
+        var snowPathToggle = debugPanel.querySelector('#debug-draw-snow-path');
+        if (snowPathToggle) snowPathToggle.addEventListener('change', syncSnowPathOverlay);
 
         debugPanel.style.cursor = 'grab';
         debugPanel.style.touchAction = 'none';
@@ -141,6 +147,7 @@ function ensureDebugPanel() {
         document.addEventListener('touchcancel', endDebugDrag);
 
         window.addEventListener('resize', () => {
+            syncSnowPathOverlay();
             if (isDebugPanelOpen()) {
                 updateDebugInfo();
                 const rect = debugPanel.getBoundingClientRect();
@@ -210,6 +217,76 @@ function isDebugPanelOpen() {
 let isDraggingDebug = false;
 let debugDragOffsetX = 0;
 let debugDragOffsetY = 0;
+let snowPathObserver = null;
+
+/** Straight fall a snowflake's horizontal drift swings around. Drift is the curve, so it stays off this line. */
+function snowLinearPath(leftPercent, widthPx, heightPx, viewportWidth, viewportHeight) {
+    var x = (leftPercent / 100) * viewportWidth + widthPx / 2;
+    var centerY = -12 + heightPx / 2;
+    return {
+        x1: x,
+        y1: centerY + (-8 * viewportHeight / 100),
+        x2: x,
+        y2: centerY + (108 * viewportHeight / 100)
+    };
+}
+
+function syncSnowPathOverlay() {
+    var toggle = document.getElementById('debug-draw-snow-path');
+    var overlay = document.getElementById('snow-path-overlay');
+    var on = !!(toggle && toggle.checked);
+    if (!on) {
+        if (overlay) overlay.setAttribute('hidden', '');
+        if (snowPathObserver) {
+            snowPathObserver.disconnect();
+            snowPathObserver = null;
+        }
+        return;
+    }
+    if (!overlay) {
+        overlay = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        overlay.id = 'snow-path-overlay';
+        overlay.setAttribute('aria-hidden', 'true');
+        document.body.appendChild(overlay);
+    }
+    overlay.removeAttribute('hidden');
+    while (overlay.firstChild) overlay.removeChild(overlay.firstChild);
+    var layer = document.getElementById('snow-layer');
+    var box = (layer && typeof layer.getBoundingClientRect === 'function') ? layer.getBoundingClientRect() : null;
+    var viewportWidth = (box && box.width) ? box.width : window.innerWidth;
+    var viewportHeight = (box && box.height) ? box.height : window.innerHeight;
+    overlay.style.left = (box && box.width) ? (box.left + 'px') : '0px';
+    overlay.style.top = (box && box.height) ? (box.top + 'px') : '0px';
+    overlay.style.width = viewportWidth + 'px';
+    overlay.style.height = viewportHeight + 'px';
+    overlay.setAttribute('width', String(viewportWidth));
+    overlay.setAttribute('height', String(viewportHeight));
+    if (!layer) return;
+    var flakes = layer.querySelectorAll('.snow-flake');
+    for (var i = 0; i < flakes.length; i++) {
+        var flake = flakes[i];
+        if (flake.classList.contains('snow-flake--leaf')
+            || flake.classList.contains('snow-flake--fluff')
+            || flake.classList.contains('snow-flake--butterfly')) continue;
+        var left = parseFloat(flake.style.left);
+        var width = parseFloat(flake.style.width);
+        var height = parseFloat(flake.style.height);
+        if (!isFinite(left) || !isFinite(width) || !isFinite(height)) continue;
+        var path = snowLinearPath(left, width, height, viewportWidth, viewportHeight);
+        var line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', String(path.x1));
+        line.setAttribute('y1', String(path.y1));
+        line.setAttribute('x2', String(path.x2));
+        line.setAttribute('y2', String(path.y2));
+        overlay.appendChild(line);
+    }
+    if (!snowPathObserver && typeof MutationObserver === 'function') {
+        snowPathObserver = new MutationObserver(function () {
+            syncSnowPathOverlay();
+        });
+        snowPathObserver.observe(layer, { childList: true });
+    }
+}
 
 function updateDebugInfo() {
     if (!debugPanel) return;

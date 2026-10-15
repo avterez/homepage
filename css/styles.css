@@ -271,4 +271,9 @@ body{position:relative;z-index:0}
 .attribution-modal__icon--lucide{color:#2dd4bf}
 #attribution-modal .attribution-modal__note{margin:1.5rem 0 0;padding-top:1rem;border-top:1px solid var(--color-border);font-size:calc(0.75rem * var(--font-scale, 1));line-height:1.4;color:color-mix(in srgb,var(--text-color) 78%,transparent)}
 .fa-icons{--fa:"\f86d"}
+.debug-panel__snow-path{display:flex;align-items:center;column-gap:0.5rem;margin-top:0.75rem;color:var(--color-muted);font-size:calc(0.75rem * var(--font-scale,1));cursor:pointer;user-select:none;-webkit-user-select:none}
+.debug-panel__snow-path input{margin:0;cursor:pointer}
+#snow-path-overlay{position:fixed;left:0;top:0;z-index:99998;overflow:visible;pointer-events:none}
+#snow-path-overlay[hidden]{display:none}
+#snow-path-overlay line{stroke:#0284c7;stroke-width:1.5;stroke-linecap:butt}
 
