@@ -29,6 +29,15 @@ assert.ok(settingsSrc.includes('paintSeasonalHeaderIcon()'), 'seasonal header ic
 assert.ok(settingsSrc.includes('paintSeasonalHeaderIcon(true)'), 'tapping the seasonal header picks a new icon');
 assert.ok(settingsSrc.includes("closest('.ui-modal__close')"), 'the seasonal close control does not reshuffle the icon');
 assert.ok(html.includes('>Northern<') && html.includes('>Southern<'), 'hemisphere options missing');
+assert.ok(
+    css.includes('.hemisphere-modal__schedule{') && css.includes('.hemisphere-modal__schedule{margin:1rem 0 0;padding:0;list-style:none;color:var(--text-color);font-size:calc(0.75rem * var(--font-scale, 1));line-height:1.45}'),
+    'season schedule uses the same size as the hemisphere option labels'
+);
+assert.ok(
+    css.includes('.settings-modal__check-label{color:var(--text-color);font-size:calc(0.75rem * var(--font-scale,1));font-weight:500}')
+    || css.includes('.settings-modal__label,.settings-modal__check-label{color:var(--text-color);font-size:calc(0.75rem * var(--font-scale,1));font-weight:500}'),
+    'hemisphere option labels stay at 0.75rem'
+);
 assert.ok(html.includes('Effects automatically change with the seasons.'), 'seasonal instructions missing');
 assert.ok(html.includes('id="effect-season-radio"'), 'season radio missing');
 assert.ok(!html.includes('Cherry Blossom Petals'), 'cherry blossom option should be removed');
