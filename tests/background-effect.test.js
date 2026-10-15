@@ -105,6 +105,15 @@ assert.ok(css.includes('(2.391vh / var(--leaf-cycles))'), 'the fastest vertical 
 assert.ok(appSrc.includes('(1.161 + Math.random() * 0.725)'), 'leaf lift stays small enough that the center crossing stays fastest');
 assert.ok(appSrc.includes("setProperty('--leaf-cycles'"), 'each leaf varies its sway frequency');
 assert.ok(appSrc.includes('/ 24348') && appSrc.includes('count > 64'), 'leaf count is fifteen percent higher, up to 64');
+assert.ok(css.includes('@property --snow-t'), 'snow time is a continuous numeric property');
+assert.ok(css.includes('@keyframes snow-fall{from{--snow-t:0}to{--snow-t:1}}'), 'snow fall advances time along a straight line');
+assert.ok(!css.includes('snow-fall-spin'), 'snow no longer snaps direction at keyframe corners');
+assert.ok(!css.includes('translate3d(var(--snow-drift),18vh,0)'), 'the zig-zag waypoints are gone');
+assert.ok(css.includes('var(--snow-drift) * var(--snow-t) + var(--snow-drift) * sin(var(--snow-ang))'), 'sideways drift is a sine wrapped around the linear path');
+assert.ok(css.includes('-8vh + 116vh * var(--snow-t)'), 'the vertical fall is linear');
+assert.ok(css.includes('--snow-spin:calc(var(--snow-t) * 360deg)'), 'crystals spin smoothly with the fall');
+assert.ok(appSrc.includes("setProperty('--snow-sway', (1.5 + Math.random() * 1.5).toFixed(2))"), 'each flake varies how often it sways');
+assert.ok(appSrc.includes("setProperty('--snow-phase', (Math.random() * 360).toFixed(1) + 'deg')"), 'each flake starts at its own point on the sine');
 
 const effectsBlock = html.slice(html.indexOf('id="other-options-effects"'), html.indexOf('id="popup-duration-settings"'));
 const effectValues = Array.from(effectsBlock.matchAll(/name="background-effect"[^>]*value="([^"]+)"/g), function (match) { return match[1]; });
