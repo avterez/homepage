@@ -129,7 +129,7 @@ assert.ok(appSrc.includes("setProperty('--snow-phase', (Math.random() * 360).toF
 
 const effectsBlock = html.slice(html.indexOf('id="other-options-effects"'), html.indexOf('id="popup-duration-settings"'));
 const effectValues = Array.from(effectsBlock.matchAll(/name="background-effect"[^>]*value="([^"]+)"/g), function (match) { return match[1]; });
-assert.deepStrictEqual(effectValues, ['none', 'season', 'fluff', 'butterflies', 'leaves', 'snow']);
+assert.deepStrictEqual(effectValues, ['none', 'season', 'fluff', 'butterflies', 'leaves', 'snow', 'fireworks']);
 assert.ok(!/>Spring<|>Summer<|>Fall<|>Winter</.test(effectsBlock), 'season labels are not shown');
 assert.ok(html.includes('id="sight-toggle"'), 'sight disclosure missing');
 assert.ok(/id="sight-choices"[^>]*hidden/.test(html), 'sight choices start hidden');
@@ -216,11 +216,12 @@ assert.strictEqual(butterflies.store.startpage_snow_effect, 'butterflies');
 assert.strictEqual(butterflies.context.readBackgroundEffect(), 'butterflies');
 assert.strictEqual(butterflies.context.parseSnowEffectFlag('butterflies'), 'butterflies');
 
-assert.ok(html.includes('>Fireworks!<'), 'Fireworks! checkbox label missing');
-assert.ok(html.includes('id="effect-fireworks-checkbox"'), 'fireworks checkbox missing');
-assert.ok(html.includes('type="checkbox" id="effect-fireworks-checkbox"'), 'Fireworks! should be a checkbox');
-assert.ok(html.indexOf('id="effect-snow-radio"') < html.indexOf('id="effect-fireworks-checkbox"'), 'Fireworks! comes after Snow');
-assert.ok(html.indexOf('id="effect-fireworks-checkbox"') < html.indexOf('id="effects-timeout-minutes"'), 'Fireworks! stays in the Effects list');
+assert.ok(html.includes('>Fireworks!<'), 'Fireworks! option label missing');
+assert.ok(html.includes('id="effect-fireworks-radio"'), 'fireworks radio missing');
+assert.ok(html.includes('type="radio" name="background-effect" id="effect-fireworks-radio" value="fireworks"'), 'Fireworks! should be a radio in the effect group');
+assert.ok(!html.includes('effect-fireworks-checkbox'), 'Fireworks! should not stay a checkbox');
+assert.ok(html.indexOf('id="effect-snow-radio"') < html.indexOf('id="effect-fireworks-radio"'), 'Fireworks! comes after Snow');
+assert.ok(html.indexOf('id="effect-fireworks-radio"') < html.indexOf('id="effects-timeout-minutes"'), 'Fireworks! stays in the Effects list');
 assert.ok(css.includes('.fireworks-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}'), 'fireworks canvas covers the background');
 assert.ok(appSrc.includes('playFireworksBoom') && appSrc.includes('playFireworksCrackle'), 'fireworks plays booms and spark crackles');
 function fireworksGain(name) {
@@ -230,8 +231,10 @@ function fireworksGain(name) {
 }
 assert.ok(fireworksGain('FIREWORKS_WHITE_BOOM_GAIN') > fireworksGain('FIREWORKS_COLOR_BOOM_GAIN'), 'white booms are louder than colorful booms');
 assert.ok(fireworksGain('FIREWORKS_COLOR_BOOM_GAIN') > fireworksGain('FIREWORKS_CRACKLE_GAIN'), 'spark crackles stay softer than the booms');
+assert.ok(fireworksGain('FIREWORKS_WHITE_BOOM_HZ') < fireworksGain('FIREWORKS_COLOR_BOOM_HZ'), 'white booms start lower than colorful booms');
+assert.ok(fireworksGain('FIREWORKS_WHITE_NOISE_HZ') < fireworksGain('FIREWORKS_COLOR_NOISE_HZ'), 'white boom noise is deeper than colorful boom noise');
 assert.ok(appSrc.includes('var bursts = 3 + Math.floor(Math.random() * 4)'), 'white flurries fire 3 to 6 booms');
-assert.ok(appSrc.includes("setBackgroundEffect(fireworksCheckbox.checked ? 'fireworks' : 'none')"), 'the checkbox turns the fireworks show on and off');
+assert.ok(!appSrc.includes('effect-fireworks-checkbox'), 'the fireworks control is no longer a separate checkbox');
 
 const fireworks = loadState();
 assert.strictEqual(fireworks.context.setBackgroundEffect('fireworks'), 'fireworks');

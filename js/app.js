@@ -980,6 +980,10 @@ function appendButterflies(layer) {
 var FIREWORKS_COLOR_BOOM_GAIN = 0.22;
 var FIREWORKS_WHITE_BOOM_GAIN = 0.55;
 var FIREWORKS_CRACKLE_GAIN = 0.045;
+var FIREWORKS_COLOR_BOOM_HZ = 150;
+var FIREWORKS_WHITE_BOOM_HZ = 78;
+var FIREWORKS_COLOR_NOISE_HZ = 380;
+var FIREWORKS_WHITE_NOISE_HZ = 160;
 var FIREWORKS_COLORS = ['#ff4b4b', '#ff9f1c', '#ffe66d', '#7dff6a', '#5aa6ff', '#e35d9f', '#c084fc', '#fff6d5'];
 
 var fireworksRunning = false;
@@ -1060,13 +1064,13 @@ function playFireworksBoom(kind) {
     var white = kind === 'white';
     var now = ctx.currentTime;
     var peak = white ? FIREWORKS_WHITE_BOOM_GAIN : FIREWORKS_COLOR_BOOM_GAIN;
-    var hold = white ? 0.22 : 0.72;
+    var hold = white ? 0.48 : 0.72;
     var noise = ctx.createBufferSource();
     noise.buffer = fireworksNoiseBuffer(ctx, 1.2);
     var filter = ctx.createBiquadFilter();
-    filter.type = white ? 'bandpass' : 'lowpass';
-    filter.frequency.setValueAtTime(white ? 1400 : 380, now);
-    filter.Q.value = white ? 0.7 : 0.6;
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(white ? FIREWORKS_WHITE_NOISE_HZ : FIREWORKS_COLOR_NOISE_HZ, now);
+    filter.Q.value = 0.6;
     var gain = ctx.createGain();
     gain.gain.setValueAtTime(peak, now);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + hold);
@@ -1077,8 +1081,8 @@ function playFireworksBoom(kind) {
     noise.stop(now + hold + 0.05);
     var osc = ctx.createOscillator();
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(white ? 540 : 150, now);
-    osc.frequency.exponentialRampToValueAtTime(white ? 180 : 42, now + hold);
+    osc.frequency.setValueAtTime(white ? FIREWORKS_WHITE_BOOM_HZ : FIREWORKS_COLOR_BOOM_HZ, now);
+    osc.frequency.exponentialRampToValueAtTime(white ? 28 : 42, now + hold);
     var oscGain = ctx.createGain();
     oscGain.gain.setValueAtTime(white ? 0.2 : 0.1, now);
     oscGain.gain.exponentialRampToValueAtTime(0.0001, now + hold);
@@ -1452,14 +1456,14 @@ function applySnowEffect(enabled) {
     var leafRadio = document.getElementById('effect-leaves-radio');
     var fluffRadio = document.getElementById('effect-fluff-radio');
     var butterflyRadio = document.getElementById('effect-butterflies-radio');
-    var fireworksBox = document.getElementById('effect-fireworks-checkbox');
+    var fireworksRadio = document.getElementById('effect-fireworks-radio');
     if (snowRadio) snowRadio.checked = effect === 'snow';
     if (noneRadio) noneRadio.checked = effect === 'none';
     if (seasonRadio) seasonRadio.checked = effect === 'season';
     if (leafRadio) leafRadio.checked = effect === 'leaves';
     if (fluffRadio) fluffRadio.checked = effect === 'fluff';
     if (butterflyRadio) butterflyRadio.checked = effect === 'butterflies';
-    if (fireworksBox) fireworksBox.checked = effect === 'fireworks';
+    if (fireworksRadio) fireworksRadio.checked = effect === 'fireworks';
     var layer = document.getElementById('snow-layer');
     if (!layer) return;
     if (shown === 'snow' || shown === 'leaves' || shown === 'fluff' || shown === 'butterflies' || shown === 'fireworks') {
@@ -1884,13 +1888,6 @@ function initializeApp() {
             setBackgroundEffect(radio.value);
         });
     });
-
-    const fireworksCheckbox = document.getElementById('effect-fireworks-checkbox');
-    if (fireworksCheckbox) {
-        fireworksCheckbox.addEventListener('change', () => {
-            setBackgroundEffect(fireworksCheckbox.checked ? 'fireworks' : 'none');
-        });
-    }
 
     function bindPopupSecondsInput(inputId, storageKey, fallback) {
         const input = document.getElementById(inputId);

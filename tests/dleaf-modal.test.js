@@ -36,7 +36,7 @@ function assertFdateFields(source, label) {
 }
 
 assertFdateFields(modalHtml, 'index.html');
-assert.ok(html.includes('name="homepage-pr" content="105"'), 'debug PR meta should be 105');
+assert.ok(html.includes('name="homepage-pr" content="106"'), 'debug PR meta should be 106');
 assert.ok(configSrc.includes("'founders-modal'"), 'founders-modal should be a ui-modal id');
 assert.ok(appSrc.includes("'founders-modal': closeFoundersModal"), 'Escape should close the Founders Modal');
 
@@ -157,7 +157,7 @@ function loadPanel() {
       },
       addEventListener: function (type, fn) { listen(docListeners, type, fn); },
       querySelector: function (sel) {
-        if (sel === 'meta[name="homepage-pr"]') return { content: '105' };
+        if (sel === 'meta[name="homepage-pr"]') return { content: '106' };
         return null;
       }
     },
