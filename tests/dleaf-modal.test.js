@@ -39,7 +39,14 @@ function assertFdateFields(source, label) {
 }
 
 assertFdateFields(modalHtml, 'index.html');
-assert.ok(html.includes('name="homepage-pr" content="106"'), 'debug PR meta should be 106');
+assert.ok(html.includes('name="homepage-pr" content="107"'), 'debug PR meta should be 107');
+assert.ok(!html.includes('name="homepage-pr" content="106"'), 'debug PR meta should not stay on 106');
+const quoteAt = html.indexOf('id="daily-quote"');
+const foundersMsgAt = html.indexOf('id="founders-day-message"');
+const headerBarAt = html.indexOf('class="app-header__bar"');
+assert.ok(quoteAt !== -1 && foundersMsgAt > quoteAt && foundersMsgAt < headerBarAt, 'the bold founders message sits under #daily-quote');
+assert.ok(html.slice(quoteAt, foundersMsgAt).includes('header-quote__text'), 'the message stays in the quote block');
+assert.ok(/id="founders-day-message"[\s\S]*class="header-quote__founders"/.test(html), 'founders message uses the bold quote class');
 const fmessageAt = modalHtml.indexOf('id="dleaf-fmessage"');
 const ruleAt = modalHtml.indexOf('<hr class="founders-modal__rule">');
 const f2DateAt = modalHtml.indexOf('id="dleaf-f2date-month"');
@@ -70,7 +77,8 @@ const secondMonth = selectBlock(modalHtml, 'dleaf-f2date-month');
 const secondDay = selectBlock(modalHtml, 'dleaf-f2date-day');
 assert.ok(/<option value="4" selected>April<\/option>/.test(firstMonth), 'first Date month stays April');
 assert.ok(/<option value="15" selected>15<\/option>/.test(firstDay), 'first Date day stays 15');
-assert.ok(/<option value="11" selected>November<\/option>/.test(secondMonth), 'second Date month defaults to November');
+assert.ok(/<option value="" selected>None<\/option>/.test(secondMonth), 'second Date month defaults to None');
+assert.ok(!/<option value="11"[^>]*selected/.test(secondMonth) && !secondMonth.includes('selected>November'), 'November is not selected by default');
 assert.ok(!/<option value="4" selected>/.test(secondMonth), 'second Date month is not April');
 assert.ok(/<option value="5" selected>5<\/option>/.test(secondDay), 'second Date day defaults to 5');
 assert.ok(!/<option value="15" selected>/.test(secondDay), 'second Date day is not 15');
@@ -83,9 +91,12 @@ function assertNoneMonth(block, label) {
   assert.ok(!/selected[^>]*>None</.test(block), label + ' None is not the selected option');
 }
 assertNoneMonth(firstMonth, 'first Date');
-assertNoneMonth(secondMonth, 'second Date');
+assert.ok(secondMonth.includes('<option value="">None</option>') || secondMonth.includes('<option value="" selected>None</option>'), 'second Date month includes None');
+assert.ok(secondMonth.indexOf('>None</option>') < secondMonth.indexOf('<option value="1">January</option>'), 'second Date None is the first month option');
 assert.ok(!firstDay.includes('>None<') && !secondDay.includes('>None<'), 'day selects do not include None');
 const css = fs.readFileSync(path.join(root, 'css/styles.css'), 'utf8');
+assert.ok(css.includes('.header-quote__founders{') && css.includes('font-weight:700'), 'the founders message under the quote is bold');
+assert.ok(css.includes('.header-quote__founders[hidden]{display:none}'), 'a non-matching day hides the founders message');
 assert.ok(css.includes('#founders-modal.is-open{z-index:100000;align-items:flex-start;justify-content:center;padding-top:10vh}'), 'Founders Modal should open at 10% of the screen height');
 assert.ok(configSrc.includes("'founders-modal'"), 'founders-modal should be a ui-modal id');
 assert.ok(appSrc.includes("'founders-modal': closeFoundersModal"), 'Escape should close the Founders Modal');
@@ -207,7 +218,7 @@ function loadPanel() {
       },
       addEventListener: function (type, fn) { listen(docListeners, type, fn); },
       querySelector: function (sel) {
-        if (sel === 'meta[name="homepage-pr"]') return { content: '106' };
+        if (sel === 'meta[name="homepage-pr"]') return { content: '107' };
         return null;
       }
     },
@@ -305,5 +316,100 @@ assert.strictEqual(headerDrag.panel.style.left, '120px', 'dragging the header sh
 const closeDrag = loadPanel();
 drag(closeDrag, closeDrag.closeBtn, 180, 48, 260, 48);
 assert.strictEqual(closeDrag.panel.style.left, undefined, 'the header close button should not start a drag');
+
+function loadFounders() {
+  const store = { startpage_snow_effect: 'leaves' };
+  const context = {
+    console: console,
+    localStorage: {
+      getItem: function (key) { return Object.prototype.hasOwnProperty.call(store, key) ? store[key] : null; },
+      setItem: function (key, value) { store[key] = String(value); }
+    }
+  };
+  context.window = context;
+  vm.createContext(context);
+  vm.runInContext(fs.readFileSync(path.join(root, 'js/founders.js'), 'utf8'), context);
+  return { context: context, store: store };
+}
+
+function plain(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+const founders = loadFounders();
+const oct15 = new Date(2026, 9, 15);
+const laterYear = new Date(2031, 9, 15);
+assert.deepStrictEqual(plain(founders.context.readFoundersRecord()), {
+  fdateMonth: '4',
+  fdateDay: '15',
+  fmessage: '',
+  f2dateMonth: '',
+  f2dateDay: '5',
+  f2message: ''
+}, 'missing keys use April 15, a blank message, and a None second month');
+assert.strictEqual(founders.context.foundersDateMatches('', '15', oct15), false, 'a None month never hits');
+assert.strictEqual(founders.context.foundersDateMatches('10', '15', oct15), true, 'October 15 matches the local month and day');
+assert.strictEqual(founders.context.foundersDateMatches('10', '15', laterYear), true, 'the year is ignored');
+assert.strictEqual(founders.context.foundersDateMatches('10', '14', oct15), false, 'a different day does not hit');
+assert.strictEqual(founders.context.foundersDateMatches('11', '15', oct15), false, 'a different month does not hit');
+
+const noneDay = {
+  fdateMonth: '',
+  fdateDay: '15',
+  fmessage: 'Lanterns over the harbor',
+  f2dateMonth: '',
+  f2dateDay: '15',
+  f2message: 'Second bell at dusk'
+};
+assert.strictEqual(founders.context.foundersRecordHits(noneDay, oct15), false, 'day numbers alone do not force a hit');
+assert.strictEqual(founders.context.foundersPlayingEffect('leaves', noneDay, oct15, false), 'leaves', 'fireworks stays off when both months are None');
+assert.deepStrictEqual(plain(founders.context.foundersDayMessages(noneDay, oct15)), [], 'None months show no message');
+
+const firstHit = founders.context.writeFoundersRecord({
+  fdateMonth: '10',
+  fdateDay: '15',
+  fmessage: 'Lanterns over the harbor',
+  f2dateMonth: '',
+  f2dateDay: '5',
+  f2message: ''
+});
+assert.strictEqual(founders.store.startpage_fdate_month, '10');
+assert.strictEqual(founders.store.startpage_fmessage, 'Lanterns over the harbor');
+assert.strictEqual(founders.store.startpage_f2date_month, '');
+assert.strictEqual(founders.store.startpage_snow_effect, 'leaves', 'saving a founders date does not write fireworks into the effect');
+assert.strictEqual(founders.context.foundersRecordHits(firstHit, oct15), true);
+assert.strictEqual(founders.context.foundersPlayingEffect('leaves', firstHit, oct15, false), 'fireworks', 'a month-and-day hit forces fireworks');
+assert.strictEqual(founders.context.foundersPlayingEffect('leaves', firstHit, oct15, true), 'leaves', 'a radio choice during the day is not replaced until reload');
+assert.deepStrictEqual(plain(founders.context.foundersDayMessages(firstHit, oct15)), ['Lanterns over the harbor']);
+assert.deepStrictEqual(plain(founders.context.foundersDayMessages({
+  fdateMonth: '10',
+  fdateDay: '15',
+  fmessage: '   ',
+  f2dateMonth: '',
+  f2dateDay: '5',
+  f2message: ''
+}, oct15)), [], 'a blank message adds no empty line');
+
+const secondHit = {
+  fdateMonth: '',
+  fdateDay: '15',
+  fmessage: 'Lanterns over the harbor',
+  f2dateMonth: '10',
+  f2dateDay: '15',
+  f2message: 'Second bell at dusk'
+};
+assert.deepStrictEqual(plain(founders.context.foundersDayMessages(secondHit, oct15)), ['Second bell at dusk'], 'only the matching message is shown');
+assert.strictEqual(founders.context.foundersPlayingEffect('none', secondHit, oct15, false), 'fireworks');
+
+const bothHit = {
+  fdateMonth: '10',
+  fdateDay: '15',
+  fmessage: 'Lanterns over the harbor',
+  f2dateMonth: '10',
+  f2dateDay: '15',
+  f2message: 'Second bell at dusk'
+};
+assert.deepStrictEqual(plain(founders.context.foundersDayMessages(bothHit, oct15)), ['Lanterns over the harbor', 'Second bell at dusk'], 'both messages stay in order');
+assert.deepStrictEqual(plain(founders.context.readFoundersRecord()), plain(firstHit), 'stored founders fields restore on load');
 
 console.log('dleaf-modal.test.js: ok');

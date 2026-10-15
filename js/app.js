@@ -978,7 +978,7 @@ function appendButterflies(layer) {
 }
 
 var FIREWORKS_COLOR_BOOM_GAIN = 0.22;
-var FIREWORKS_WHITE_BOOM_GAIN = 0.55;
+var FIREWORKS_WHITE_BOOM_GAIN = 0.715;
 var FIREWORKS_COLOR_BOOM_HZ = 150;
 var FIREWORKS_WHITE_BOOM_HZ = 78;
 var FIREWORKS_COLOR_NOISE_HZ = 380;
@@ -1382,8 +1382,16 @@ function resolvedBackgroundEffect() {
     return backgroundEffect;
 }
 
+var foundersFireworksHold = false;
+var foundersUserPickedEffect = false;
+
+function displayedBackgroundEffect() {
+    if (foundersFireworksHold) return 'fireworks';
+    return resolvedBackgroundEffect();
+}
+
 function backgroundEffectIsOn() {
-    var effect = resolvedBackgroundEffect();
+    var effect = displayedBackgroundEffect();
     return effect === 'snow' || effect === 'leaves' || effect === 'fluff' || effect === 'butterflies' || effect === 'fireworks';
 }
 
@@ -1391,7 +1399,7 @@ function syncSnowPausedNote() {
     var note = document.getElementById('snow-paused-note');
     if (!note) return;
     var effectOn = backgroundEffectIsOn();
-    var shown = resolvedBackgroundEffect();
+    var shown = displayedBackgroundEffect();
     if (shown === 'leaves') note.textContent = '(Leaves paused)';
     else if (shown === 'fluff') note.textContent = '(Fluff paused)';
     else if (shown === 'butterflies') note.textContent = '(Butterflies paused)';
@@ -1404,7 +1412,7 @@ function syncSnowPausedNote() {
 function syncSnowPlayback() {
     var layer = document.getElementById('snow-layer');
     if (!layer) return;
-    if (backgroundEffect === 'season' && backgroundParticlesKind && backgroundParticlesKind !== resolvedBackgroundEffect()) {
+    if (!foundersFireworksHold && backgroundEffect === 'season' && backgroundParticlesKind && backgroundParticlesKind !== resolvedBackgroundEffect()) {
         applySnowEffect('season');
         return;
     }
@@ -1430,8 +1438,9 @@ document.addEventListener('visibilitychange', syncSnowPlayback);
 function applySnowEffect(enabled) {
     var effect = (typeof parseSnowEffectFlag === 'function') ? parseSnowEffectFlag(enabled) : null;
     if (!effect) effect = enabled ? 'snow' : 'none';
-    backgroundEffect = effect;
-    var shown = effect === 'season' ? resolvedBackgroundEffect() : effect;
+    if (!foundersFireworksHold) backgroundEffect = effect;
+    var shown = foundersFireworksHold ? 'fireworks' : (effect === 'season' ? resolvedBackgroundEffect() : effect);
+    var radioEffect = foundersFireworksHold ? 'fireworks' : effect;
     snowEffect = shown !== 'none';
     var snowRadio = document.getElementById('effect-snow-radio');
     var noneRadio = document.getElementById('effect-none-radio');
@@ -1440,13 +1449,13 @@ function applySnowEffect(enabled) {
     var fluffRadio = document.getElementById('effect-fluff-radio');
     var butterflyRadio = document.getElementById('effect-butterflies-radio');
     var fireworksRadio = document.getElementById('effect-fireworks-radio');
-    if (snowRadio) snowRadio.checked = effect === 'snow';
-    if (noneRadio) noneRadio.checked = effect === 'none';
-    if (seasonRadio) seasonRadio.checked = effect === 'season';
-    if (leafRadio) leafRadio.checked = effect === 'leaves';
-    if (fluffRadio) fluffRadio.checked = effect === 'fluff';
-    if (butterflyRadio) butterflyRadio.checked = effect === 'butterflies';
-    if (fireworksRadio) fireworksRadio.checked = effect === 'fireworks';
+    if (snowRadio) snowRadio.checked = radioEffect === 'snow';
+    if (noneRadio) noneRadio.checked = radioEffect === 'none';
+    if (seasonRadio) seasonRadio.checked = radioEffect === 'season';
+    if (leafRadio) leafRadio.checked = radioEffect === 'leaves';
+    if (fluffRadio) fluffRadio.checked = radioEffect === 'fluff';
+    if (butterflyRadio) butterflyRadio.checked = radioEffect === 'butterflies';
+    if (fireworksRadio) fireworksRadio.checked = radioEffect === 'fireworks';
     var layer = document.getElementById('snow-layer');
     if (!layer) return;
     if (shown === 'snow' || shown === 'leaves' || shown === 'fluff' || shown === 'butterflies' || shown === 'fireworks') {
@@ -1466,6 +1475,88 @@ function loadSnowEffect() {
     var effect = (typeof readBackgroundEffect === 'function') ? readBackgroundEffect() : 'snow';
     if (typeof setBackgroundEffect === 'function') setBackgroundEffect(effect);
     else applySnowEffect(effect);
+}
+
+function foundersFormRecord() {
+    function val(id, fallback) {
+        var el = document.getElementById(id);
+        return el ? el.value : fallback;
+    }
+    var defaults = (typeof FOUNDERS_DEFAULTS !== 'undefined') ? FOUNDERS_DEFAULTS : {
+        fdateMonth: '4',
+        fdateDay: '15',
+        fmessage: '',
+        f2dateMonth: '',
+        f2dateDay: '5',
+        f2message: ''
+    };
+    return {
+        fdateMonth: val('dleaf-fdate-month', defaults.fdateMonth),
+        fdateDay: val('dleaf-fdate-day', defaults.fdateDay),
+        fmessage: val('dleaf-fmessage', defaults.fmessage),
+        f2dateMonth: val('dleaf-f2date-month', defaults.f2dateMonth),
+        f2dateDay: val('dleaf-f2date-day', defaults.f2dateDay),
+        f2message: val('dleaf-f2message', defaults.f2message)
+    };
+}
+
+function applyFoundersForm(record) {
+    function setVal(id, value) {
+        var el = document.getElementById(id);
+        if (el) el.value = value;
+    }
+    setVal('dleaf-fdate-month', record.fdateMonth);
+    setVal('dleaf-fdate-day', record.fdateDay);
+    setVal('dleaf-fmessage', record.fmessage);
+    setVal('dleaf-f2date-month', record.f2dateMonth);
+    setVal('dleaf-f2date-day', record.f2dateDay);
+    setVal('dleaf-f2message', record.f2message);
+}
+
+function paintFoundersDayMessage(record, date) {
+    var el = document.getElementById('founders-day-message');
+    if (!el) return;
+    var lines = (typeof foundersDayMessages === 'function') ? foundersDayMessages(record, date) : [];
+    if (!lines.length) {
+        el.textContent = '';
+        el.setAttribute('hidden', '');
+        return;
+    }
+    el.textContent = lines.join('\n');
+    el.removeAttribute('hidden');
+}
+
+function applyFoundersDay(date) {
+    var record = foundersFormRecord();
+    var when = (date && typeof date.getMonth === 'function') ? date : new Date();
+    paintFoundersDayMessage(record, when);
+    var hit = (typeof foundersRecordHits === 'function') && foundersRecordHits(record, when);
+    if (hit && !foundersUserPickedEffect) {
+        foundersFireworksHold = true;
+        applySnowEffect(backgroundEffect);
+        return;
+    }
+    if (!hit && foundersFireworksHold) {
+        foundersFireworksHold = false;
+        applySnowEffect(backgroundEffect);
+    }
+}
+
+function saveFoundersFromForm() {
+    if (typeof writeFoundersRecord === 'function') writeFoundersRecord(foundersFormRecord());
+    applyFoundersDay(new Date());
+}
+
+function loadFoundersFields() {
+    if (typeof readFoundersRecord === 'function') applyFoundersForm(readFoundersRecord());
+    var ids = ['dleaf-fdate-month', 'dleaf-fdate-day', 'dleaf-fmessage', 'dleaf-f2date-month', 'dleaf-f2date-day', 'dleaf-f2message'];
+    for (var i = 0; i < ids.length; i++) {
+        var el = document.getElementById(ids[i]);
+        if (!el || el.getAttribute('data-founders-bound') === '1') continue;
+        el.setAttribute('data-founders-bound', '1');
+        el.addEventListener('change', saveFoundersFromForm);
+        el.addEventListener('input', saveFoundersFromForm);
+    }
 }
 
 function updateClock() {
@@ -1805,7 +1896,9 @@ function initializeApp() {
     }
 
     loadHideCategories();
+    loadFoundersFields();
     loadSnowEffect();
+    applyFoundersDay();
     loadLinks();
 
     loadColorSettings();
@@ -1868,6 +1961,8 @@ function initializeApp() {
     document.querySelectorAll('input[name="background-effect"]').forEach((radio) => {
         radio.addEventListener('change', () => {
             if (!radio.checked) return;
+            foundersUserPickedEffect = true;
+            foundersFireworksHold = false;
             setBackgroundEffect(radio.value);
         });
     });
