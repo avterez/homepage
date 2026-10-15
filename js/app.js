@@ -1208,6 +1208,13 @@ function avt_ScrollToTop() {
     avt_ScrollTo(0);
 }
 
+/** Desktop go-to buttons focus link search. Mobile mode leaves that field alone. */
+function focusLinkSearchFromGoto() {
+    if (typeof isMobileBrowser === 'function' && isMobileBrowser()) return;
+    const linkSearch = document.getElementById('link-search-input');
+    if (linkSearch) linkSearch.focus();
+}
+
 /** Inclusive start/end of the header-bounded card section containing `index`. */
 function getLinkCardSectionRange(cards, index) {
     const card = cards[index];
@@ -1691,8 +1698,7 @@ function initializeApp() {
 					avt_ScrollToTop();
 				}
 
-				const linkSearch = document.getElementById('link-search-input');
-				if (linkSearch) linkSearch.focus();
+				focusLinkSearchFromGoto();
 				keyboardFocusedIndex = 0;
 				applyLinkCardKeyboardFocus({ scroll: false });
 			};
@@ -1701,8 +1707,7 @@ function initializeApp() {
 		if (bottomBtn) {
 			bottomBtn.onclick = () => {
 				avt_ScrollToBottom();
-				const linkSearch = document.getElementById('link-search-input');
-				if (linkSearch) linkSearch.focus();
+				focusLinkSearchFromGoto();
 				const cards = document.querySelectorAll('#links-grid .link-card');
 				keyboardFocusedIndex = Math.max(0, cards.length - 1);
 				applyLinkCardKeyboardFocus();
