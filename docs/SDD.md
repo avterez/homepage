@@ -275,7 +275,7 @@ Primary shell after load. Full component design: **§6.0**.
 
 | Modal ID | Purpose |
 |----------|---------|
-| `#settings-modal` | Preferences hub — name, font scale, theme/attribution entry, shortcut hints (**§6.8**) |
+| `#settings-modal` | Preferences hub — name, font scale, theme/attribution entry, shortcut hints, and the current PR number under the Close button, bottom right (**§6.8**) |
 | `#search-modal` | Draggable Google Search (**§6.7**) |
 | `#color-theme-modal` | Color role editor (child of Settings; **§6.8**) |
 | `#attribution-modal` | Credits / licenses (child of Settings; **§6.8**) |
@@ -2363,7 +2363,7 @@ Until captured, reviewers use live UI against this section.
 
 ### 6.8 Settings Hub & Related Modals
 
-Preferences surface for personalization (name, font scale), navigation into the Color Theme Editor and Attributions, and an in-UI keyboard shortcut cheat sheet. Module: `js/settingsmodal.js` (modal open/close, color apply/save); font scale and name wiring also in `js/app.js`. Role vocabulary and CSS variable map remain in **§5**; font-scale layout side effects in **§6.9**.
+Preferences surface for personalization (name, font scale), navigation into the Color Theme Editor and Attributions, and an in-UI keyboard shortcut cheat sheet. The current pull-request number from `<meta name="homepage-pr">` sits under the Close button, at the bottom right of the modal panel. Module: `js/settingsmodal.js` (modal open/close, color apply/save); font scale and name wiring also in `js/app.js`. Role vocabulary and CSS variable map remain in **§5**; font-scale layout side effects in **§6.9**.
 
 > *Detail note:* Expands the prior bullet list into a full component design for `#settings-modal` and its child flows (`#color-theme-modal`, `#attribution-modal`), aligned with current implementation.
 
@@ -2372,7 +2372,7 @@ Preferences surface for personalization (name, font scale), navigation into the 
 | Item | Description |
 |------|-------------|
 | **Purpose** | Provide a single preferences hub so users can personalize identity (name/title), readability (font scale), visual theme (color roles), and view third-party/project attributions without leaving the local start page. |
-| **In scope** | Open/close Settings; live name → title + `localStorage`; font scale ±5% / reset / clamp; open Color Theme Editor (load fields, dual picker/hex sync, per-field undo, Light/Dark presets, Save Colors); open Attribution credits; Esc stack participation; return-to-Settings navigation from children. |
+| **In scope** | Open/close Settings; live name → title + `localStorage`; font scale ±5% / reset / clamp; open Color Theme Editor (load fields, dual picker/hex sync, per-field undo, Light/Dark presets, Save Colors); open Attribution credits; Esc stack participation; return-to-Settings navigation from children. The footer shows the current PR number (`PR` plus `<meta name="homepage-pr">`) under the Close button, right-aligned, and that label stays in the footer when the form scrolls. |
 | **Out of scope** | Link CRUD (§6.1.1); Gist sync credentials (§6.11); view/sort mode (main chrome); account/SSO; remote theme marketplace; WCAG audit certification. |
 | **Actors** | End user of the local start page. |
 | **Primary artifacts** | `index.html`: `#settings-modal`, `#color-theme-modal`, `#attribution-modal`. Logic: `settingsmodal.js`, font/name in `app.js` (`COLOR_DEFAULTS`, `COLOR_LIGHT_DEFAULTS`, `COLOR_ID_MAP`, `applyFontScale`). Persistence: `localStorage` keys in §4.6 / §6.8.6. |
@@ -2685,7 +2685,7 @@ Export payload includes `colors`, `userName`, `fontScale` (§4.3). Import restor
 
 | View | Steps | Capture |
 |------|-------|---------|
-| Settings hub | Header gear | Name field, font − / % / +, Reset, Edit Color Theme, Attributions, shortcut hints, Close |
+| Settings hub | Header gear | Name field, font − / % / +, Reset, Edit Color Theme, Attributions, shortcut hints, Close, and the current PR number under that Close button at the bottom right |
 | Font scale change | Click + or − | `%` readout updates; page text size changes |
 | Color Theme Editor | Edit Color Theme | 3-col role grid, pickers, hex, undo, Light/Dark, Cancel, Save Colors |
 | Light Mode applied | Light Mode button | Fields + page adopt light palette (saved) |
@@ -2703,6 +2703,7 @@ Until captured, reviewers use live UI against this section.
 | ID | Role |
 |----|------|
 | `#settings-modal` | Preferences hub |
+| `#settings-pr-number` | Current PR number under the Close button, bottom right. Digits come from `<meta name="homepage-pr">` |
 | `#theme-author-name` | Display name |
 | `#font-scale-value` | Scale readout |
 | `#color-theme-modal` | Theme editor |
@@ -3602,11 +3603,11 @@ Optional background effects on the landing page (`#snow-layer`). A first visit u
 
 | Item | Behavior |
 |------|----------|
-| Toggle | Other Options shows **Effects** before **Sight**. Effects order: **None**, **Season**, **Dandelion Fluff***, **Butterflies**, **Falling Leaves**, **Snow***, **Fireworks!**. Each choice is a radio. The note under the list reads: * Uses "Effects" color in the "Color Theme Editor". Sight, Effects, and Description Timing start collapsed. **show more...** stays visible when Other Options is opened from Settings, and stays hidden when it is opened from the perspective control. |
+| Toggle | Other Options shows **Effects** before **Sight**. Effects order: **None**, **Season**, **Dandelion Fluff***, **Butterflies**, **Falling Leaves**, **Snow***. Each visible choice is a radio. **Fireworks!** is no longer a visible Effects choice. The fireworks radio stays in the markup with the `hidden` attribute, so a person cannot see it or tab to it. It still runs on a founders day and when the saved effect is already fireworks. Founders-day playback does not write `fireworks` into `startpage_snow_effect`. The note under the list reads: * Uses "Effects" color in the "Color Theme Editor". Sight, Effects, and Description Timing start collapsed. **show more...** stays visible when Other Options is opened from Settings, and stays hidden when it is opened from the perspective control. |
 | Persistence | `startpage_snow_effect` (`true` snow, `false` none, `season`, `leaves`, `fluff`, `butterflies`, `fireworks`). A missing key starts on **Seasonal**. Northern shows snow in Dec–Feb, dandelion fluff in Mar–May, butterflies in Jun–Aug, and falling leaves in Sep–Nov. Southern shifts that calendar by six months. The hemisphere is saved as `startpage_hemisphere`. The control beside **Seasonal** uses the Settings gear. Each time the Seasonal modal opens, its header icon is chosen at random from the Lucide snowflake, flower, butterfly, sun, and feather marks. Tapping the header, aside from the close control, picks a different one of those marks. |
 | Founders day | When today's local month and day match FDATE or F2DATE, and that month is not **None**, the effect that plays is fireworks. The match ignores the year. A **None** month never matches, even if the day number is today's. `startpage_snow_effect` is not overwritten, so the saved choice returns the next day. Choosing a different effect radio keeps that choice for the rest of the session; reloading on the matching day forces fireworks again. The same check runs when the page loads and when the saved founders fields change. |
 | Color | Theme role **Effects** → `startpage_snow_color` → CSS `--snow-color`. Snow and dandelion fluff use that color. Falling leaves use an autumn palette. Butterflies use several wing colors. |
-| Motion | Snow builds 48–96 flakes. Falling leaves are 28–64 wide shapes. Sideways position follows a sine wave, so each swing accelerates out of a turn, moves fastest across the center, and decelerates to a brief hang at the far side. The fall flattens and lifts slightly at those hangs, and is fastest on the center crossings. A smaller second wave keeps successive swings from matching. Each fall starts above the top of the screen at 35 degrees clockwise. Each leaf picks a left or right direction of movement with an even chance. The angle follows the leaf's place on its sine sway. At the center it is 35 degrees. On the left side of that center it turns clockwise, reaching 60 degrees at the left edge. On the right side it turns counter-clockwise, reaching -25 degrees at the right edge. Each swing passes through both. Dandelion fluff is 18–40 soft balls of different sizes and opacities that wander around the screen. Butterflies are 8–16 fliers of different sizes and colors; the wings flap separately from the flight path. **Fireworks!** is a radio in that same group. Big bursts use several colors and throw sparks that fall. Every several seconds a flurry of 3 to 8 smaller bright white booms fires. The white booms are 30% louder (gain 0.715) than the previous white booms and much deeper than the colored booms (gain 0.22). Boom sound starts with the show when the browser allows it, and otherwise on the first click or key after load. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for the Effects Timeout. That value is 1–99 minutes and defaults to 5. The timeout field uses the same up and down arrows as Description Timing, with an **m** after the box. |
+| Motion | Snow builds 48–96 flakes. Falling leaves are 28–64 wide shapes. Sideways position follows a sine wave, so each swing accelerates out of a turn, moves fastest across the center, and decelerates to a brief hang at the far side. The fall flattens and lifts slightly at those hangs, and is fastest on the center crossings. A smaller second wave keeps successive swings from matching. Each fall starts above the top of the screen at 35 degrees clockwise. Each leaf picks a left or right direction of movement with an even chance. The angle follows the leaf's place on its sine sway. At the center it is 35 degrees. On the left side of that center it turns clockwise, reaching 60 degrees at the left edge. On the right side it turns counter-clockwise, reaching -25 degrees at the right edge. Each swing passes through both. Dandelion fluff is 18–40 soft balls of different sizes and opacities that wander around the screen. Butterflies are 8–16 fliers of different sizes and colors; the wings flap separately from the flight path. Fireworks are no longer a visible Effects choice. They still run on a founders day and when the saved effect is already fireworks. Big bursts use several colors and throw sparks that fall. Every several seconds a flurry of 3 to 8 smaller bright white booms fires. The white booms are 30% louder (gain 0.715) than the previous white booms and much deeper than the colored booms (gain 0.22). Boom sound starts with the show when the browser allows it, and otherwise on the first click or key after load. Playback pauses when the tab is hidden, a dialog covers the page, or the pointer has been idle for the Effects Timeout. That value is 1–99 minutes and defaults to 5. The timeout field uses the same up and down arrows as Description Timing, with an **m** after the box. |
 | Hit testing | The layer does not receive pointer events. |
 
 ---
@@ -4218,6 +4219,7 @@ Minimum before tagging a release:
 | 3.14 | October 15, 2026 | PR 106: the Founders Modal text headers are Message:. The fields are FMESSAGE and F2MESSAGE. The second Date: still defaults to November 5 |
 | 3.15 | October 15, 2026 | PR 106: both Founders Modal month dropdowns include None, and None is not selected. The first Date stays April 15 and the second Date stays November 5 |
 | 3.16 | October 15, 2026 | PR 107: white firework booms are 30% louder (gain 0.715). White flurries are 3 to 8 booms inclusive. The second Founders month defaults to None. FDATE and F2DATE, with their messages, are saved in the browser. On a matching month and day, fireworks play without replacing the saved effect, and the matching message is bold under the daily quote. Debug panel PR meta is 107 |
+| 3.17 | October 15, 2026 | PR 108: Fireworks! is no longer a visible Effects choice. It still runs on a founders day and when the saved effect is already fireworks. Settings shows the current PR number from `homepage-pr` under its Close button, bottom right. Debug panel PR meta is 108 |
 
 ---
 

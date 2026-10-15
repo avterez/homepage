@@ -1877,7 +1877,16 @@ function setupBackupDropdownAutoHide() {
     }
 }
 
+function syncSettingsPrNumber() {
+    var slot = document.getElementById('settings-pr-number');
+    if (!slot) return;
+    var meta = document.querySelector('meta[name="homepage-pr"]');
+    var value = meta && meta.content ? String(meta.content).trim() : '';
+    slot.textContent = value ? ('PR ' + value) : '';
+}
+
 function initializeApp() {
+    syncSettingsPrNumber();
     const savedViewMode = localStorage.getItem('startpage_view_mode');
     if (savedViewMode === 'compact' || savedViewMode === 'full') {
         viewMode = savedViewMode;
