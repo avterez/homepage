@@ -235,10 +235,26 @@ function updateDebugInfo() {
     const prMeta = document.querySelector('meta[name="homepage-pr"]');
     const prNumber = (prMeta && prMeta.content) ? prMeta.content : '?';
 
+    const quoteCount = (typeof dailyQuotes !== 'undefined' && dailyQuotes && typeof dailyQuotes.length === 'number')
+        ? dailyQuotes.length
+        : 0;
+    let quoteShown = '—';
+    if (quoteCount > 0 && typeof quoteLineIndex === 'function' && typeof daysSinceJanuary1_2026 === 'function') {
+        quoteShown = quoteLineIndex(daysSinceJanuary1_2026(), quoteCount) + 1;
+    }
+
     content.innerHTML = `
         <div class="debug-panel__row">
             <span class="debug-panel__key">PR</span>
             <span class="debug-panel__val debug-panel__val--pr">${prNumber}</span>
+        </div>
+        <div class="debug-panel__row">
+            <span class="debug-panel__key"># of Quotes</span>
+            <span class="debug-panel__val debug-panel__val--count">${quoteCount}</span>
+        </div>
+        <div class="debug-panel__row">
+            <span class="debug-panel__key">Quote Shown</span>
+            <span class="debug-panel__val debug-panel__val--index">${quoteShown}</span>
         </div>
         <div class="debug-panel__row">
             <span class="debug-panel__key">Window Width</span>
