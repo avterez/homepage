@@ -358,7 +358,7 @@ function ensureDebugLoaded() {
 
     __debugScriptPromise = new Promise(function (resolve, reject) {
         var s = document.createElement('script');
-        s.src = 'js/debug.js?v=pr104-header-drag';
+        s.src = 'js/debug.js?v=pr105-founders-modal';
         s.onload = function () {
             window.__debugModuleLoaded = true;
             resolve();
@@ -414,13 +414,13 @@ function refreshDebugIfOpen() {
     }
 }
 
-function closeDleafModal() {
-    closeUiModal('dleaf-modal');
+function closeFoundersModal() {
+    closeUiModal('founders-modal');
 }
 
 function setupAppKeyboardShortcuts() {
     var uiModalCloseById = {
-        'dleaf-modal': closeDleafModal,
+        'founders-modal': closeFoundersModal,
         'modal': closeModal,
         'settings-modal': closeSettingsModal,
         'color-theme-modal': closeColorThemeModal,
@@ -977,15 +977,383 @@ function appendButterflies(layer) {
     layer.appendChild(frag);
 }
 
+var FIREWORKS_COLOR_BOOM_GAIN = 0.22;
+var FIREWORKS_WHITE_BOOM_GAIN = 0.55;
+var FIREWORKS_CRACKLE_GAIN = 0.045;
+var FIREWORKS_COLORS = ['#ff4b4b', '#ff9f1c', '#ffe66d', '#7dff6a', '#5aa6ff', '#e35d9f', '#c084fc', '#fff6d5'];
+
+var fireworksRunning = false;
+var fireworksFrame = 0;
+var fireworksCanvas = null;
+var fireworksCtx2d = null;
+var fireworksLastTs = 0;
+var fireworksClock = 0;
+var fireworksNextLaunch = 0;
+var fireworksNextFlurry = 0;
+var fireworksRockets = [];
+var fireworksSparks = [];
+var fireworksFlashes = [];
+var fireworksQueue = [];
+var fireworksResizeBound = false;
+var fireworksAudio = null;
+var fireworksMaster = null;
+var fireworksNoiseClip = null;
+var fireworksLastCrackle = 0;
+
+function fireworksAudioContext() {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    if (!fireworksAudio) {
+        try {
+            fireworksAudio = new AC();
+        } catch (e) {
+            return null;
+        }
+    }
+    if (fireworksAudio.state === 'suspended') {
+        fireworksAudio.resume();
+    }
+    return fireworksAudio;
+}
+
+function fireworksOutput() {
+    var ctx = fireworksAudioContext();
+    if (!ctx) return null;
+    if (!fireworksMaster) {
+        var comp = ctx.createDynamicsCompressor();
+        comp.threshold.setValueAtTime(-16, ctx.currentTime);
+        comp.knee.setValueAtTime(10, ctx.currentTime);
+        comp.ratio.setValueAtTime(6, ctx.currentTime);
+        comp.attack.setValueAtTime(0.003, ctx.currentTime);
+        comp.release.setValueAtTime(0.18, ctx.currentTime);
+        var master = ctx.createGain();
+        master.gain.value = 0.9;
+        comp.connect(master);
+        master.connect(ctx.destination);
+        fireworksMaster = comp;
+    }
+    return fireworksMaster;
+}
+
+function fireworksNoiseBuffer(ctx, seconds) {
+    if (fireworksNoiseClip && fireworksNoiseClip.sampleRate === ctx.sampleRate) return fireworksNoiseClip;
+    var length = Math.floor(ctx.sampleRate * seconds);
+    var buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+    var data = buffer.getChannelData(0);
+    for (var i = 0; i < length; i++) data[i] = Math.random() * 2 - 1;
+    fireworksNoiseClip = buffer;
+    return buffer;
+}
+
+function fireworksSoundLive() {
+    var layer = document.getElementById('snow-layer');
+    return fireworksRunning && layer && layer.classList.contains('is-on') &&
+        !layer.classList.contains('is-paused') && !layer.classList.contains('is-covered') &&
+        document.visibilityState !== 'hidden';
+}
+
+function playFireworksBoom(kind) {
+    if (!fireworksSoundLive()) return;
+    var ctx = fireworksAudioContext();
+    var dest = fireworksOutput();
+    if (!ctx || !dest) return;
+    var white = kind === 'white';
+    var now = ctx.currentTime;
+    var peak = white ? FIREWORKS_WHITE_BOOM_GAIN : FIREWORKS_COLOR_BOOM_GAIN;
+    var hold = white ? 0.22 : 0.72;
+    var noise = ctx.createBufferSource();
+    noise.buffer = fireworksNoiseBuffer(ctx, 1.2);
+    var filter = ctx.createBiquadFilter();
+    filter.type = white ? 'bandpass' : 'lowpass';
+    filter.frequency.setValueAtTime(white ? 1400 : 380, now);
+    filter.Q.value = white ? 0.7 : 0.6;
+    var gain = ctx.createGain();
+    gain.gain.setValueAtTime(peak, now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + hold);
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(dest);
+    noise.start(now);
+    noise.stop(now + hold + 0.05);
+    var osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(white ? 540 : 150, now);
+    osc.frequency.exponentialRampToValueAtTime(white ? 180 : 42, now + hold);
+    var oscGain = ctx.createGain();
+    oscGain.gain.setValueAtTime(white ? 0.2 : 0.1, now);
+    oscGain.gain.exponentialRampToValueAtTime(0.0001, now + hold);
+    osc.connect(oscGain);
+    oscGain.connect(dest);
+    osc.start(now);
+    osc.stop(now + hold + 0.02);
+}
+
+function playFireworksCrackle() {
+    if (!fireworksSoundLive()) return;
+    var ctx = fireworksAudioContext();
+    var dest = fireworksOutput();
+    if (!ctx || !dest) return;
+    var now = ctx.currentTime;
+    var noise = ctx.createBufferSource();
+    noise.buffer = fireworksNoiseBuffer(ctx, 1.2);
+    var filter = ctx.createBiquadFilter();
+    filter.type = 'highpass';
+    filter.frequency.value = 2800 + Math.random() * 2200;
+    var gain = ctx.createGain();
+    gain.gain.setValueAtTime(FIREWORKS_CRACKLE_GAIN * (0.55 + Math.random() * 0.7), now);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045 + Math.random() * 0.04);
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(dest);
+    var offset = Math.random() * 0.8;
+    noise.start(now, offset);
+    noise.stop(now + 0.1);
+}
+
+function resizeFireworks() {
+    if (!fireworksCanvas || !fireworksCtx2d) return;
+    var dpr = window.devicePixelRatio || 1;
+    var w = window.innerWidth || 1;
+    var h = window.innerHeight || 1;
+    fireworksCanvas.width = Math.max(1, Math.round(w * dpr));
+    fireworksCanvas.height = Math.max(1, Math.round(h * dpr));
+    fireworksCtx2d.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+function fireworksBurst(x, y, kind) {
+    var white = kind === 'white';
+    var count = white ? (16 + Math.floor(Math.random() * 12)) : (110 + Math.floor(Math.random() * 40));
+    var palette = [];
+    if (white) {
+        palette = ['#ffffff', '#f7fbff', '#fffef4'];
+    } else {
+        var first = Math.floor(Math.random() * FIREWORKS_COLORS.length);
+        palette.push(FIREWORKS_COLORS[first]);
+        palette.push(FIREWORKS_COLORS[(first + 2) % FIREWORKS_COLORS.length]);
+        palette.push(FIREWORKS_COLORS[(first + 5) % FIREWORKS_COLORS.length]);
+    }
+    fireworksFlashes.push({
+        x: x,
+        y: y,
+        age: 0,
+        life: white ? 0.16 : 0.28,
+        radius: white ? (14 + Math.random() * 10) : (48 + Math.random() * 28),
+        color: white ? '#ffffff' : palette[0]
+    });
+    for (var i = 0; i < count; i++) {
+        var angle = Math.random() * Math.PI * 2;
+        var speed = white ? (80 + Math.random() * 150) : (140 + Math.random() * 380);
+        var vx = Math.cos(angle) * speed;
+        var vy = Math.sin(angle) * speed;
+        fireworksSparks.push({
+            x: x,
+            y: y,
+            px: x,
+            py: y,
+            vx: vx,
+            vy: vy,
+            life: white ? (0.45 + Math.random() * 0.4) : (1.35 + Math.random() * 1.15),
+            age: 0,
+            size: white ? (1.4 + Math.random() * 1.6) : (3.2 + Math.random() * 3.6),
+            color: palette[i % palette.length],
+            white: white
+        });
+    }
+    if (fireworksSparks.length > 700) fireworksSparks.splice(0, fireworksSparks.length - 700);
+    playFireworksBoom(white ? 'white' : 'color');
+}
+
+function launchFireworksRocket() {
+    var w = window.innerWidth || 1280;
+    var h = window.innerHeight || 800;
+    fireworksRockets.push({
+        x: w * (0.12 + Math.random() * 0.76),
+        y: h + 6,
+        targetY: h * (0.1 + Math.random() * 0.42),
+        flight: 0.65 + Math.random() * 0.45,
+        age: 0
+    });
+}
+
+function queueWhiteFlurry() {
+    var w = window.innerWidth || 1280;
+    var h = window.innerHeight || 800;
+    var bursts = 3 + Math.floor(Math.random() * 4);
+    var start = fireworksClock;
+    for (var i = 0; i < bursts; i++) {
+        fireworksQueue.push({
+            at: start + i * (0.08 + Math.random() * 0.07),
+            x: w * (0.08 + Math.random() * 0.84),
+            y: h * (0.08 + Math.random() * 0.45)
+        });
+    }
+}
+
+function stopFireworks() {
+    fireworksRunning = false;
+    if (fireworksFrame) cancelAnimationFrame(fireworksFrame);
+    fireworksFrame = 0;
+    fireworksRockets = [];
+    fireworksSparks = [];
+    fireworksFlashes = [];
+    fireworksQueue = [];
+    if (fireworksCanvas && fireworksCanvas.parentNode) fireworksCanvas.parentNode.removeChild(fireworksCanvas);
+    fireworksCanvas = null;
+    fireworksCtx2d = null;
+}
+
+function fireworksTick(ts) {
+    if (!fireworksRunning) return;
+    fireworksFrame = requestAnimationFrame(fireworksTick);
+    var layer = document.getElementById('snow-layer');
+    var paused = !layer || !layer.classList.contains('is-on') ||
+        layer.classList.contains('is-paused') || layer.classList.contains('is-covered');
+    if (paused || !fireworksCtx2d) {
+        fireworksLastTs = ts;
+        return;
+    }
+    var dt = fireworksLastTs ? Math.min(0.05, (ts - fireworksLastTs) / 1000) : 0.016;
+    fireworksLastTs = ts;
+    fireworksClock += dt;
+    var w = window.innerWidth || 1280;
+    var h = window.innerHeight || 800;
+    if (fireworksClock >= fireworksNextLaunch) {
+        launchFireworksRocket();
+        fireworksNextLaunch = fireworksClock + 0.55 + Math.random() * 0.7;
+    }
+    if (fireworksClock >= fireworksNextFlurry) {
+        queueWhiteFlurry();
+        fireworksNextFlurry = fireworksClock + 8 + Math.random() * 7;
+    }
+    var qi = 0;
+    while (qi < fireworksQueue.length) {
+        if (fireworksQueue[qi].at <= fireworksClock) {
+            fireworksBurst(fireworksQueue[qi].x, fireworksQueue[qi].y, 'white');
+            fireworksQueue.splice(qi, 1);
+        } else {
+            qi++;
+        }
+    }
+    var ri = 0;
+    while (ri < fireworksRockets.length) {
+        var rocket = fireworksRockets[ri];
+        rocket.age += dt;
+        var t = rocket.age / rocket.flight;
+        if (t >= 1) {
+            fireworksBurst(rocket.x, rocket.targetY, 'color');
+            fireworksRockets.splice(ri, 1);
+        } else {
+            rocket.y = (h + 6) + (rocket.targetY - h - 6) * t;
+            ri++;
+        }
+    }
+    var falling = false;
+    var si = 0;
+    while (si < fireworksSparks.length) {
+        var spark = fireworksSparks[si];
+        spark.age += dt;
+        if (spark.age >= spark.life) {
+            fireworksSparks.splice(si, 1);
+            continue;
+        }
+        spark.vy += (spark.white ? 170 : 95) * dt;
+        spark.vx *= (1 - 0.35 * dt);
+        spark.vy *= (1 - 0.08 * dt);
+        spark.px = spark.x;
+        spark.py = spark.y;
+        spark.x += spark.vx * dt;
+        spark.y += spark.vy * dt;
+        if (spark.vy > 20) falling = true;
+        si++;
+    }
+    if (falling && ts - fireworksLastCrackle > 85) {
+        fireworksLastCrackle = ts;
+        playFireworksCrackle();
+    }
+    var fi = 0;
+    while (fi < fireworksFlashes.length) {
+        fireworksFlashes[fi].age += dt;
+        if (fireworksFlashes[fi].age >= fireworksFlashes[fi].life) fireworksFlashes.splice(fi, 1);
+        else fi++;
+    }
+    var ctx2d = fireworksCtx2d;
+    ctx2d.globalCompositeOperation = 'source-over';
+    ctx2d.clearRect(0, 0, w, h);
+    ctx2d.globalCompositeOperation = 'lighter';
+    for (var f = 0; f < fireworksFlashes.length; f++) {
+        var flash = fireworksFlashes[f];
+        var flashLeft = 1 - flash.age / flash.life;
+        ctx2d.globalAlpha = flashLeft * 0.85;
+        ctx2d.fillStyle = flash.color;
+        ctx2d.beginPath();
+        ctx2d.arc(flash.x, flash.y, flash.radius * (0.45 + flashLeft), 0, Math.PI * 2);
+        ctx2d.fill();
+    }
+    for (var r = 0; r < fireworksRockets.length; r++) {
+        var head = fireworksRockets[r];
+        ctx2d.globalAlpha = 0.95;
+        ctx2d.strokeStyle = '#fff4d2';
+        ctx2d.lineWidth = 2;
+        ctx2d.beginPath();
+        ctx2d.moveTo(head.x, head.y + 16);
+        ctx2d.lineTo(head.x, head.y);
+        ctx2d.stroke();
+        ctx2d.fillStyle = '#fffaf0';
+        ctx2d.beginPath();
+        ctx2d.arc(head.x, head.y, 2.6, 0, Math.PI * 2);
+        ctx2d.fill();
+    }
+    for (var s = 0; s < fireworksSparks.length; s++) {
+        var bit = fireworksSparks[s];
+        var remain = 1 - bit.age / bit.life;
+        ctx2d.globalAlpha = Math.max(0, remain) * 0.45;
+        ctx2d.strokeStyle = bit.color;
+        ctx2d.lineWidth = bit.white ? 1.2 : 2.4;
+        ctx2d.beginPath();
+        ctx2d.moveTo(bit.px, bit.py);
+        ctx2d.lineTo(bit.x, bit.y);
+        ctx2d.stroke();
+        ctx2d.globalAlpha = Math.max(0, remain);
+        ctx2d.fillStyle = bit.color;
+        ctx2d.beginPath();
+        ctx2d.arc(bit.x, bit.y, bit.size * (0.65 + remain * 0.5), 0, Math.PI * 2);
+        ctx2d.fill();
+    }
+    ctx2d.globalAlpha = 1;
+}
+
+function startFireworks(layer) {
+    stopFireworks();
+    fireworksCanvas = document.createElement('canvas');
+    fireworksCanvas.className = 'fireworks-canvas';
+    fireworksCanvas.setAttribute('aria-hidden', 'true');
+    layer.appendChild(fireworksCanvas);
+    fireworksCtx2d = fireworksCanvas.getContext('2d');
+    resizeFireworks();
+    fireworksRunning = true;
+    fireworksLastTs = 0;
+    fireworksClock = 0;
+    fireworksNextLaunch = 0;
+    fireworksNextFlurry = 6.5;
+    if (!fireworksResizeBound) {
+        window.addEventListener('resize', resizeFireworks);
+        fireworksResizeBound = true;
+    }
+    fireworksAudioContext();
+    fireworksFrame = requestAnimationFrame(fireworksTick);
+}
+
 function ensureBackgroundParticles(kind) {
     if (backgroundParticlesKind === kind) return;
     var layer = document.getElementById('snow-layer');
     if (!layer) return;
+    stopFireworks();
     while (layer.firstChild) layer.removeChild(layer.firstChild);
     if (kind === 'leaves') appendLeaves(layer);
     else if (kind === 'fluff') appendFluff(layer);
     else if (kind === 'butterflies') appendButterflies(layer);
     else if (kind === 'snow') appendSnowFlakes(layer);
+    else if (kind === 'fireworks') startFireworks(layer);
     backgroundParticlesKind = kind;
 }
 
@@ -1029,7 +1397,7 @@ function resolvedBackgroundEffect() {
 
 function backgroundEffectIsOn() {
     var effect = resolvedBackgroundEffect();
-    return effect === 'snow' || effect === 'leaves' || effect === 'fluff' || effect === 'butterflies';
+    return effect === 'snow' || effect === 'leaves' || effect === 'fluff' || effect === 'butterflies' || effect === 'fireworks';
 }
 
 function syncSnowPausedNote() {
@@ -1040,6 +1408,7 @@ function syncSnowPausedNote() {
     if (shown === 'leaves') note.textContent = '(Leaves paused)';
     else if (shown === 'fluff') note.textContent = '(Fluff paused)';
     else if (shown === 'butterflies') note.textContent = '(Butterflies paused)';
+    else if (shown === 'fireworks') note.textContent = '(Fireworks paused)';
     else note.textContent = '(Snow paused)';
     if (effectOn && snowIdlePaused) note.removeAttribute('hidden');
     else note.setAttribute('hidden', '');
@@ -1083,19 +1452,23 @@ function applySnowEffect(enabled) {
     var leafRadio = document.getElementById('effect-leaves-radio');
     var fluffRadio = document.getElementById('effect-fluff-radio');
     var butterflyRadio = document.getElementById('effect-butterflies-radio');
+    var fireworksBox = document.getElementById('effect-fireworks-checkbox');
     if (snowRadio) snowRadio.checked = effect === 'snow';
     if (noneRadio) noneRadio.checked = effect === 'none';
     if (seasonRadio) seasonRadio.checked = effect === 'season';
     if (leafRadio) leafRadio.checked = effect === 'leaves';
     if (fluffRadio) fluffRadio.checked = effect === 'fluff';
     if (butterflyRadio) butterflyRadio.checked = effect === 'butterflies';
+    if (fireworksBox) fireworksBox.checked = effect === 'fireworks';
     var layer = document.getElementById('snow-layer');
     if (!layer) return;
-    if (shown === 'snow' || shown === 'leaves' || shown === 'fluff' || shown === 'butterflies') {
+    if (shown === 'snow' || shown === 'leaves' || shown === 'fluff' || shown === 'butterflies' || shown === 'fireworks') {
         ensureBackgroundParticles(shown);
         layer.classList.add('is-on');
         if (!snowIdleTimer && !snowIdlePaused) scheduleSnowIdlePause();
     } else {
+        stopFireworks();
+        backgroundParticlesKind = '';
         layer.classList.remove('is-on');
         clearSnowIdlePause();
     }
@@ -1511,6 +1884,13 @@ function initializeApp() {
             setBackgroundEffect(radio.value);
         });
     });
+
+    const fireworksCheckbox = document.getElementById('effect-fireworks-checkbox');
+    if (fireworksCheckbox) {
+        fireworksCheckbox.addEventListener('change', () => {
+            setBackgroundEffect(fireworksCheckbox.checked ? 'fireworks' : 'none');
+        });
+    }
 
     function bindPopupSecondsInput(inputId, storageKey, fallback) {
         const input = document.getElementById(inputId);

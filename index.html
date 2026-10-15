@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<!-- AI: The Debug screen shows this pull request number. When a new PR starts, update content below to that PR number. -->
-		<meta name="homepage-pr" content="104">
+		<meta name="homepage-pr" content="105">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<script>
 		(function () {
@@ -46,7 +46,7 @@
 		<link rel="preload" href="css/lucide/lucide.woff2?v=pr75-settings-icons" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="css/styles.css?v=pr104-fdate-month-day" as="style">
+		<link rel="preload" href="css/styles.css?v=pr105-fireworks" as="style">
 
 		<!-- Critical CSS (FOUC / first paint) -->
 		<style>
@@ -70,7 +70,7 @@
 		</style>
 
 		<!-- Main CSS (blocking; avoid FOUC) -->
-		<link rel="stylesheet" href="css/styles.css?v=pr104-fdate-month-day">
+		<link rel="stylesheet" href="css/styles.css?v=pr105-fireworks">
 		<link rel="stylesheet" href="css/lucide/lucide.css?v=pr75-settings-icons">
 
 		<!-- FA subset async (~1.8KB vs full) -->
@@ -733,6 +733,11 @@
 							<input type="radio" name="background-effect" id="effect-snow-radio" value="snow"
 								class="settings-modal__radio">
 							<span class="settings-modal__check-label">Snow*</span>
+						</label>
+						<label class="settings-modal__check-row">
+							<input type="checkbox" id="effect-fireworks-checkbox"
+								class="settings-modal__checkbox">
+							<span class="settings-modal__check-label">Fireworks!</span>
 						</label>
 						<label class="other-options-modal__duration other-options-modal__timeout" for="effects-timeout-minutes">
 							<span class="other-options-modal__duration-label">Effects Timeout (in minutes):</span>
@@ -1713,29 +1718,29 @@
 			</div>
 		</div>
 
-		<!-- Ten DLEAF clicks within ten seconds. Fields are display-only. -->
-		<div id="dleaf-modal"
-			class="ui-modal ui-modal--topmost dleaf-modal"
-			role="dialog" aria-modal="true" aria-labelledby="dleaf-modal-title">
+		<!-- Founders Modal. Ten DLEAF clicks within ten seconds. Fields are display-only. -->
+		<div id="founders-modal"
+			class="ui-modal ui-modal--topmost founders-modal"
+			role="dialog" aria-modal="true" aria-labelledby="founders-modal-title">
 			<div onclick="event.stopImmediatePropagation()"
-				class="ui-modal__panel modal dleaf-modal__panel">
+				class="ui-modal__panel modal founders-modal__panel">
 
 				<div class="ui-modal__header">
-					<h3 id="dleaf-modal-title" class="ui-modal__title ui-modal__title--row">
-						<span>DLEAF</span>
+					<h3 id="founders-modal-title" class="ui-modal__title ui-modal__title--row">
+						<span>Special Date</span>
 					</h3>
-					<button type="button" onclick="closeDleafModal()" class="ui-modal__close" aria-label="Close">
+					<button type="button" onclick="closeFoundersModal()" class="ui-modal__close" aria-label="Close">
 						<i class="fa-solid fa-times"></i>
 					</button>
 				</div>
 
-				<div class="dleaf-modal__body">
-					<div class="dleaf-modal__field">
-						<div class="dleaf-modal__label" id="dleaf-fdate-label">FDATE</div>
-						<div class="dleaf-modal__date" role="group" aria-labelledby="dleaf-fdate-label">
-							<label class="dleaf-modal__date-part dleaf-modal__date-part--month" for="dleaf-fdate-month">
-								<span class="dleaf-modal__date-caption">Month</span>
-								<select id="dleaf-fdate-month" class="dleaf-modal__input" name="fdate-month">
+				<div class="founders-modal__body">
+					<div class="founders-modal__field">
+						<div class="founders-modal__label" id="dleaf-fdate-label">Date:</div>
+						<div class="founders-modal__date" role="group" aria-labelledby="dleaf-fdate-label">
+							<label class="founders-modal__date-part founders-modal__date-part--month" for="dleaf-fdate-month">
+								<span class="founders-modal__date-caption">Month</span>
+								<select id="dleaf-fdate-month" class="founders-modal__input" name="fdate-month">
 									<option value="1">January</option>
 									<option value="2">February</option>
 									<option value="3">March</option>
@@ -1750,9 +1755,9 @@
 									<option value="12">December</option>
 								</select>
 							</label>
-							<label class="dleaf-modal__date-part dleaf-modal__date-part--day" for="dleaf-fdate-day">
-								<span class="dleaf-modal__date-caption">Day</span>
-								<select id="dleaf-fdate-day" class="dleaf-modal__input" name="fdate-day">
+							<label class="founders-modal__date-part founders-modal__date-part--day" for="dleaf-fdate-day">
+								<span class="founders-modal__date-caption">Day</span>
+								<select id="dleaf-fdate-day" class="founders-modal__input" name="fdate-day">
 									<option value="1">1</option>
 									<option value="2">2</option>
 									<option value="3">3</option>
@@ -1788,9 +1793,9 @@
 							</label>
 						</div>
 					</div>
-					<div class="dleaf-modal__field">
-						<label class="dleaf-modal__label" for="dleaf-fname">FNAME</label>
-						<input type="text" id="dleaf-fname" class="dleaf-modal__input" name="fname" autocomplete="off" spellcheck="false">
+					<div class="founders-modal__field">
+						<label class="founders-modal__label" for="dleaf-fname">Name:</label>
+						<input type="text" id="dleaf-fname" class="founders-modal__input" name="fname" autocomplete="off" spellcheck="false">
 					</div>
 				</div>
 			</div>
@@ -1812,7 +1817,7 @@
 		</div>
 
 		<!-- Defer JS (tag order = execute order) -->
-		<script defer src="js/config.js?v=pr104-dleaf-modal"></script>
+		<script defer src="js/config.js?v=pr105-founders-modal"></script>
 		<script defer src="js/state.js?v=pr87-timeout"></script>
 		<script defer src="js/storage.js?v=pr87-timeout"></script>
 		<script defer src="js/github.js"></script>
@@ -1821,7 +1826,7 @@
 		<script defer src="js/addeditlink.js?v=pr78-google-ai"></script>
 		<script defer src="js/settingsmodal.js?v=pr92-seasonal-tap"></script>
 		<script defer src="js/gsmodal.js?v=pr82-clear"></script>
-		<script defer src="js/app.js?v=pr104-header-drag"></script>
+		<script defer src="js/app.js?v=pr105-fireworks"></script>
 		<script defer src="js/script.js"></script>
 	</body>
 </html>

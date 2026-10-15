@@ -1,5 +1,5 @@
 /**
- * Ten DLEAF clicks within ten seconds open the FDATE / FNAME modal.
+ * Ten DLEAF clicks within ten seconds open the Founders Modal.
  * Run: node tests/dleaf-modal.test.js
  */
 'use strict';
@@ -15,29 +15,30 @@ const debugSrc = fs.readFileSync(path.join(root, 'js/debug.js'), 'utf8');
 const appSrc = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');
 const configSrc = fs.readFileSync(path.join(root, 'js/config.js'), 'utf8');
 
-const modalAt = html.indexOf('id="dleaf-modal"');
-assert.ok(modalAt !== -1, 'index.html should include #dleaf-modal');
+const modalAt = html.indexOf('id="founders-modal"');
+assert.ok(modalAt !== -1, 'index.html should include #founders-modal');
 const modalEnd = html.indexOf('id="landscape-lock"', modalAt);
 const modalHtml = html.slice(modalAt, modalEnd === -1 ? modalAt + 8000 : modalEnd);
 
 function assertFdateFields(source, label) {
-  assert.ok(source.includes('>FDATE<'), label + ' should label FDATE');
+  assert.ok(source.includes('>Special Date<'), label + ' should title the Founders Modal Special Date');
+  assert.ok(source.includes('>Date:<'), label + ' should label Date:');
   assert.ok(source.includes('id="dleaf-fdate-month"'), label + ' should ask for a month');
   assert.ok(source.includes('id="dleaf-fdate-day"'), label + ' should ask for a day');
   assert.ok(/<option value="4" selected>April<\/option>/.test(source), label + ' should default the month to April');
   assert.ok(/<option value="15" selected>15<\/option>/.test(source), label + ' should default the day to 15');
   assert.ok(!source.includes('type="date"'), label + ' should not use a year-bearing date input');
   assert.ok(!/year/i.test(source), label + ' should not ask for a year');
-  assert.ok(/<label[^>]*for="dleaf-fname"[^>]*>FNAME<\/label>/.test(source), label);
+  assert.ok(/<label[^>]*for="dleaf-fname"[^>]*>Name:<\/label>/.test(source), label);
   const fnameTag = source.match(/<input[^>]*id="dleaf-fname"[^>]*>/);
   assert.ok(fnameTag && fnameTag[0].includes('type="text"'), label + ' FNAME should be a text box');
   assert.ok(fnameTag && !/\bvalue\s*=/.test(fnameTag[0]), label + ' FNAME should start blank');
 }
 
 assertFdateFields(modalHtml, 'index.html');
-assert.ok(html.includes('name="homepage-pr" content="104"'), 'debug PR meta should be 104');
-assert.ok(configSrc.includes("'dleaf-modal'"), 'dleaf-modal should be a ui-modal id');
-assert.ok(appSrc.includes("'dleaf-modal': closeDleafModal"), 'Escape should close the DLEAF modal');
+assert.ok(html.includes('name="homepage-pr" content="105"'), 'debug PR meta should be 105');
+assert.ok(configSrc.includes("'founders-modal'"), 'founders-modal should be a ui-modal id');
+assert.ok(appSrc.includes("'founders-modal': closeFoundersModal"), 'Escape should close the Founders Modal');
 
 function matches(el, sel) {
   return String(sel).split(',').some(function (part) {
@@ -104,7 +105,7 @@ function loadPanel() {
   const angle = node({ id: 'debug-dleaf-angle', tagName: 'input', value: '35', parent: panel });
   const minus = node({ id: 'debug-dleaf-angle-minus', tagName: 'button', parent: panel });
   const plus = node({ id: 'debug-dleaf-angle-plus', tagName: 'button', parent: panel });
-  const modal = node({ id: 'dleaf-modal', tagName: 'div', className: 'ui-modal' });
+  const modal = node({ id: 'founders-modal', tagName: 'div', className: 'ui-modal' });
   modal.innerHTML = modalHtml;
 
   panel.querySelector = function (sel) {
@@ -150,13 +151,13 @@ function loadPanel() {
       createElement: function () { return panel; },
       getElementById: function (id) {
         if (id === 'dleaf') return leaf;
-        if (id === 'dleaf-modal') return modal;
+        if (id === 'founders-modal') return modal;
         if (id === 'daily-quote') return { textContent: '', title: '' };
         return null;
       },
       addEventListener: function (type, fn) { listen(docListeners, type, fn); },
       querySelector: function (sel) {
-        if (sel === 'meta[name="homepage-pr"]') return { content: '104' };
+        if (sel === 'meta[name="homepage-pr"]') return { content: '105' };
         return null;
       }
     },
@@ -201,7 +202,7 @@ for (let i = 0; i < 9; i++) click(within, within.leaf, 16, 16);
 assert.ok(!within.modal.classList.contains('is-open'), 'nine clicks should not open the modal');
 click(within, within.leaf, 16, 16);
 assert.ok(within.modal.classList.contains('is-open'), 'the tenth click within ten seconds should open the modal');
-assert.strictEqual(within.opened[0], 'dleaf-modal');
+assert.strictEqual(within.opened[0], 'founders-modal');
 assertFdateFields(within.modal.innerHTML, 'opened modal');
 
 within.modal.classList.remove('is-open');

@@ -202,7 +202,7 @@ function setHemisphere(value) {
     return hemisphere;
 }
 
-/** 'snow', 'none', 'season', 'leaves', 'fluff', or 'butterflies'. null when an older backup should leave the setting alone. */
+/** 'snow', 'none', 'season', 'leaves', 'fluff', 'butterflies', or 'fireworks'. null when an older backup should leave the setting alone. */
 function parseSnowEffectFlag(value) {
     if (value === true || value === 'true' || value === 'snow') return 'snow';
     if (value === false || value === 'false' || value === 'none') return 'none';
@@ -210,6 +210,7 @@ function parseSnowEffectFlag(value) {
     if (value === 'leaves') return 'leaves';
     if (value === 'fluff') return 'fluff';
     if (value === 'butterflies') return 'butterflies';
+    if (value === 'fireworks') return 'fireworks';
     return null;
 }
 

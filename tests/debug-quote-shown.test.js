@@ -15,7 +15,7 @@ const quotesSrc = fs.readFileSync(path.join(root, 'js/quotes.js'), 'utf8');
 const debugSrc = fs.readFileSync(path.join(root, 'js/debug.js'), 'utf8');
 const appSrc = fs.readFileSync(path.join(root, 'js/app.js'), 'utf8');
 
-assert.ok(appSrc.includes('js/debug.js?v=pr104-header-drag'), 'debug.js cache key should change with this panel');
+assert.ok(appSrc.includes('js/debug.js?v=pr105-founders-modal'), 'debug.js cache key should change with this panel');
 
 function makeElement() {
   const content = { innerHTML: '' };
