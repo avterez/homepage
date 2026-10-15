@@ -979,7 +979,10 @@ function appendButterflies(layer) {
 
 var FIREWORKS_COLOR_BOOM_GAIN = 0.22;
 var FIREWORKS_WHITE_BOOM_GAIN = 0.55;
-var FIREWORKS_CRACKLE_GAIN = 0.045;
+var FIREWORKS_COLOR_BOOM_HZ = 150;
+var FIREWORKS_WHITE_BOOM_HZ = 78;
+var FIREWORKS_COLOR_NOISE_HZ = 380;
+var FIREWORKS_WHITE_NOISE_HZ = 160;
 var FIREWORKS_COLORS = ['#ff4b4b', '#ff9f1c', '#ffe66d', '#7dff6a', '#5aa6ff', '#e35d9f', '#c084fc', '#fff6d5'];
 
 var fireworksRunning = false;
@@ -998,7 +1001,7 @@ var fireworksResizeBound = false;
 var fireworksAudio = null;
 var fireworksMaster = null;
 var fireworksNoiseClip = null;
-var fireworksLastCrackle = 0;
+var fireworksAudioUnlockBound = false;
 
 function fireworksAudioContext() {
     var AC = window.AudioContext || window.webkitAudioContext;
@@ -1010,10 +1013,20 @@ function fireworksAudioContext() {
             return null;
         }
     }
-    if (fireworksAudio.state === 'suspended') {
-        fireworksAudio.resume();
-    }
     return fireworksAudio;
+}
+
+function resumeFireworksAudio() {
+    var ctx = fireworksAudioContext();
+    if (ctx && ctx.state === 'suspended') ctx.resume();
+}
+
+function bindFireworksAudioUnlock() {
+    if (fireworksAudioUnlockBound) return;
+    fireworksAudioUnlockBound = true;
+    document.addEventListener('pointerdown', resumeFireworksAudio, true);
+    document.addEventListener('keydown', resumeFireworksAudio, true);
+    document.addEventListener('touchstart', resumeFireworksAudio, true);
 }
 
 function fireworksOutput() {
@@ -1055,18 +1068,19 @@ function fireworksSoundLive() {
 function playFireworksBoom(kind) {
     if (!fireworksSoundLive()) return;
     var ctx = fireworksAudioContext();
+    if (!ctx || ctx.state !== 'running') return;
     var dest = fireworksOutput();
-    if (!ctx || !dest) return;
+    if (!dest) return;
     var white = kind === 'white';
     var now = ctx.currentTime;
     var peak = white ? FIREWORKS_WHITE_BOOM_GAIN : FIREWORKS_COLOR_BOOM_GAIN;
-    var hold = white ? 0.22 : 0.72;
+    var hold = white ? 0.48 : 0.72;
     var noise = ctx.createBufferSource();
     noise.buffer = fireworksNoiseBuffer(ctx, 1.2);
     var filter = ctx.createBiquadFilter();
-    filter.type = white ? 'bandpass' : 'lowpass';
-    filter.frequency.setValueAtTime(white ? 1400 : 380, now);
-    filter.Q.value = white ? 0.7 : 0.6;
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(white ? FIREWORKS_WHITE_NOISE_HZ : FIREWORKS_COLOR_NOISE_HZ, now);
+    filter.Q.value = 0.6;
     var gain = ctx.createGain();
     gain.gain.setValueAtTime(peak, now);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + hold);
@@ -1077,8 +1091,8 @@ function playFireworksBoom(kind) {
     noise.stop(now + hold + 0.05);
     var osc = ctx.createOscillator();
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(white ? 540 : 150, now);
-    osc.frequency.exponentialRampToValueAtTime(white ? 180 : 42, now + hold);
+    osc.frequency.setValueAtTime(white ? FIREWORKS_WHITE_BOOM_HZ : FIREWORKS_COLOR_BOOM_HZ, now);
+    osc.frequency.exponentialRampToValueAtTime(white ? 28 : 42, now + hold);
     var oscGain = ctx.createGain();
     oscGain.gain.setValueAtTime(white ? 0.2 : 0.1, now);
     oscGain.gain.exponentialRampToValueAtTime(0.0001, now + hold);
@@ -1086,28 +1100,6 @@ function playFireworksBoom(kind) {
     oscGain.connect(dest);
     osc.start(now);
     osc.stop(now + hold + 0.02);
-}
-
-function playFireworksCrackle() {
-    if (!fireworksSoundLive()) return;
-    var ctx = fireworksAudioContext();
-    var dest = fireworksOutput();
-    if (!ctx || !dest) return;
-    var now = ctx.currentTime;
-    var noise = ctx.createBufferSource();
-    noise.buffer = fireworksNoiseBuffer(ctx, 1.2);
-    var filter = ctx.createBiquadFilter();
-    filter.type = 'highpass';
-    filter.frequency.value = 2800 + Math.random() * 2200;
-    var gain = ctx.createGain();
-    gain.gain.setValueAtTime(FIREWORKS_CRACKLE_GAIN * (0.55 + Math.random() * 0.7), now);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.045 + Math.random() * 0.04);
-    noise.connect(filter);
-    filter.connect(gain);
-    gain.connect(dest);
-    var offset = Math.random() * 0.8;
-    noise.start(now, offset);
-    noise.stop(now + 0.1);
 }
 
 function resizeFireworks() {
@@ -1247,7 +1239,6 @@ function fireworksTick(ts) {
             ri++;
         }
     }
-    var falling = false;
     var si = 0;
     while (si < fireworksSparks.length) {
         var spark = fireworksSparks[si];
@@ -1263,12 +1254,7 @@ function fireworksTick(ts) {
         spark.py = spark.y;
         spark.x += spark.vx * dt;
         spark.y += spark.vy * dt;
-        if (spark.vy > 20) falling = true;
         si++;
-    }
-    if (falling && ts - fireworksLastCrackle > 85) {
-        fireworksLastCrackle = ts;
-        playFireworksCrackle();
     }
     var fi = 0;
     while (fi < fireworksFlashes.length) {
@@ -1339,7 +1325,8 @@ function startFireworks(layer) {
         window.addEventListener('resize', resizeFireworks);
         fireworksResizeBound = true;
     }
-    fireworksAudioContext();
+    bindFireworksAudioUnlock();
+    resumeFireworksAudio();
     fireworksFrame = requestAnimationFrame(fireworksTick);
 }
 
@@ -1452,14 +1439,14 @@ function applySnowEffect(enabled) {
     var leafRadio = document.getElementById('effect-leaves-radio');
     var fluffRadio = document.getElementById('effect-fluff-radio');
     var butterflyRadio = document.getElementById('effect-butterflies-radio');
-    var fireworksBox = document.getElementById('effect-fireworks-checkbox');
+    var fireworksRadio = document.getElementById('effect-fireworks-radio');
     if (snowRadio) snowRadio.checked = effect === 'snow';
     if (noneRadio) noneRadio.checked = effect === 'none';
     if (seasonRadio) seasonRadio.checked = effect === 'season';
     if (leafRadio) leafRadio.checked = effect === 'leaves';
     if (fluffRadio) fluffRadio.checked = effect === 'fluff';
     if (butterflyRadio) butterflyRadio.checked = effect === 'butterflies';
-    if (fireworksBox) fireworksBox.checked = effect === 'fireworks';
+    if (fireworksRadio) fireworksRadio.checked = effect === 'fireworks';
     var layer = document.getElementById('snow-layer');
     if (!layer) return;
     if (shown === 'snow' || shown === 'leaves' || shown === 'fluff' || shown === 'butterflies' || shown === 'fireworks') {
@@ -1884,13 +1871,6 @@ function initializeApp() {
             setBackgroundEffect(radio.value);
         });
     });
-
-    const fireworksCheckbox = document.getElementById('effect-fireworks-checkbox');
-    if (fireworksCheckbox) {
-        fireworksCheckbox.addEventListener('change', () => {
-            setBackgroundEffect(fireworksCheckbox.checked ? 'fireworks' : 'none');
-        });
-    }
 
     function bindPopupSecondsInput(inputId, storageKey, fallback) {
         const input = document.getElementById(inputId);

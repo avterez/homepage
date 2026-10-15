@@ -29,14 +29,64 @@ function assertFdateFields(source, label) {
   assert.ok(/<option value="15" selected>15<\/option>/.test(source), label + ' should default the day to 15');
   assert.ok(!source.includes('type="date"'), label + ' should not use a year-bearing date input');
   assert.ok(!/year/i.test(source), label + ' should not ask for a year');
-  assert.ok(/<label[^>]*for="dleaf-fname"[^>]*>Name:<\/label>/.test(source), label);
-  const fnameTag = source.match(/<input[^>]*id="dleaf-fname"[^>]*>/);
-  assert.ok(fnameTag && fnameTag[0].includes('type="text"'), label + ' FNAME should be a text box');
-  assert.ok(fnameTag && !/\bvalue\s*=/.test(fnameTag[0]), label + ' FNAME should start blank');
+  assert.ok(/<label[^>]*for="dleaf-fmessage"[^>]*>Message:<\/label>/.test(source), label);
+  const fmessageTag = source.match(/<input[^>]*id="dleaf-fmessage"[^>]*>/);
+  assert.ok(fmessageTag && fmessageTag[0].includes('type="text"'), label + ' FMESSAGE should be a text box');
+  assert.ok(fmessageTag && fmessageTag[0].includes('name="fmessage"'), label + ' FMESSAGE name should be fmessage');
+  assert.ok(fmessageTag && fmessageTag[0].includes('autocomplete="off"') && fmessageTag[0].includes('spellcheck="false"'), label + ' FMESSAGE stays a plain text box');
+  assert.ok(fmessageTag && fmessageTag[0].includes('class="founders-modal__input"'), label + ' FMESSAGE keeps the founders input class');
+  assert.ok(fmessageTag && !/\bvalue\s*=/.test(fmessageTag[0]), label + ' FMESSAGE should start blank');
 }
 
 assertFdateFields(modalHtml, 'index.html');
-assert.ok(html.includes('name="homepage-pr" content="105"'), 'debug PR meta should be 105');
+assert.ok(html.includes('name="homepage-pr" content="106"'), 'debug PR meta should be 106');
+const fmessageAt = modalHtml.indexOf('id="dleaf-fmessage"');
+const ruleAt = modalHtml.indexOf('<hr class="founders-modal__rule">');
+const f2DateAt = modalHtml.indexOf('id="dleaf-f2date-month"');
+const f2MessageAt = modalHtml.indexOf('id="dleaf-f2message"');
+assert.ok(fmessageAt !== -1 && ruleAt > fmessageAt, 'an hr sits under FMESSAGE');
+assert.ok(f2DateAt > ruleAt, 'second Date sits under the hr');
+assert.ok(/id="dleaf-f2date-label">Date:</.test(modalHtml), 'second Date label should read Date:');
+assert.ok(modalHtml.includes('id="dleaf-f2date-day"'), 'second Date should ask for a day');
+assert.ok(f2MessageAt > f2DateAt, 'F2MESSAGE sits under the second Date');
+assert.ok(/<label[^>]*for="dleaf-f2message"[^>]*>Message:<\/label>/.test(modalHtml), 'second Message label should read Message:');
+const f2MessageTag = modalHtml.match(/<input[^>]*id="dleaf-f2message"[^>]*>/);
+assert.ok(f2MessageTag && f2MessageTag[0].includes('type="text"') && f2MessageTag[0].includes('name="f2message"') && !/\bvalue\s*=/.test(f2MessageTag[0]), 'F2MESSAGE should be a blank text box');
+assert.ok(!modalHtml.includes('dleaf-fname') && !modalHtml.includes('dleaf-f2name'), 'old name ids are gone from the Founders Modal');
+assert.ok(!modalHtml.includes('name="fname"') && !modalHtml.includes('name="f2name"'), 'old name attributes are gone from the Founders Modal');
+
+function selectBlock(source, id) {
+  const marker = 'id="' + id + '"';
+  const at = source.indexOf(marker);
+  assert.ok(at !== -1, id + ' missing');
+  const open = source.lastIndexOf('<select', at);
+  const close = source.indexOf('</select>', at);
+  return source.slice(open, close);
+}
+
+const firstMonth = selectBlock(modalHtml, 'dleaf-fdate-month');
+const firstDay = selectBlock(modalHtml, 'dleaf-fdate-day');
+const secondMonth = selectBlock(modalHtml, 'dleaf-f2date-month');
+const secondDay = selectBlock(modalHtml, 'dleaf-f2date-day');
+assert.ok(/<option value="4" selected>April<\/option>/.test(firstMonth), 'first Date month stays April');
+assert.ok(/<option value="15" selected>15<\/option>/.test(firstDay), 'first Date day stays 15');
+assert.ok(/<option value="11" selected>November<\/option>/.test(secondMonth), 'second Date month defaults to November');
+assert.ok(!/<option value="4" selected>/.test(secondMonth), 'second Date month is not April');
+assert.ok(/<option value="5" selected>5<\/option>/.test(secondDay), 'second Date day defaults to 5');
+assert.ok(!/<option value="15" selected>/.test(secondDay), 'second Date day is not 15');
+
+function assertNoneMonth(block, label) {
+  const none = '<option value="">None</option>';
+  assert.ok(block.includes(none), label + ' month includes <option value="">None</option>');
+  assert.ok(block.indexOf(none) !== -1 && block.indexOf(none) < block.indexOf('<option value="1">January</option>'), label + ' None is the first month option');
+  assert.ok(!/<option value=""[^>]*selected/.test(block), label + ' None is not selected');
+  assert.ok(!/selected[^>]*>None</.test(block), label + ' None is not the selected option');
+}
+assertNoneMonth(firstMonth, 'first Date');
+assertNoneMonth(secondMonth, 'second Date');
+assert.ok(!firstDay.includes('>None<') && !secondDay.includes('>None<'), 'day selects do not include None');
+const css = fs.readFileSync(path.join(root, 'css/styles.css'), 'utf8');
+assert.ok(css.includes('#founders-modal.is-open{z-index:100000;align-items:flex-start;justify-content:center;padding-top:10vh}'), 'Founders Modal should open at 10% of the screen height');
 assert.ok(configSrc.includes("'founders-modal'"), 'founders-modal should be a ui-modal id');
 assert.ok(appSrc.includes("'founders-modal': closeFoundersModal"), 'Escape should close the Founders Modal');
 
@@ -157,7 +207,7 @@ function loadPanel() {
       },
       addEventListener: function (type, fn) { listen(docListeners, type, fn); },
       querySelector: function (sel) {
-        if (sel === 'meta[name="homepage-pr"]') return { content: '105' };
+        if (sel === 'meta[name="homepage-pr"]') return { content: '106' };
         return null;
       }
     },
