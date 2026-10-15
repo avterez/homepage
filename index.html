@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<!-- AI: The Debug screen shows this pull request number. When a new PR starts, update content below to that PR number. -->
-		<meta name="homepage-pr" content="107">
+		<meta name="homepage-pr" content="108">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<script>
 		(function () {
@@ -46,7 +46,7 @@
 		<link rel="preload" href="css/lucide/lucide.woff2?v=pr75-settings-icons" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="css/styles.css?v=pr107-founders-day" as="style">
+		<link rel="preload" href="css/styles.css?v=pr108-hide-fireworks" as="style">
 
 		<!-- Critical CSS (FOUC / first paint) -->
 		<style>
@@ -71,7 +71,7 @@
 		</style>
 
 		<!-- Main CSS (blocking; avoid FOUC) -->
-		<link rel="stylesheet" href="css/styles.css?v=pr107-founders-day">
+		<link rel="stylesheet" href="css/styles.css?v=pr108-hide-fireworks">
 		<link rel="stylesheet" href="css/lucide/lucide.css?v=pr75-settings-icons">
 
 		<!-- FA subset async (~1.8KB vs full) -->
@@ -356,6 +356,7 @@
 						class="settings-modal__footer-close ui-modal__btn ui-modal__btn--block">
 						Close
 					</button>
+					<p id="settings-pr-number" class="settings-modal__pr"></p>
 				</div>
 			</div>
 		</div>
@@ -738,9 +739,9 @@
 								class="settings-modal__radio">
 							<span class="settings-modal__check-label">Snow*</span>
 						</label>
-						<label class="settings-modal__check-row">
+						<label class="settings-modal__check-row" hidden aria-hidden="true">
 							<input type="radio" name="background-effect" id="effect-fireworks-radio" value="fireworks"
-								class="settings-modal__radio">
+								class="settings-modal__radio" tabindex="-1">
 							<span class="settings-modal__check-label">Fireworks!</span>
 						</label>
 						<label class="other-options-modal__duration other-options-modal__timeout" for="effects-timeout-minutes">
@@ -1896,7 +1897,7 @@
 		<script defer src="js/settingsmodal.js?v=pr92-seasonal-tap"></script>
 		<script defer src="js/gsmodal.js?v=pr82-clear"></script>
 		<script defer src="js/founders.js?v=pr107-founders-day"></script>
-		<script defer src="js/app.js?v=pr107-founders-day"></script>
+		<script defer src="js/app.js?v=pr108-hide-fireworks"></script>
 		<script defer src="js/script.js"></script>
 	</body>
 </html>
