@@ -815,11 +815,25 @@ function appendSnowFlakes(layer) {
     var frag = document.createDocumentFragment();
     for (var i = 0; i < count; i++) {
         var flake = document.createElement('span');
-        var crystal = Math.random() < 0.34;
-        flake.className = crystal ? 'snow-flake snow-flake--crystal' : 'snow-flake';
-        var size = (crystal ? (12 + Math.random() * 8) : (4 + Math.random() * 5)) * 0.8;
+        var roll = Math.random();
+        var fern = roll < 0.12;
+        var crystal = fern || roll < 0.34;
+        flake.className = 'snow-flake' + (crystal ? ' snow-flake--crystal' : '') + (fern ? ' snow-flake--fern' : '');
+        if (crystal) {
+            for (var armIndex = 0; armIndex < 3; armIndex++) {
+                var arm = document.createElement('span');
+                arm.className = 'snow-flake__arm';
+                arm.style.transform = 'rotate(' + (armIndex * 60) + 'deg)';
+                flake.appendChild(arm);
+            }
+        }
+        var size = fern ? (16 + Math.random() * 6) : (crystal ? (11 + Math.random() * 5) : ((4 + Math.random() * 5) * 0.8));
         var duration = 18 + Math.random() * 16;
-        var drift = (22 + Math.random() * 64) * (Math.random() < 0.5 ? -1 : 1);
+        var sign = Math.random() < 0.5 ? -1 : 1;
+        var drift = (22 + Math.random() * 64) * sign;
+        var angleDeg = (1.4 + Math.random() * 5.6) * sign;
+        var fallPx = (window.innerHeight || 800) * 1.16;
+        var windPx = Math.tan(angleDeg * Math.PI / 180) * fallPx;
         flake.style.left = (Math.random() * 100) + '%';
         flake.style.width = size + 'px';
         flake.style.height = size + 'px';
@@ -827,6 +841,7 @@ function appendSnowFlakes(layer) {
         flake.style.animationDuration = duration.toFixed(2) + 's';
         flake.style.animationDelay = (-Math.random() * duration).toFixed(2) + 's';
         flake.style.setProperty('--snow-drift', drift.toFixed(1) + 'px');
+        flake.style.setProperty('--snow-wind', windPx + 'px');
         flake.style.setProperty('--snow-sway', (1.5 + Math.random() * 1.5).toFixed(2));
         flake.style.setProperty('--snow-phase', (Math.random() * 360).toFixed(1) + 'deg');
         frag.appendChild(flake);
