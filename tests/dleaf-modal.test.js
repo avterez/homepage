@@ -37,6 +37,20 @@ function assertFdateFields(source, label) {
 
 assertFdateFields(modalHtml, 'index.html');
 assert.ok(html.includes('name="homepage-pr" content="106"'), 'debug PR meta should be 106');
+const fnameAt = modalHtml.indexOf('id="dleaf-fname"');
+const ruleAt = modalHtml.indexOf('<hr class="founders-modal__rule">');
+const f2DateAt = modalHtml.indexOf('id="dleaf-f2date-month"');
+const f2NameAt = modalHtml.indexOf('id="dleaf-f2name"');
+assert.ok(fnameAt !== -1 && ruleAt > fnameAt, 'an hr sits under FNAME');
+assert.ok(f2DateAt > ruleAt, 'F2Date sits under the hr');
+assert.ok(modalHtml.includes('>F2Date:<'), 'F2Date label missing');
+assert.ok(modalHtml.includes('id="dleaf-f2date-day"'), 'F2Date should ask for a day');
+assert.ok(f2NameAt > f2DateAt, 'F2Name sits under F2Date');
+assert.ok(/<label[^>]*for="dleaf-f2name"[^>]*>F2Name:<\/label>/.test(modalHtml), 'F2Name label missing');
+const f2NameTag = modalHtml.match(/<input[^>]*id="dleaf-f2name"[^>]*>/);
+assert.ok(f2NameTag && f2NameTag[0].includes('type="text"') && !/\bvalue\s*=/.test(f2NameTag[0]), 'F2Name should be a blank text box');
+const css = fs.readFileSync(path.join(root, 'css/styles.css'), 'utf8');
+assert.ok(css.includes('#founders-modal.is-open{z-index:100000;align-items:flex-start;justify-content:center;padding-top:10vh}'), 'Founders Modal should open at 10% of the screen height');
 assert.ok(configSrc.includes("'founders-modal'"), 'founders-modal should be a ui-modal id');
 assert.ok(appSrc.includes("'founders-modal': closeFoundersModal"), 'Escape should close the Founders Modal');
 
