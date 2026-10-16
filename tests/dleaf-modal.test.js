@@ -39,9 +39,9 @@ function assertFdateFields(source, label) {
 }
 
 assertFdateFields(modalHtml, 'index.html');
-assert.ok(html.includes('name="homepage-pr" content="109"'), 'debug PR meta should be 109');
+assert.ok(html.includes('name="homepage-pr" content="110"'), 'debug PR meta should be 110');
+assert.ok(!html.includes('name="homepage-pr" content="109"'), 'debug PR meta should not stay on 109');
 assert.ok(!html.includes('name="homepage-pr" content="108"'), 'debug PR meta should not stay on 108');
-assert.ok(!html.includes('name="homepage-pr" content="107"'), 'debug PR meta should not stay on 107');
 const settingsAt = html.indexOf('id="settings-modal"');
 const settingsEnd = html.indexOf('id="search-modal"', settingsAt);
 const settingsHtml = html.slice(settingsAt, settingsEnd);
@@ -52,7 +52,7 @@ const prSlotAt = settingsHtml.indexOf('id="settings-pr-number"');
 assert.ok(footerAt !== -1 && closeAt > footerAt && prSlotAt > closeAt, 'the PR slot sits under the settings close button');
 assert.ok(appSrc.includes("document.querySelector('meta[name=\"homepage-pr\"]')"), 'script reads meta[name="homepage-pr"] for the settings PR slot');
 assert.ok(appSrc.includes('settings-pr-number') && appSrc.includes("'PR ' + value"), 'the settings label prefixes the meta content');
-assert.ok(!appSrc.includes('PR 109'), 'the settings PR digits are not hardcoded');
+assert.ok(!appSrc.includes('PR 110'), 'the settings PR digits are not hardcoded');
 const quoteAt = html.indexOf('id="daily-quote"');
 const foundersMsgAt = html.indexOf('id="founders-day-message"');
 const headerBarAt = html.indexOf('class="app-header__bar"');
@@ -230,7 +230,7 @@ function loadPanel() {
       },
       addEventListener: function (type, fn) { listen(docListeners, type, fn); },
       querySelector: function (sel) {
-        if (sel === 'meta[name="homepage-pr"]') return { content: '109' };
+        if (sel === 'meta[name="homepage-pr"]') return { content: '110' };
         return null;
       }
     },
