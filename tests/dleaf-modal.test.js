@@ -39,9 +39,9 @@ function assertFdateFields(source, label) {
 }
 
 assertFdateFields(modalHtml, 'index.html');
-assert.ok(html.includes('name="homepage-pr" content="110"'), 'debug PR meta should be 110');
+assert.ok(html.includes('name="homepage-pr" content="111"'), 'debug PR meta should be 111');
+assert.ok(!html.includes('name="homepage-pr" content="110"'), 'debug PR meta should not stay on 110');
 assert.ok(!html.includes('name="homepage-pr" content="109"'), 'debug PR meta should not stay on 109');
-assert.ok(!html.includes('name="homepage-pr" content="108"'), 'debug PR meta should not stay on 108');
 const settingsAt = html.indexOf('id="settings-modal"');
 const settingsEnd = html.indexOf('id="search-modal"', settingsAt);
 const settingsHtml = html.slice(settingsAt, settingsEnd);

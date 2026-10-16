@@ -13,7 +13,12 @@ function renderCategoriesSidebar() {
     const container = document.getElementById('categories-sidebar');
     container.innerHTML = '';
 
-    let cats = getAllCategories();
+    const shownLinks = (typeof linksShownInUi === 'function') ? linksShownInUi() : links;
+    let cats = getAllCategories().filter(function (cat) {
+        return shownLinks.some(function (l) {
+            return Array.isArray(l.categories) && l.categories.includes(cat);
+        });
+    });
     if (categorySearchTerm) {
         const term = categorySearchTerm.toLowerCase();
         cats = cats.filter(c => c.toLowerCase().includes(term));
@@ -27,7 +32,7 @@ function renderCategoriesSidebar() {
             <i class="fa-solid fa-list"></i>
             <span class="sidebar-category__label">All Links</span>
         </div>
-        <span class="sidebar-category__count">${links.length}</span>
+        <span class="sidebar-category__count">${shownLinks.length}</span>
     `;
     all.onclick = () => {
         clearCategoryFilter();
@@ -42,7 +47,7 @@ function renderCategoriesSidebar() {
         container.appendChild(empty);
     } else {
         cats.forEach(cat => {
-            const count = links.filter(l => Array.isArray(l.categories) && l.categories.includes(cat)).length;
+            const count = shownLinks.filter(l => Array.isArray(l.categories) && l.categories.includes(cat)).length;
             const div = document.createElement('div');
             div.className = `sidebar-category sidebar-category--item${currentFilterCategory === cat ? ' active' : ''}`;
             div.setAttribute('tabindex', '0');
@@ -222,7 +227,7 @@ function updateAbcSectionNav(sectionLabels) {
 function getTallySectionOrderIds(targetLink, tallyOverride) {
     if (!targetLink) return [];
 
-    let filtered = links;
+    let filtered = (typeof linksShownInUi === 'function') ? linksShownInUi() : links;
 
     if (currentFilterCategory) {
         filtered = filtered.filter(l => Array.isArray(l.categories) && l.categories.includes(currentFilterCategory));
@@ -297,7 +302,7 @@ function renderLinks() {
         grid.className = 'links-grid';
     }
 
-    let filtered = links;
+    let filtered = (typeof linksShownInUi === 'function') ? linksShownInUi() : links;
 
     if (currentFilterCategory) {
         filtered = filtered.filter(l => Array.isArray(l.categories) && l.categories.includes(currentFilterCategory));

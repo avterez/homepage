@@ -164,6 +164,36 @@ function unmaskToken(masked) {
     }
 }
 
+/** Local filesystem URL. These are left as typed and hidden on mobile. */
+function isLocalFileUrl(url) {
+    return String(url == null ? '' : url).trim().toLowerCase().startsWith('file:///');
+}
+
+/**
+ * Add https:// when the user omitted a scheme.
+ * A file:/// URL is already absolute, so it is stored unchanged.
+ */
+function normalizeLinkUrl(url) {
+    var trimmed = String(url == null ? '' : url).trim();
+    if (!trimmed.startsWith('http') && !isLocalFileUrl(trimmed)) {
+        trimmed = 'https://' + trimmed;
+    }
+    return trimmed;
+}
+
+/** file:/// cards stay in the desktop list and are omitted on mobile. */
+function isLinkVisible(link) {
+    if (!link) return false;
+    if (typeof isMobileBrowser === 'function' && isMobileBrowser() && isLocalFileUrl(link.url)) return false;
+    return true;
+}
+
+/** Links that should appear in the current browser (desktop or mobile). */
+function linksShownInUi() {
+    if (!Array.isArray(links)) return [];
+    return links.filter(isLinkVisible);
+}
+
 /** Coerce to non-negative integer tally; invalid → 0. */
 function coerceTally(value) {
     if (value === null || value === undefined || value === '') return 0;
