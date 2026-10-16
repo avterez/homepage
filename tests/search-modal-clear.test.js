@@ -37,13 +37,17 @@ const searchOpen = html.slice(
     html.indexOf('>', html.indexOf('<div id="search-modal"')) + 1
 );
 assert.ok(!/onclick\s*=/.test(searchOpen), 'clicking off the search modal does not close it');
+const searchStart = html.indexOf('<div id="search-modal"');
+const searchEnd = html.indexOf('<div id="color-theme-modal"');
+const searchHtml = html.slice(searchStart, searchEnd);
+assert.ok(!searchHtml.includes('ui-modal__header'), 'the search modal has no header');
+assert.ok(!searchHtml.includes('ui-modal__close'), 'the search modal has no header close control');
+const footerAt = searchHtml.indexOf('class="search-modal__footer ui-modal__footer"');
+const closeAt = searchHtml.indexOf('search-modal__footer-close');
+assert.ok(footerAt !== -1 && closeAt > footerAt, 'Close sits in the search footer');
 assert.ok(
-    /<button type="button" onclick="closeSearchModal\(\)" class="ui-modal__close" aria-label="Close">/.test(html),
-    'the X button still closes the search modal'
-);
-assert.ok(
-    /onclick="closeSearchModal\(\)"\s+class="search-modal__close ui-modal__btn ui-modal__btn--block ui-modal__btn--bordered">\s*Close\s*<\/button>/.test(html),
-    'the Close button closes the search modal'
+    /<div class="search-modal__footer ui-modal__footer">\s*<button type="button" onclick="closeSearchModal\(\)"\s+class="search-modal__footer-close ui-modal__btn ui-modal__btn--block ui-modal__btn--bordered">\s*Close\s*<\/button>/.test(searchHtml),
+    'the footer Close button closes the search modal'
 );
 
 function loadGsmodal() {

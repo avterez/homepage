@@ -366,42 +366,39 @@
 			class="ui-modal ui-modal--top ui-modal--topmost search-modal"
 			role="dialog" aria-modal="true" aria-labelledby="search-modal-title">
 			<div onclick="event.stopImmediatePropagation()"
-				class="ui-modal__panel ui-modal__panel--lg ui-modal__panel--padded search-modal__panel modal">
+				class="ui-modal__panel ui-modal__panel--lg search-modal__panel modal">
 
-				<div class="ui-modal__header ui-modal__header--plain">
-					<h3 id="search-modal-title" class="ui-modal__title ui-modal__title--row">
-						<i class="fa-solid fa-search"></i>
-						<span>Google Search</span>
-					</h3>
-					<button type="button" onclick="closeSearchModal()" class="ui-modal__close" aria-label="Close">
-						<i class="fa-solid fa-times"></i>
-					</button>
-				</div>
-
+				<div class="search-modal__body custom-scroll">
 				<div class="search-modal__sections">
-					<form id="search-modal-form" class="search-modal__form">
-						<div class="search-modal__row">
-							<div class="search-modal__field">
-								<div id="search-modal-icon-wrapper" class="search-modal__icon">
-									<i class="fa-solid fa-search"></i>
+					<section class="search-modal__section" aria-labelledby="search-modal-title">
+						<h3 id="search-modal-title" class="search-modal__section-title">
+							<span class="search-modal__section-mark" aria-hidden="true"><i class="fa-solid fa-search"></i></span>
+							<span>Google Search</span>
+						</h3>
+						<form id="search-modal-form" class="search-modal__form">
+							<div class="search-modal__row">
+								<div class="search-modal__field">
+									<div id="search-modal-icon-wrapper" class="search-modal__icon">
+										<i class="fa-solid fa-search"></i>
+									</div>
+									<input
+										id="search-modal-input"
+										type="text"
+										placeholder="Search Google"
+										class="search-modal__input search-input"
+										autocomplete="off"
+										>
+									<button type="button"
+										class="search-modal__clear"
+										onclick="clearSearchModalField('search-modal-input')"
+										aria-label="Clear">
+										<i class="fa-solid fa-times"></i>
+									</button>
 								</div>
-								<input
-									id="search-modal-input"
-									type="text"
-									placeholder="Search Google"
-									class="search-modal__input search-input"
-									autocomplete="off"
-									>
-								<button type="button"
-									class="search-modal__clear"
-									onclick="clearSearchModalField('search-modal-input')"
-									aria-label="Clear">
-									<i class="fa-solid fa-times"></i>
-								</button>
+								<button type="submit" class="search-modal__submit ui-modal__btn" aria-label="Google">Google</button>
 							</div>
-							<button type="submit" class="search-modal__submit ui-modal__btn" aria-label="Google">Google</button>
-						</div>
-					</form>
+						</form>
+					</section>
 
 					<section class="search-modal__section" aria-labelledby="yahoo-finance-title">
 						<h4 id="yahoo-finance-title" class="search-modal__section-title">
@@ -493,11 +490,14 @@
 						</form>
 					</section>
 				</div>
+				</div>
 
-				<button type="button" onclick="closeSearchModal()"
-					class="search-modal__close ui-modal__btn ui-modal__btn--block ui-modal__btn--bordered">
-					Close
-				</button>
+				<div class="search-modal__footer ui-modal__footer">
+					<button type="button" onclick="closeSearchModal()"
+						class="search-modal__footer-close ui-modal__btn ui-modal__btn--block ui-modal__btn--bordered">
+						Close
+					</button>
+				</div>
 			</div>
 		</div>
 
