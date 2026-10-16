@@ -178,7 +178,7 @@ function saveCurrentLink() {
         alert("Name and URL are required");
         return;
     }
-    if (!url.startsWith('http')) url = 'https://' + url;
+    if (!url.startsWith('http') && !isLocalFileUrl(url)) url = 'https://' + url;
 
     const cats = [...modalCurrentCategories];
     const isFavorite = document.getElementById('link-is-favorite').checked;
