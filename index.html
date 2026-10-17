@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<!-- AI: The Debug screen shows this pull request number. When a new PR starts, update content below to that PR number. -->
-		<meta name="homepage-pr" content="110">
+		<meta name="homepage-pr" content="112">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<script>
 		(function () {
@@ -46,7 +46,7 @@
 		<link rel="preload" href="css/lucide/lucide.woff2?v=pr75-settings-icons" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="css/styles.css?v=pr108-hide-fireworks" as="style">
+		<link rel="preload" href="css/styles.css?v=pr112-founders-message" as="style">
 
 		<!-- Critical CSS (FOUC / first paint) -->
 		<style>
@@ -62,7 +62,10 @@
 	  #header-logo{background-color:var(--active-cat-color,var(--active-cat-bg))!important}
 	  #daily-quote,#page-title,#greeting,#date,#clock,.menu-text-label,#founders-day-message{color:var(--color-text-primary)!important}
 	  #daily-quote{font-style:italic;line-height:1.2;font-size:.875rem}
-	  #founders-day-message{font-weight:700;font-style:normal;line-height:1.25;font-size:.875rem;text-align:center;overflow-wrap:anywhere;white-space:pre-line;max-width:100%}
+	  #founders-day-message{width:100%;box-sizing:border-box;font-weight:700;font-style:normal;font-size:1.125rem;line-height:1.75rem;margin:0;padding:.125rem 0 .375rem;text-align:center;overflow-wrap:anywhere;white-space:pre-line;max-width:100%;text-shadow:0 0 .35rem var(--active-cat-color,var(--active-cat-bg)),0 0 .85rem var(--active-cat-color,var(--active-cat-bg)),0 0 1.5rem var(--active-cat-color,var(--active-cat-bg))}
+	  @media (min-width:640px){#founders-day-message{font-size:1.25rem;line-height:1.75rem}}
+	  @media (min-width:768px){#founders-day-message{font-size:1.5rem;line-height:2rem}}
+	  #founders-day-message[hidden]{display:none}
 	  /* Critical header icons (rocket + chrome) before async FA subset */
 	  @font-face{font-family:"Font Awesome 7 Free";font-style:normal;font-weight:900;font-display:swap;src:url(css/fontawesome/webfonts/fa-solid-900.woff2) format("woff2")}
 	  .fa-solid{font-family:"Font Awesome 7 Free";font-weight:900;display:inline-block;font-style:normal;line-height:1;-webkit-font-smoothing:antialiased}
@@ -71,7 +74,7 @@
 		</style>
 
 		<!-- Main CSS (blocking; avoid FOUC) -->
-		<link rel="stylesheet" href="css/styles.css?v=pr108-hide-fireworks">
+		<link rel="stylesheet" href="css/styles.css?v=pr112-founders-message">
 		<link rel="stylesheet" href="css/lucide/lucide.css?v=pr75-settings-icons">
 
 		<!-- FA subset async (~1.8KB vs full) -->
@@ -88,9 +91,6 @@
 						class="header-quote__text"
 						title="">
 					</div>
-					<div id="founders-day-message"
-						class="header-quote__founders"
-						hidden></div>
 				</div>
 
 				<div class="app-header__bar">
@@ -154,6 +154,9 @@
 						</button>
 					</div>
 				</div>
+				<div id="founders-day-message"
+					class="app-header__founders"
+					hidden></div>
 			</div>
 		</header>
 
