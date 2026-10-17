@@ -55,10 +55,11 @@ assert.ok(appSrc.includes('settings-pr-number') && appSrc.includes("'PR ' + valu
 assert.ok(!appSrc.includes('PR 112'), 'the settings PR digits are not hardcoded');
 const quoteAt = html.indexOf('id="daily-quote"');
 const foundersMsgAt = html.indexOf('id="founders-day-message"');
-const headerBarAt = html.indexOf('class="app-header__bar"');
-const headerEnd = html.indexOf('</header>', headerBarAt);
-assert.ok(quoteAt !== -1 && headerBarAt > quoteAt && foundersMsgAt > headerBarAt && foundersMsgAt < headerEnd, 'the founders message sits at the bottom of the header');
-assert.ok(/id="founders-day-message"[\s\S]*class="app-header__founders"/.test(html), 'founders message uses the header class');
+const headerEnd = html.indexOf('</header>');
+const privacyAt = html.indexOf('id="privacy-note"');
+const footerAtPage = html.indexOf('class="app-footer"');
+assert.ok(quoteAt !== -1 && foundersMsgAt > headerEnd && foundersMsgAt > footerAtPage && foundersMsgAt < privacyAt, 'the founders message sits in the page footer above the privacy note');
+assert.ok(/id="founders-day-message"[\s\S]*class="app-footer__founders"/.test(html), 'founders message uses the page footer class');
 assert.ok(html.includes('#founders-day-message{') && html.includes('text-align:center') && html.includes('font-size:1.125rem'), 'the founders message is centered at the greeting size');
 assert.ok(html.includes('text-shadow:0 0 .35rem var(--active-cat-color,var(--active-cat-bg))'), 'the founders message glows with Active & Accent');
 const fmessageAt = modalHtml.indexOf('id="dleaf-fmessage"');
@@ -117,9 +118,9 @@ assert.ok(secondMonth.includes('<option value="">None</option>') || secondMonth.
 assert.ok(secondMonth.indexOf('>None</option>') < secondMonth.indexOf('<option value="1">January</option>'), 'second Date None is the first month option');
 assert.ok(!firstDay.includes('>None<') && !secondDay.includes('>None<'), 'day selects do not include None');
 const css = fs.readFileSync(path.join(root, 'css/styles.css'), 'utf8');
-assert.ok(css.includes('.app-header__founders{') && css.includes('font-weight:700') && css.includes('text-align:center'), 'the founders message is bold and centered');
-assert.ok(css.includes('#greeting,#founders-day-message,.app-header__founders{font-size:1.125rem;line-height:1.75rem}'), 'the founders message uses the greeting font size');
-assert.ok(css.includes('@media (min-width:768px){#greeting,#founders-day-message,.app-header__founders{font-size:1.5rem;line-height:2rem}}'), 'the founders message scales with the greeting');
+assert.ok(css.includes('.app-footer__founders{') && css.includes('font-weight:700') && css.includes('text-align:center'), 'the founders message is bold and centered');
+assert.ok(css.includes('#greeting,#founders-day-message,.app-footer__founders{font-size:1.125rem;line-height:1.75rem}'), 'the founders message uses the greeting font size');
+assert.ok(css.includes('@media (min-width:768px){#greeting,#founders-day-message,.app-footer__founders{font-size:1.5rem;line-height:2rem}}'), 'the founders message scales with the greeting');
 assert.ok(css.includes('text-shadow:0 0 0.35rem var(--active-cat-color,var(--active-cat-bg)),0 0 0.85rem var(--active-cat-color,var(--active-cat-bg)),0 0 1.5rem var(--active-cat-color,var(--active-cat-bg))'), 'the founders message glows with Active & Accent');
 assert.ok(css.includes('#founders-day-message[hidden]{display:none}'), 'a non-matching day hides the founders message');
 assert.ok(css.includes('.founders-modal__footer{flex-shrink:0') && css.includes('.founders-modal__footer-close{width:100%'), 'Special Date has a full-width footer Close like the other modals');

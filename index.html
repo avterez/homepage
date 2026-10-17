@@ -62,7 +62,7 @@
 	  #header-logo{background-color:var(--active-cat-color,var(--active-cat-bg))!important}
 	  #daily-quote,#page-title,#greeting,#date,#clock,.menu-text-label,#founders-day-message{color:var(--color-text-primary)!important}
 	  #daily-quote{font-style:italic;line-height:1.2;font-size:.875rem}
-	  #founders-day-message{width:100%;box-sizing:border-box;font-weight:700;font-style:normal;font-size:1.125rem;line-height:1.75rem;margin:0;padding:.125rem 0 .375rem;text-align:center;overflow-wrap:anywhere;white-space:pre-line;max-width:100%;text-shadow:0 0 .35rem var(--active-cat-color,var(--active-cat-bg)),0 0 .85rem var(--active-cat-color,var(--active-cat-bg)),0 0 1.5rem var(--active-cat-color,var(--active-cat-bg))}
+	  #founders-day-message{width:100%;box-sizing:border-box;font-weight:700;font-style:normal;font-size:1.125rem;line-height:1.75rem;margin:0;padding:.35rem .5rem 0;text-align:center;overflow-wrap:anywhere;white-space:pre-line;max-width:100%;text-shadow:0 0 .35rem var(--active-cat-color,var(--active-cat-bg)),0 0 .85rem var(--active-cat-color,var(--active-cat-bg)),0 0 1.5rem var(--active-cat-color,var(--active-cat-bg))}
 	  @media (min-width:640px){#founders-day-message{font-size:1.25rem;line-height:1.75rem}}
 	  @media (min-width:768px){#founders-day-message{font-size:1.5rem;line-height:2rem}}
 	  #founders-day-message[hidden]{display:none}
@@ -154,9 +154,6 @@
 						</button>
 					</div>
 				</div>
-				<div id="founders-day-message"
-					class="app-header__founders"
-					hidden></div>
 			</div>
 		</header>
 
@@ -245,6 +242,9 @@
 
 		<footer class="app-footer">
 			<p id="snow-paused-note" class="snow-paused-note" hidden>(Snow paused)</p>
+			<div id="founders-day-message"
+				class="app-footer__founders"
+				hidden></div>
 			<p id="privacy-note" class="privacy-note">All links are saved privately in your browser</p>
 		</footer>
 
