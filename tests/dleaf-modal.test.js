@@ -73,6 +73,14 @@ assert.ok(f2MessageAt > f2DateAt, 'F2MESSAGE sits under the second Date');
 assert.ok(/<label[^>]*for="dleaf-f2message"[^>]*>Message:<\/label>/.test(modalHtml), 'second Message label should read Message:');
 const f2MessageTag = modalHtml.match(/<input[^>]*id="dleaf-f2message"[^>]*>/);
 assert.ok(f2MessageTag && f2MessageTag[0].includes('type="text"') && f2MessageTag[0].includes('name="f2message"') && !/\bvalue\s*=/.test(f2MessageTag[0]), 'F2MESSAGE should be a blank text box');
+const foundersFooterAt = modalHtml.indexOf('class="founders-modal__footer ui-modal__footer"');
+const foundersCloseAt = modalHtml.indexOf('founders-modal__footer-close');
+const f2FieldEnd = modalHtml.indexOf('id="dleaf-f2message"');
+assert.ok(foundersFooterAt !== -1 && foundersCloseAt > foundersFooterAt && foundersFooterAt > f2FieldEnd, 'a Close footer sits under the Special Date fields');
+assert.ok(
+  /<div class="founders-modal__footer ui-modal__footer">\s*<button type="button" onclick="closeFoundersModal\(\)"\s+class="founders-modal__footer-close ui-modal__btn ui-modal__btn--block ui-modal__btn--bordered">\s*Close\s*<\/button>/.test(modalHtml),
+  'the Special Date footer Close button matches the other modals'
+);
 assert.ok(!modalHtml.includes('dleaf-fname') && !modalHtml.includes('dleaf-f2name'), 'old name ids are gone from the Founders Modal');
 assert.ok(!modalHtml.includes('name="fname"') && !modalHtml.includes('name="f2name"'), 'old name attributes are gone from the Founders Modal');
 
@@ -114,6 +122,7 @@ assert.ok(css.includes('#greeting,#founders-day-message,.app-header__founders{fo
 assert.ok(css.includes('@media (min-width:768px){#greeting,#founders-day-message,.app-header__founders{font-size:1.5rem;line-height:2rem}}'), 'the founders message scales with the greeting');
 assert.ok(css.includes('text-shadow:0 0 0.35rem var(--active-cat-color,var(--active-cat-bg)),0 0 0.85rem var(--active-cat-color,var(--active-cat-bg)),0 0 1.5rem var(--active-cat-color,var(--active-cat-bg))'), 'the founders message glows with Active & Accent');
 assert.ok(css.includes('#founders-day-message[hidden]{display:none}'), 'a non-matching day hides the founders message');
+assert.ok(css.includes('.founders-modal__footer{flex-shrink:0') && css.includes('.founders-modal__footer-close{width:100%'), 'Special Date has a full-width footer Close like the other modals');
 assert.ok(css.includes('#founders-modal.is-open{z-index:100000;align-items:flex-start;justify-content:center;padding-top:10vh}'), 'Founders Modal should open at 10% of the screen height');
 assert.ok(configSrc.includes("'founders-modal'"), 'founders-modal should be a ui-modal id');
 assert.ok(appSrc.includes("'founders-modal': closeFoundersModal"), 'Escape should close the Founders Modal');
