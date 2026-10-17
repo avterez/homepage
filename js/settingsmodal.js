@@ -68,9 +68,15 @@ function isMobileBrowser() {
     }
 }
 
+var fileLinkVisibilityIsMobile = null;
+
 function updateColorThemeMobileLayout() {
     var mobile = isMobileBrowser();
     document.documentElement.classList.toggle('is-mobile', mobile);
+    if (fileLinkVisibilityIsMobile !== null && fileLinkVisibilityIsMobile !== mobile && typeof renderLinks === 'function') {
+        renderLinks();
+    }
+    fileLinkVisibilityIsMobile = mobile;
     if (typeof syncAddEditModalLayout === 'function') syncAddEditModalLayout();
     if (typeof syncGitHubCredentialsModalLayout === 'function') syncGitHubCredentialsModalLayout();
     if (typeof refreshAbcSectionNavLayout === 'function') {
