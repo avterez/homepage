@@ -124,6 +124,7 @@ assert.ok(css.includes('@media (min-width:768px){#greeting,#founders-day-message
 assert.ok(css.includes('text-shadow:0 0 0.35rem var(--active-cat-color,var(--active-cat-bg)),0 0 0.85rem var(--active-cat-color,var(--active-cat-bg)),0 0 1.5rem var(--active-cat-color,var(--active-cat-bg))'), 'the founders message glows with Active & Accent');
 assert.ok(css.includes('.founders-chip{') && css.includes('width:fit-content') && css.includes('background-color:color-mix(in srgb, var(--color-surface-chrome) 80%, transparent)'), 'the founders message is a chip in the header color');
 assert.ok(css.includes('.links-title-row{display:grid;grid-template-columns:1fr auto 1fr'), 'the chip is centered on the Your Links row');
+assert.ok(css.includes('.links-title-row:has(#founders-footer:not([hidden])){padding-top:0.25rem}'), 'the chip sits 0.25rem under the header');
 assert.ok(css.includes('@media (max-width:649px)') && css.includes('.founders-chip-slot{order:1'), 'under 650px the chip sits on its own line above Your Links');
 assert.ok(css.includes('#founders-footer[hidden]{display:none}'), 'a non-matching day hides the founders chip');
 assert.ok(appSrc.includes("getElementById('founders-footer')"), 'showing a founders message unhides the second footer');
