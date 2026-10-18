@@ -1515,15 +1515,16 @@ function applyFoundersForm(record) {
 
 function paintFoundersDayMessage(record, date) {
     var el = document.getElementById('founders-day-message');
+    var bar = document.getElementById('founders-footer');
     if (!el) return;
     var lines = (typeof foundersDayMessages === 'function') ? foundersDayMessages(record, date) : [];
     if (!lines.length) {
         el.textContent = '';
-        el.setAttribute('hidden', '');
+        if (bar) bar.setAttribute('hidden', '');
         return;
     }
     el.textContent = lines.join('\n');
-    el.removeAttribute('hidden');
+    if (bar) bar.removeAttribute('hidden');
 }
 
 function applyFoundersDay(date) {

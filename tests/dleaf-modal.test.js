@@ -39,9 +39,9 @@ function assertFdateFields(source, label) {
 }
 
 assertFdateFields(modalHtml, 'index.html');
-assert.ok(html.includes('name="homepage-pr" content="110"'), 'debug PR meta should be 110');
-assert.ok(!html.includes('name="homepage-pr" content="109"'), 'debug PR meta should not stay on 109');
-assert.ok(!html.includes('name="homepage-pr" content="108"'), 'debug PR meta should not stay on 108');
+assert.ok(html.includes('name="homepage-pr" content="112"'), 'debug PR meta should be 112');
+assert.ok(!html.includes('name="homepage-pr" content="111"'), 'debug PR meta should not stay on 111');
+assert.ok(!html.includes('name="homepage-pr" content="110"'), 'debug PR meta should not stay on 110');
 const settingsAt = html.indexOf('id="settings-modal"');
 const settingsEnd = html.indexOf('id="search-modal"', settingsAt);
 const settingsHtml = html.slice(settingsAt, settingsEnd);
@@ -52,13 +52,18 @@ const prSlotAt = settingsHtml.indexOf('id="settings-pr-number"');
 assert.ok(footerAt !== -1 && closeAt > footerAt && prSlotAt > closeAt, 'the PR slot sits under the settings close button');
 assert.ok(appSrc.includes("document.querySelector('meta[name=\"homepage-pr\"]')"), 'script reads meta[name="homepage-pr"] for the settings PR slot');
 assert.ok(appSrc.includes('settings-pr-number') && appSrc.includes("'PR ' + value"), 'the settings label prefixes the meta content');
-assert.ok(!appSrc.includes('PR 110'), 'the settings PR digits are not hardcoded');
+assert.ok(!appSrc.includes('PR 112'), 'the settings PR digits are not hardcoded');
 const quoteAt = html.indexOf('id="daily-quote"');
 const foundersMsgAt = html.indexOf('id="founders-day-message"');
-const headerBarAt = html.indexOf('class="app-header__bar"');
-assert.ok(quoteAt !== -1 && foundersMsgAt > quoteAt && foundersMsgAt < headerBarAt, 'the bold founders message sits under #daily-quote');
-assert.ok(html.slice(quoteAt, foundersMsgAt).includes('header-quote__text'), 'the message stays in the quote block');
-assert.ok(/id="founders-day-message"[\s\S]*class="header-quote__founders"/.test(html), 'founders message uses the bold quote class');
+const headerEnd = html.indexOf('</header>');
+const privacyAt = html.indexOf('id="privacy-note"');
+const foundersBarAt = html.indexOf('id="founders-footer"');
+const privacyFooterAt = html.indexOf('<footer class="app-footer">');
+assert.ok(quoteAt !== -1 && foundersBarAt > headerEnd && foundersBarAt < privacyFooterAt && foundersMsgAt > foundersBarAt && foundersMsgAt < privacyAt, 'a second footer above the privacy footer holds the founders message');
+assert.ok(/id="founders-footer"[^>]*class="app-footer app-footer--founders"[^>]*hidden/.test(html), 'the founders footer starts hidden');
+assert.ok(/id="founders-day-message"[^>]*class="app-footer__founders"/.test(html), 'founders message uses the page footer class');
+assert.ok(html.includes('#founders-day-message{') && html.includes('text-align:center') && html.includes('font-size:1.125rem'), 'the founders message is centered at the greeting size');
+assert.ok(html.includes('text-shadow:0 0 .35rem var(--active-cat-color,var(--active-cat-bg))'), 'the founders message glows with Active & Accent');
 const fmessageAt = modalHtml.indexOf('id="dleaf-fmessage"');
 const ruleAt = modalHtml.indexOf('<hr class="founders-modal__rule">');
 const f2DateAt = modalHtml.indexOf('id="dleaf-f2date-month"');
@@ -71,6 +76,14 @@ assert.ok(f2MessageAt > f2DateAt, 'F2MESSAGE sits under the second Date');
 assert.ok(/<label[^>]*for="dleaf-f2message"[^>]*>Message:<\/label>/.test(modalHtml), 'second Message label should read Message:');
 const f2MessageTag = modalHtml.match(/<input[^>]*id="dleaf-f2message"[^>]*>/);
 assert.ok(f2MessageTag && f2MessageTag[0].includes('type="text"') && f2MessageTag[0].includes('name="f2message"') && !/\bvalue\s*=/.test(f2MessageTag[0]), 'F2MESSAGE should be a blank text box');
+const foundersFooterAt = modalHtml.indexOf('class="founders-modal__footer ui-modal__footer"');
+const foundersCloseAt = modalHtml.indexOf('founders-modal__footer-close');
+const f2FieldEnd = modalHtml.indexOf('id="dleaf-f2message"');
+assert.ok(foundersFooterAt !== -1 && foundersCloseAt > foundersFooterAt && foundersFooterAt > f2FieldEnd, 'a Close footer sits under the Special Date fields');
+assert.ok(
+  /<div class="founders-modal__footer ui-modal__footer">\s*<button type="button" onclick="closeFoundersModal\(\)"\s+class="founders-modal__footer-close ui-modal__btn ui-modal__btn--block ui-modal__btn--bordered">\s*Close\s*<\/button>/.test(modalHtml),
+  'the Special Date footer Close button matches the other modals'
+);
 assert.ok(!modalHtml.includes('dleaf-fname') && !modalHtml.includes('dleaf-f2name'), 'old name ids are gone from the Founders Modal');
 assert.ok(!modalHtml.includes('name="fname"') && !modalHtml.includes('name="f2name"'), 'old name attributes are gone from the Founders Modal');
 
@@ -107,8 +120,15 @@ assert.ok(secondMonth.includes('<option value="">None</option>') || secondMonth.
 assert.ok(secondMonth.indexOf('>None</option>') < secondMonth.indexOf('<option value="1">January</option>'), 'second Date None is the first month option');
 assert.ok(!firstDay.includes('>None<') && !secondDay.includes('>None<'), 'day selects do not include None');
 const css = fs.readFileSync(path.join(root, 'css/styles.css'), 'utf8');
-assert.ok(css.includes('.header-quote__founders{') && css.includes('font-weight:700'), 'the founders message under the quote is bold');
-assert.ok(css.includes('.header-quote__founders[hidden]{display:none}'), 'a non-matching day hides the founders message');
+assert.ok(css.includes('.app-footer__founders{') && css.includes('font-weight:700') && css.includes('text-align:center'), 'the founders message is bold and centered');
+assert.ok(css.includes('#greeting,#founders-day-message,.app-footer__founders{font-size:1.125rem;line-height:1.75rem}'), 'the founders message uses the greeting font size');
+assert.ok(css.includes('@media (min-width:768px){#greeting,#founders-day-message,.app-footer__founders{font-size:1.5rem;line-height:2rem}}'), 'the founders message scales with the greeting');
+assert.ok(css.includes('text-shadow:0 0 0.35rem var(--active-cat-color,var(--active-cat-bg)),0 0 0.85rem var(--active-cat-color,var(--active-cat-bg)),0 0 1.5rem var(--active-cat-color,var(--active-cat-bg))'), 'the founders message glows with Active & Accent');
+assert.ok(css.includes('.app-footer__founders{') && css.includes('width:fit-content') && css.includes('background-color:color-mix(in srgb, var(--color-surface-chrome) 80%, transparent)'), 'the founders message is a chip in the header color');
+assert.ok(css.includes('.app-footer--founders{display:flex;justify-content:center'), 'the founders chip is centered above the privacy footer');
+assert.ok(css.includes('.app-footer--founders[hidden]{display:none}'), 'a non-matching day hides the founders footer');
+assert.ok(appSrc.includes("getElementById('founders-footer')"), 'showing a founders message unhides the second footer');
+assert.ok(css.includes('.founders-modal__footer{flex-shrink:0') && css.includes('.founders-modal__footer-close{width:100%'), 'Special Date has a full-width footer Close like the other modals');
 assert.ok(css.includes('#founders-modal.is-open{z-index:100000;align-items:flex-start;justify-content:center;padding-top:10vh}'), 'Founders Modal should open at 10% of the screen height');
 assert.ok(configSrc.includes("'founders-modal'"), 'founders-modal should be a ui-modal id');
 assert.ok(appSrc.includes("'founders-modal': closeFoundersModal"), 'Escape should close the Founders Modal');
