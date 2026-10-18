@@ -124,7 +124,8 @@ assert.ok(css.includes('.app-footer__founders{') && css.includes('font-weight:70
 assert.ok(css.includes('#greeting,#founders-day-message,.app-footer__founders{font-size:1.125rem;line-height:1.75rem}'), 'the founders message uses the greeting font size');
 assert.ok(css.includes('@media (min-width:768px){#greeting,#founders-day-message,.app-footer__founders{font-size:1.5rem;line-height:2rem}}'), 'the founders message scales with the greeting');
 assert.ok(css.includes('text-shadow:0 0 0.35rem var(--active-cat-color,var(--active-cat-bg)),0 0 0.85rem var(--active-cat-color,var(--active-cat-bg)),0 0 1.5rem var(--active-cat-color,var(--active-cat-bg))'), 'the founders message glows with Active & Accent');
-assert.ok(css.includes('.app-footer--founders{background-color:color-mix(in srgb, var(--color-surface-chrome) 80%, transparent)'), 'the founders footer uses the header background');
+assert.ok(css.includes('.app-footer__founders{') && css.includes('width:fit-content') && css.includes('background-color:color-mix(in srgb, var(--color-surface-chrome) 80%, transparent)'), 'the founders message is a chip in the header color');
+assert.ok(css.includes('.app-footer--founders{display:flex;justify-content:center'), 'the founders chip is centered above the privacy footer');
 assert.ok(css.includes('.app-footer--founders[hidden]{display:none}'), 'a non-matching day hides the founders footer');
 assert.ok(appSrc.includes("getElementById('founders-footer')"), 'showing a founders message unhides the second footer');
 assert.ok(css.includes('.founders-modal__footer{flex-shrink:0') && css.includes('.founders-modal__footer-close{width:100%'), 'Special Date has a full-width footer Close like the other modals');

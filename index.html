@@ -46,7 +46,7 @@
 		<link rel="preload" href="css/lucide/lucide.woff2?v=pr75-settings-icons" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="css/styles.css?v=pr112-founders-message" as="style">
+		<link rel="preload" href="css/styles.css?v=pr112-founders-chip" as="style">
 
 		<!-- Critical CSS (FOUC / first paint) -->
 		<style>
@@ -62,9 +62,9 @@
 	  #header-logo{background-color:var(--active-cat-color,var(--active-cat-bg))!important}
 	  #daily-quote,#page-title,#greeting,#date,#clock,.menu-text-label,#founders-day-message{color:var(--color-text-primary)!important}
 	  #daily-quote{font-style:italic;line-height:1.2;font-size:.875rem}
-	  #founders-footer{background-color:color-mix(in srgb,var(--color-surface-chrome) 80%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+	  #founders-footer{display:flex;justify-content:center;border-top:0;background:transparent;padding:.5rem 1rem .25rem}
 	  #founders-footer[hidden]{display:none}
-	  #founders-day-message{width:100%;box-sizing:border-box;font-weight:700;font-style:normal;font-size:1.125rem;line-height:1.75rem;margin:0;padding:.35rem .5rem;text-align:center;overflow-wrap:anywhere;white-space:pre-line;max-width:100%;text-shadow:0 0 .35rem var(--active-cat-color,var(--active-cat-bg)),0 0 .85rem var(--active-cat-color,var(--active-cat-bg)),0 0 1.5rem var(--active-cat-color,var(--active-cat-bg))}
+	  #founders-day-message{width:fit-content;max-width:100%;box-sizing:border-box;font-weight:700;font-style:normal;font-size:1.125rem;line-height:1.75rem;margin:0;padding:.4rem 1.1rem;border:1px solid var(--color-hairline);border-radius:.85rem;background-color:color-mix(in srgb,var(--color-surface-chrome) 80%,transparent);text-align:center;overflow-wrap:anywhere;white-space:pre-line;text-shadow:0 0 .35rem var(--active-cat-color,var(--active-cat-bg)),0 0 .85rem var(--active-cat-color,var(--active-cat-bg)),0 0 1.5rem var(--active-cat-color,var(--active-cat-bg))}
 	  @media (min-width:640px){#founders-day-message{font-size:1.25rem;line-height:1.75rem}}
 	  @media (min-width:768px){#founders-day-message{font-size:1.5rem;line-height:2rem}}
 	  /* Critical header icons (rocket + chrome) before async FA subset */
@@ -75,7 +75,7 @@
 		</style>
 
 		<!-- Main CSS (blocking; avoid FOUC) -->
-		<link rel="stylesheet" href="css/styles.css?v=pr112-founders-message">
+		<link rel="stylesheet" href="css/styles.css?v=pr112-founders-chip">
 		<link rel="stylesheet" href="css/lucide/lucide.css?v=pr75-settings-icons">
 
 		<!-- FA subset async (~1.8KB vs full) -->
