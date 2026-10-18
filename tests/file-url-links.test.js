@@ -141,6 +141,6 @@ assert.deepStrictEqual(loadGrid(false), ['Drive', 'Web', 'Local']);
 assert.deepStrictEqual(loadGrid(true), ['Web']);
 
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-assert.ok(html.includes('name="homepage-pr" content="112"'), 'debug and settings PR number is 112');
+assert.ok(html.includes('name="homepage-pr" content="113"'), 'debug and settings PR number is 113');
 
 console.log('file-url-links.test.js: ok');
