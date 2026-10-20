@@ -771,7 +771,7 @@ function initCategoryAutocomplete() {
     const addButton = input.nextElementSibling;
 
     const wrapper = document.createElement('div');
-    wrapper.className = 'add-edit-modal__cat-wrap category-input-wrapper';
+    wrapper.className = 'add-edit-modal__cat-wrap';
 
     input.parentNode.insertBefore(wrapper, input);
     wrapper.appendChild(input);
@@ -826,7 +826,7 @@ function initCategoryAutocomplete() {
             empty.textContent = 'No matching categories';
             categorySuggestionsBox.appendChild(empty);
         } else {
-            matches.forEach((cat, index) => {
+            matches.forEach((cat) => {
                 const item = document.createElement('div');
                 item.className = 'add-edit-modal__suggest-item';
                 item.setAttribute('tabindex', '0');

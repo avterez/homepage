@@ -165,7 +165,6 @@ function updateSortModeUI() {
             dragReorderText.textContent = '';
             dragReorderText.classList.add('is-hidden');
         }
-        dragReorderText.classList.remove('date-warning');
     }
     updatePerspectiveLabel();
 }
@@ -295,8 +294,8 @@ function googleStockUrl(ticker) {
     return 'https://www.google.com/search?udm=50&q=' + encodeURIComponent(query);
 }
 
-/** Enter or the row's button opens urlFor(value) in a new tab. Finance rows leave the modal open. */
-function bindSearchLaunchForm(formId, inputId, readValue, urlFor, keepOpen) {
+/** Enter or the row's button opens urlFor(value) in a new tab and closes Search. */
+function bindSearchLaunchForm(formId, inputId, readValue, urlFor) {
     const form = document.getElementById(formId);
     if (!form || form.dataset.launchBound === '1') return;
     form.dataset.launchBound = '1';
@@ -306,7 +305,6 @@ function bindSearchLaunchForm(formId, inputId, readValue, urlFor, keepOpen) {
         const value = readValue(input ? input.value : '');
         if (!value) return;
         openExternalUrl(urlFor(value));
-        if (keepOpen) return;
         closeSearchModal();
         if (input) input.value = '';
     });
@@ -618,8 +616,6 @@ function updatePageTitleSize() {
     if (!title) return;
     const baseRem = 1.5;
     const scale = getPageTitleVisualRem() / baseRem;
-    title.classList.remove('is-wide');
-    title.style.zoom = '';
     title.style.transformOrigin = 'left center';
     if (scale >= 0.999) {
         title.style.transform = '';

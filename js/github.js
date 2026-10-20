@@ -67,14 +67,14 @@ function copyTokenToClipboard() {
                 }, 1300);
             }
         }).catch(() => {
-            fallbackCopy(tokenValue);
+            fallbackCopy();
         });
     } else {
-        fallbackCopy(tokenValue);
+        fallbackCopy();
     }
 }
 
-function fallbackCopy(text) {
+function fallbackCopy() {
     const input = document.getElementById('github-token');
     if (input) {
         input.select();
