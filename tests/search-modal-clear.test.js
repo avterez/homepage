@@ -43,7 +43,15 @@ assert.ok(
     /id="search-modal-title"[^>]*class="ui-modal__title ui-modal__title--row"[\s\S]*?<i class="fa-solid fa-search" aria-hidden="true"><\/i>\s*<span>Search<\/span>/.test(searchHtml),
     'the search modal header is titled Search with a magnifying glass'
 );
-assert.ok(!searchHtml.includes('ui-modal__close'), 'the search modal has no header close control');
+assert.ok(
+    /<div class="ui-modal__header">[\s\S]*?<button type="button" onclick="closeSearchModal\(\)" class="ui-modal__close" aria-label="Close">\s*<i class="fa-solid fa-times"><\/i>\s*<\/button>/.test(searchHtml),
+    'the search modal header close control calls closeSearchModal'
+);
+assert.strictEqual(
+    (searchHtml.match(/class="ui-modal__close"/g) || []).length,
+    1,
+    'the search modal has one header close control'
+);
 assert.ok(!searchHtml.includes('id="finviz-title"') && !searchHtml.includes('id="finviz-input"'), 'the Finviz header and textbox are gone');
 assert.ok(!searchHtml.includes('Google Financial Search') && !searchHtml.includes('id="google-stock-input"'), 'the Google Financial header and textbox are gone');
 assert.ok(!searchHtml.includes('id="yahoo-finance-input"') && !searchHtml.includes('Yahoo Finance'), 'the Yahoo Finance field is replaced by Ticker Lookup');
