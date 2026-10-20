@@ -14,9 +14,7 @@ const gsmodalSrc = fs.readFileSync(path.join(__dirname, '..', 'js/gsmodal.js'), 
 
 const FIELD_IDS = [
     'search-modal-input',
-    'yahoo-finance-input',
-    'finviz-input',
-    'google-stock-input'
+    'ticker-lookup-input'
 ];
 
 FIELD_IDS.forEach(function (id) {
@@ -40,8 +38,29 @@ assert.ok(!/onclick\s*=/.test(searchOpen), 'clicking off the search modal does n
 const searchStart = html.indexOf('<div id="search-modal"');
 const searchEnd = html.indexOf('<div id="color-theme-modal"');
 const searchHtml = html.slice(searchStart, searchEnd);
-assert.ok(!searchHtml.includes('ui-modal__header'), 'the search modal has no header');
-assert.ok(!searchHtml.includes('ui-modal__close'), 'the search modal has no header close control');
+assert.ok(searchHtml.includes('class="ui-modal__header"'), 'the search modal has a header');
+assert.ok(
+    /id="search-modal-title"[^>]*class="ui-modal__title ui-modal__title--row"[\s\S]*?<i class="fa-solid fa-search" aria-hidden="true"><\/i>\s*<span>Search<\/span>/.test(searchHtml),
+    'the search modal header is titled Search with a magnifying glass'
+);
+assert.ok(
+    /<div class="ui-modal__header">[\s\S]*?<button type="button" onclick="closeSearchModal\(\)" class="ui-modal__close" aria-label="Close">\s*<i class="fa-solid fa-times"><\/i>\s*<\/button>/.test(searchHtml),
+    'the search modal header close control calls closeSearchModal'
+);
+assert.strictEqual(
+    (searchHtml.match(/class="ui-modal__close"/g) || []).length,
+    1,
+    'the search modal has one header close control'
+);
+assert.ok(!searchHtml.includes('id="finviz-title"') && !searchHtml.includes('id="finviz-input"'), 'the Finviz header and textbox are gone');
+assert.ok(!searchHtml.includes('Google Financial Search') && !searchHtml.includes('id="google-stock-input"'), 'the Google Financial header and textbox are gone');
+assert.ok(!searchHtml.includes('id="yahoo-finance-input"') && !searchHtml.includes('Yahoo Finance'), 'the Yahoo Finance field is replaced by Ticker Lookup');
+assert.ok(searchHtml.includes('id="ticker-lookup-title"') && searchHtml.includes('>Ticker Lookup<'), 'Ticker Lookup replaces the finance sections');
+const tickerForm = searchHtml.slice(searchHtml.indexOf('id="ticker-lookup-form"'), searchHtml.indexOf('search-modal__footer'));
+assert.ok(tickerForm.includes('id="ticker-lookup-input"'), 'the ticker field sits in the ticker form');
+assert.ok(tickerForm.includes('value="yahoo"') && tickerForm.includes('>Yahoo<'), 'Yahoo submits the ticker form');
+assert.ok(tickerForm.includes('value="finviz"') && tickerForm.includes('>Finviz<'), 'Finviz submits the ticker form');
+assert.ok(tickerForm.includes('value="google"') && tickerForm.includes('aria-label="Google Financial"') && tickerForm.includes('>Google<'), 'Google Financial submits the ticker form');
 const footerAt = searchHtml.indexOf('class="search-modal__footer ui-modal__footer"');
 const closeAt = searchHtml.indexOf('search-modal__footer-close');
 assert.ok(footerAt !== -1 && closeAt > footerAt, 'Close sits in the search footer');
@@ -66,12 +85,10 @@ function loadGsmodal() {
 }
 
 const loaded = loadGsmodal();
-loaded.inputs['yahoo-finance-input'].value = 'AAPL';
-loaded.inputs['finviz-input'].value = 'MSFT';
-loaded.context.clearSearchModalField('yahoo-finance-input');
-assert.strictEqual(loaded.inputs['yahoo-finance-input'].value, '');
-assert.strictEqual(loaded.inputs['yahoo-finance-input'].focused, true);
-assert.strictEqual(loaded.inputs['finviz-input'].value, 'MSFT');
+loaded.inputs['ticker-lookup-input'].value = 'AAPL';
+loaded.context.clearSearchModalField('ticker-lookup-input');
+assert.strictEqual(loaded.inputs['ticker-lookup-input'].value, '');
+assert.strictEqual(loaded.inputs['ticker-lookup-input'].focused, true);
 assert.strictEqual(loaded.inputs['search-modal-input'].value, 'KEEPME');
 
 loaded.context.clearSearchModalField('missing-id');

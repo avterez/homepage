@@ -319,27 +319,20 @@ function setupSearchModalForm() {
         function (value) { return String(value || '').trim(); },
         function (query) { return 'https://www.google.com/search?q=' + encodeURIComponent(query); }
     );
-    bindSearchLaunchForm(
-        'finviz-form',
-        'finviz-input',
-        normalizeFinanceTicker,
-        finvizUrl,
-        true
-    );
-    bindSearchLaunchForm(
-        'yahoo-finance-form',
-        'yahoo-finance-input',
-        normalizeFinanceTicker,
-        yahooFinanceUrl,
-        true
-    );
-    bindSearchLaunchForm(
-        'google-stock-form',
-        'google-stock-input',
-        normalizeFinanceTicker,
-        googleStockUrl,
-        true
-    );
+    var tickerForm = document.getElementById('ticker-lookup-form');
+    if (!tickerForm || tickerForm.dataset.launchBound === '1') return;
+    tickerForm.dataset.launchBound = '1';
+    tickerForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var input = document.getElementById('ticker-lookup-input');
+        var ticker = normalizeFinanceTicker(input ? input.value : '');
+        if (!ticker) return;
+        var which = (e.submitter && e.submitter.value) || 'yahoo';
+        var url = yahooFinanceUrl(ticker);
+        if (which === 'finviz') url = finvizUrl(ticker);
+        else if (which === 'google') url = googleStockUrl(ticker);
+        openExternalUrl(url);
+    });
 }
 
 /** Lazy-load js/debug.js the first time Debug is opened. */

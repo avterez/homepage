@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<!-- AI: The Debug screen shows this pull request number. When a new PR starts, update content below to that PR number. -->
-		<meta name="homepage-pr" content="114">
+		<meta name="homepage-pr" content="115">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<script>
 		(function () {
@@ -46,7 +46,7 @@
 		<link rel="preload" href="css/lucide/lucide.woff2?v=pr75-settings-icons" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="css/fontawesome/webfonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
-		<link rel="preload" href="css/styles.css?v=pr113-chip-pad" as="style">
+		<link rel="preload" href="css/styles.css?v=pr115-header-gap-04" as="style">
 
 		<!-- Critical CSS (FOUC / first paint) -->
 		<style>
@@ -74,7 +74,7 @@
 		</style>
 
 		<!-- Main CSS (blocking; avoid FOUC) -->
-		<link rel="stylesheet" href="css/styles.css?v=pr113-chip-pad">
+		<link rel="stylesheet" href="css/styles.css?v=pr115-header-gap-04">
 		<link rel="stylesheet" href="css/lucide/lucide.css?v=pr75-settings-icons">
 
 		<!-- FA subset async (~1.8KB vs full) -->
@@ -373,13 +373,22 @@
 			<div onclick="event.stopImmediatePropagation()"
 				class="ui-modal__panel ui-modal__panel--lg search-modal__panel modal">
 
+				<div class="ui-modal__header">
+					<h3 id="search-modal-title" class="ui-modal__title ui-modal__title--row">
+						<i class="fa-solid fa-search" aria-hidden="true"></i>
+						<span>Search</span>
+					</h3>
+					<button type="button" onclick="closeSearchModal()" class="ui-modal__close" aria-label="Close">
+						<i class="fa-solid fa-times"></i>
+					</button>
+				</div>
 				<div class="search-modal__body custom-scroll">
 				<div class="search-modal__sections">
-					<section class="search-modal__section" aria-labelledby="search-modal-title">
-						<h3 id="search-modal-title" class="search-modal__section-title">
+					<section class="search-modal__section" aria-labelledby="google-search-title">
+						<h4 id="google-search-title" class="search-modal__section-title">
 							<span class="search-modal__section-mark" aria-hidden="true"><i class="fa-solid fa-search"></i></span>
 							<span>Google Search</span>
-						</h3>
+						</h4>
 						<form id="search-modal-form" class="search-modal__form">
 							<div class="search-modal__row">
 								<div class="search-modal__field">
@@ -400,97 +409,39 @@
 										<i class="fa-solid fa-times"></i>
 									</button>
 								</div>
-								<button type="submit" class="search-modal__submit ui-modal__btn" aria-label="Google">Google</button>
+								<button type="submit" class="search-modal__submit ui-modal__btn" aria-label="Search">Search</button>
 							</div>
 						</form>
 					</section>
 
-					<section class="search-modal__section" aria-labelledby="yahoo-finance-title">
-						<h4 id="yahoo-finance-title" class="search-modal__section-title">
+					<section class="search-modal__section" aria-labelledby="ticker-lookup-title">
+						<h4 id="ticker-lookup-title" class="search-modal__section-title">
 							<span class="search-modal__section-mark" aria-hidden="true"><i class="icon-chart-spline"></i></span>
-							<span>Yahoo Finance</span>
+							<span>Ticker Lookup</span>
 						</h4>
-						<form id="yahoo-finance-form" class="search-modal__form">
-							<div class="search-modal__row">
-								<div class="search-modal__field">
-									<div class="search-modal__icon" aria-hidden="true"><i class="icon-chart-spline"></i></div>
-									<input
-										id="yahoo-finance-input"
-										type="text"
-										placeholder="Ticker"
-										class="search-modal__input"
-										autocomplete="off"
-										autocapitalize="characters"
-										spellcheck="false"
-										>
-									<button type="button"
-										class="search-modal__clear"
-										onclick="clearSearchModalField('yahoo-finance-input')"
-										aria-label="Clear">
-										<i class="fa-solid fa-times"></i>
-									</button>
-								</div>
-								<button type="submit" class="search-modal__submit ui-modal__btn" aria-label="Yahoo">Yahoo</button>
+						<form id="ticker-lookup-form" class="search-modal__form">
+							<div class="search-modal__field">
+								<div class="search-modal__icon" aria-hidden="true"><i class="icon-chart-spline"></i></div>
+								<input
+									id="ticker-lookup-input"
+									type="text"
+									placeholder="Ticker"
+									class="search-modal__input"
+									autocomplete="off"
+									autocapitalize="characters"
+									spellcheck="false"
+									>
+								<button type="button"
+									class="search-modal__clear"
+									onclick="clearSearchModalField('ticker-lookup-input')"
+									aria-label="Clear">
+									<i class="fa-solid fa-times"></i>
+								</button>
 							</div>
-						</form>
-					</section>
-
-					<section class="search-modal__section" aria-labelledby="finviz-title">
-						<h4 id="finviz-title" class="search-modal__section-title">
-							<span class="search-modal__section-mark" aria-hidden="true"><i class="icon-chart-spline"></i></span>
-							<span>Finviz</span>
-						</h4>
-						<form id="finviz-form" class="search-modal__form">
-							<div class="search-modal__row">
-								<div class="search-modal__field">
-									<div class="search-modal__icon" aria-hidden="true"><i class="icon-chart-spline"></i></div>
-									<input
-										id="finviz-input"
-										type="text"
-										placeholder="Ticker"
-										class="search-modal__input"
-										autocomplete="off"
-										autocapitalize="characters"
-										spellcheck="false"
-										>
-									<button type="button"
-										class="search-modal__clear"
-										onclick="clearSearchModalField('finviz-input')"
-										aria-label="Clear">
-										<i class="fa-solid fa-times"></i>
-									</button>
-								</div>
-								<button type="submit" class="search-modal__submit ui-modal__btn" aria-label="Finviz">Finviz</button>
-							</div>
-						</form>
-					</section>
-
-					<section class="search-modal__section" aria-labelledby="google-stock-title">
-						<h4 id="google-stock-title" class="search-modal__section-title">
-							<span class="search-modal__section-mark" aria-hidden="true"><i class="icon-chart-spline"></i></span>
-							<span>Google Financial Search</span>
-						</h4>
-						<form id="google-stock-form" class="search-modal__form">
-							<div class="search-modal__row">
-								<div class="search-modal__field">
-									<div class="search-modal__icon" aria-hidden="true"><i class="icon-chart-spline"></i></div>
-									<input
-										id="google-stock-input"
-										type="text"
-										placeholder="Ticker"
-										class="search-modal__input"
-										autocomplete="off"
-										autocapitalize="characters"
-										spellcheck="false"
-										>
-									<button type="button"
-										class="search-modal__clear"
-										onclick="clearSearchModalField('google-stock-input')"
-										aria-label="Clear">
-										<i class="fa-solid fa-times"></i>
-									</button>
-								</div>
-								<button type="submit" class="search-modal__submit ui-modal__btn" aria-label="Google">Google</button>
+							<div class="search-modal__ticker-actions">
+								<button type="submit" class="search-modal__submit ui-modal__btn" value="yahoo" aria-label="Yahoo">Yahoo</button>
+								<button type="submit" class="search-modal__submit ui-modal__btn" value="finviz" aria-label="Finviz">Finviz</button>
+								<button type="submit" class="search-modal__submit ui-modal__btn" value="google" aria-label="Google Financial">Google</button>
 							</div>
 						</form>
 					</section>
@@ -1906,9 +1857,9 @@
 		<script defer src="js/quotes.js"></script>
 		<script defer src="js/addeditlink.js?v=pr111-file-url"></script>
 		<script defer src="js/settingsmodal.js?v=pr111-file-url"></script>
-		<script defer src="js/gsmodal.js?v=pr82-clear"></script>
+		<script defer src="js/gsmodal.js?v=pr115-search"></script>
 		<script defer src="js/founders.js?v=pr107-founders-day"></script>
-		<script defer src="js/app.js?v=pr112-founders-message"></script>
+		<script defer src="js/app.js?v=pr115-search"></script>
 		<script defer src="js/script.js"></script>
 	</body>
 </html>

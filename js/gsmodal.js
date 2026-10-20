@@ -7,10 +7,8 @@ function openSearchModal() {
     openUiModal('search-modal');
 
     input.value = '';
-    ['yahoo-finance-input', 'finviz-input', 'google-stock-input'].forEach(function (id) {
-        var field = document.getElementById(id);
-        if (field) field.value = '';
-    });
+    var ticker = document.getElementById('ticker-lookup-input');
+    if (ticker) ticker.value = '';
     setTimeout(() => {
         input.focus();
     }, 50);

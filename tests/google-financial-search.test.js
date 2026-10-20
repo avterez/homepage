@@ -66,11 +66,19 @@ function loadFinanceSearch() {
 }
 
 const loaded = loadFinanceSearch();
-const input = loaded.context.document.getElementById('google-stock-input');
-const form = loaded.elements['google-stock-form'];
+const input = loaded.context.document.getElementById('ticker-lookup-input');
+const form = loaded.elements['ticker-lookup-form'];
+
+function submitTicker(value) {
+    form.dispatchEvent({
+        type: 'submit',
+        submitter: { value: value },
+        preventDefault: function () {}
+    });
+}
 
 input.value = '  aapl  ';
-form.dispatchEvent({ type: 'submit', preventDefault: function () {} });
+submitTicker('google');
 
 assert.strictEqual(loaded.opened.length, 1);
 const url = new URL(loaded.opened[0]);
@@ -82,8 +90,20 @@ assert.ok(url.searchParams.get('q').indexOf('JPMorgan, Goldman, DB, Barclays, an
 assert.strictEqual(input.value, '  aapl  ', 'finance search leaves the modal field as entered');
 
 loaded.opened.length = 0;
+submitTicker('yahoo');
+assert.strictEqual(loaded.opened.length, 1);
+assert.strictEqual(loaded.opened[0], 'https://finance.yahoo.com/quote/AAPL');
+assert.strictEqual(input.value, '  aapl  ', 'Yahoo leaves the ticker field as entered');
+
+loaded.opened.length = 0;
+submitTicker('finviz');
+assert.strictEqual(loaded.opened.length, 1);
+assert.strictEqual(loaded.opened[0], 'https://finviz.com/stock?t=AAPL');
+assert.strictEqual(input.value, '  aapl  ', 'Finviz leaves the ticker field as entered');
+
+loaded.opened.length = 0;
 input.value = '   ';
-form.dispatchEvent({ type: 'submit', preventDefault: function () {} });
+submitTicker('google');
 assert.strictEqual(loaded.opened.length, 0, 'blank ticker does not open a search');
 
 const direct = loaded.context.googleStockUrl('BRK.B');
