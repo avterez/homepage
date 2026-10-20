@@ -222,7 +222,7 @@ function updateAbcSectionNav(sectionLabels) {
 function getTallySectionOrderIds(targetLink, tallyOverride) {
     if (!targetLink) return [];
 
-    let filtered = hideLocalFileLinksOnMobile(links);
+    let filtered = links;
 
     if (currentFilterCategory) {
         filtered = filtered.filter(l => Array.isArray(l.categories) && l.categories.includes(currentFilterCategory));
@@ -283,17 +283,6 @@ function dismissOtherLinkCardTooltips(exceptCard) {
     });
 }
 
-/** True for a local file URL. The scheme match is case-insensitive. */
-function isLocalFileUrl(url) {
-    return String(url == null ? '' : url).trim().toLowerCase().startsWith('file:///');
-}
-
-/** Drop file:/// cards from the main page while the browser is in mobile mode. */
-function hideLocalFileLinksOnMobile(list) {
-    if (!(typeof isMobileBrowser === 'function' && isMobileBrowser())) return list;
-    return list.filter(function (link) { return !isLocalFileUrl(link && link.url); });
-}
-
 function renderLinks() {
     const grid = document.getElementById('links-grid');
 
@@ -308,7 +297,7 @@ function renderLinks() {
         grid.className = 'links-grid';
     }
 
-    let filtered = hideLocalFileLinksOnMobile(links);
+    let filtered = links;
 
     if (currentFilterCategory) {
         filtered = filtered.filter(l => Array.isArray(l.categories) && l.categories.includes(currentFilterCategory));
