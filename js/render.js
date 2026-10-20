@@ -501,14 +501,11 @@ function renderLinks() {
 
             card.addEventListener('dragend', () => {
                 card.classList.remove('dragging');
-                document.querySelectorAll('.link-card').forEach(c => c.classList.remove('drag-over','drop-indicator'));
                 draggedId = null;
             });
-            card.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; card.classList.add('drag-over','drop-indicator'); });
-            card.addEventListener('dragleave', () => card.classList.remove('drag-over','drop-indicator'));
+            card.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
             card.addEventListener('drop', (e) => {
                 e.preventDefault();
-                card.classList.remove('drag-over','drop-indicator');
                 if (draggedId && draggedId !== link.id) reorderLinks(draggedId, link.id);
             });
         } else {
